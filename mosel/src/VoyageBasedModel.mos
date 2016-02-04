@@ -1,0 +1,615 @@
+	model VoyageBasedModel
+uses  "mmxprs", "mmsystem", "mmive"; ! Use Xpress-Optimizer
+
+parameters
+	 ! Input file is specified here
+	 
+	 DataFilePath = '..\data\Standard input'
+	 InputDate = '2015-11-13'
+	 ProblemInstance = '11-3-47'
+	 DataFile = DataFilePath + InputDate + " " + ProblemInstance + '.txt'
+	 
+	
+	 OutputFilePath = '..\data\output\'
+	 
+	 
+	 UseEpsilonConstraintMethod = true
+	 ! Input file containing baseline solution to compare new solution with
+	 BaselineFilePath = '..\data\input\baseline\'
+	 BaselineFile = BaselineFilePath + '11-3-47_rem3visits.txt'
+	 TestCase = 'add3visits'
+	 nNBaseline = 11
+	 
+	 
+	 ! Solver will stop and accept current best solution when optimality gap is lower than the limit
+	 OptimalityGapLimit = 0
+	 Timeout = 3600
+	 
+	 ! NB! Not valid to use symmetrybreaking when depot capacity varies from day to day
+	 SymmetryBreaking = false;
+	 
+	 ValidInequalities = false;
+	 VesselDom = false;
+
+end-parameters
+
+
+writeln("DataFile = " + DataFile);
+writeln("UseEpsilon = " + UseEpsilonConstraintMethod);
+
+!Modify Optimizer control parameter MIPRELSTOP
+setparam("XPRS_MIPRELSTOP", OptimalityGapLimit);
+setparam("XPRS_MAXTIME", Timeout);
+setparam("XPRS_CPUTIME", 0); ! 0 - Reports actual time, 1- Reports CPU time
+	
+declarations
+	! Sizes/bounds of sets
+	nV: integer; ! No of vessels
+	nR: integer; ! No of voyages
+	nN: integer; ! No of installations
+	minF: integer; ! Minimum number of required visits
+	maxF: integer; ! Maximum number of required visits
+	nT: integer; ! No of days in planning period
+	minL: integer; ! Minimum voyage duration
+	maxL: integer; ! Maximum voyage duration
+	
+	OutputFile: string;
+	DateTime: datetime;
+end-declarations
+
+initializations from DataFile
+	nV;
+	nR;
+	nN;
+	minF;
+	maxF;
+	nT;
+	minL;
+	maxL;
+end-initializations
+
+V := 1 .. nV;
+N := 1 .. nN;
+F := minF .. maxF;
+T := 0 .. nT-1; ! Zero-indexed due to use of modulus operator in spread of departures constraints
+L := minL .. maxL;
+R := 1 .. nR;
+
+NBaseline := 1 .. nNBaseline;
+
+ParetoIndex := {'Epsilon', 'TotalChange', 'TotalCost'}; ! For indexing ParetoFront
+
+declarations
+	! Sets
+	Rv: array(V) of set of integer; ! Voyages a vessel can sail
+	Rvi: array(V, N) of set of integer; ! Voyages a vessel can sail that visit installation i
+	Rvl: array(V, L) of set of integer; ! Voyages a vessel can sail that has duration l
+	Nf: array(F) of set of integer; ! Sets of installations requiring f visits
+	
+	! Parameters
+	TimeCharterCost: array(V) of real; ! C^(TC)
+	VoyageCost: array(R) of real; ! C^S, includes sailing and service costs
+	VoyageDuration: array(R) of integer; ! D_r, duration of voyage
+	RequiredVisits: array(N) of integer; ! S_i
+	NumberOfDaysAvailable: array(V) of integer; ! F_v, number of days vessel v may be used during the planning period
+ 	DepotCapacity: array(T) of integer; ! B_t, max number of vessels that can be serviced at depot each day
+			
+	hf: array(1..7) of integer;
+	Pf_min: array(1..7) of integer;
+	Pf_max: array(1..7) of integer;
+	
+	! Variables
+	delta: dynamic array(V) of mpvar; ! 1 if vessel v is chartered, 0 otherwise
+	x: dynamic array(V, R, T) of mpvar; ! 1 if vessel v sails route r starting on day t
+	
+	! Output helpers
+	DayNames: array(T) of string;
+	
+	! Epsilon-constraint: Baseline solution values
+	BaselineSigma: array(NBaseline, T) of integer; ! Sigma-values in baseline solutione
+	
+	! Epsilon-constraint: Variables
+	sigma: array(N, T) of mpvar; ! 1 if there is a departure to installation i on day t, 0 otherwise				
+	gamma: array(N, T) of mpvar; ! 1 if there is a change in the departures to installation i on day t, 0 otherwise
+	
+	! Epsilon-constraint: Used for storing output
+	! 1st row: Epsilonvalues, 2nd row: Total cost of solution, 3rd row: Change from baseline
+	ParetoFront: array(1..nT*nN+1, ParetoIndex) of real;
+	
+end-declarations
+
+! Parameters used for spreading departures
+hf ::	[6, 2, 2, 3, 1, 0, 0] ! Horizon in which we need to constrain number of departures, given f required visits
+Pf_min :: [0, 0, 1, 2, 1, 0, 0] ! Minimum no of departures to an installation in the horizon hf
+Pf_max :: [1, 1, 3, 4, 2, 1, 1] ! Maximum no of departures to an installation in the horizon hf
+
+! DayNames is used to make output more readable
+DayNames :: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+initializations from DataFile
+	! Sets
+	Rv;
+	Rvi;
+	Rvl;
+	nN;
+	minF;
+	maxF;
+	Nf;
+	nT;
+	minL;
+	maxL;
+	
+	!Parameters
+	TimeCharterCost;
+	VoyageCost;
+	VoyageDuration;
+	RequiredVisits;
+	NumberOfDaysAvailable;
+ 	DepotCapacity;
+end-initializations
+
+nVisitsTotal := sum(ii in N) RequiredVisits(ii);
+
+
+
+!Creating variables
+forall(vv in V) do
+	create(delta(vv));
+	delta(vv) is_binary;
+	
+	! Sets directive on variable
+	! setmipdir(delta(vv), XPRS_PR, 1);
+	! setmipdir(delta(vv), XPRS_DN);
+	! setmipdir(delta(vv), XPRS_UP);
+	
+	forall(rv in Rv(vv), tt in T) do
+		create(x(vv,rv,tt));
+		x(vv,rv,tt) is_binary;
+	end-do
+	
+end-do
+
+
+! Declaring constraints and objective function
+declarations
+	TotalCost: linctr ! (4.1)
+	VisitsCon: dynamic array(N) of linctr; ! (4.2) All installations must be visited the required times
+	AvailableDaysCon: dynamic array(V) of linctr; ! (4.3) Each vessel does not sail more days than allowed
+	DepotCapacityCon: dynamic array(T) of linctr; ! (4.4)
+	ReturnBeforeNewVoyageCon: dynamic array(V, T, L) of linctr; ! (4.5) Vessel does not begin a new voyage before it has returned from its last voyage
+	SpreadDeparturesMinCon: dynamic array(N, F, T) of linctr; ! (4.6) - Lower bound
+	SpreadDeparturesMaxCon: dynamic array(N, F, T) of linctr; ! (4.6) - Upper bound
+	OneDeparturePerDayCon: dynamic array(N, T) of linctr; ! (4.6) - Maximum one departure to an installation per day
+	
+	! Symmetry-breaking constraints - NOT USED
+	!SymmetryBreakingCon: dynamic array(T) of linctr; ! symmetry-breaking on the number of installations visited by voyages departing on a day
+				
+	! Epsilon-constraint
+	XToSigmaCon: array(N, T) of linctr; ! Constraint linking x-variables with sigma
+	! Constraints linking gamma and sigma
+	SigmaToGammaCon1: array(N, T) of linctr; 
+	SigmaToGammaCon2: array(N, T) of linctr;
+	
+	Change: linctr; ! Sum of all gamma variables
+	EpsilonCon: linctr; ! Constraint that constrains change
+	
+end-declarations
+
+! (4.2)
+forall(ii in N) do
+	VisitsCon(ii) := sum(vv in V, rr in Rvi(vv,ii), tt in T) x(vv,rr,tt) >= RequiredVisits(ii);
+end-do
+
+! (4.3)
+forall(vv in V) do
+	AvailableDaysCon(vv) := sum(ll in L, rr in Rvl(vv, ll), tt in T) (x(vv,rr,tt) * ll) <= NumberOfDaysAvailable(vv) * delta(vv);
+end-do
+
+! (4.4)
+forall(tt in T) do
+	DepotCapacityCon(tt) := sum(vv in V, rr in Rv(vv)) x(vv,rr,tt) <= DepotCapacity(tt);
+end-do
+
+! (4.5)
+forall(vv in V, tt in T, ll in L) do
+	ReturnBeforeNewVoyageCon(vv, tt, ll) := sum(rr in Rvl(vv,ll)) (x(vv,rr,tt)) + sum(rr in Rv(vv), ti in 1..(ll-1)) x(vv, rr, (tt+ti)mod nT)<= delta(vv);
+end-do
+
+! (4.6)
+forall(ff in F, ii in Nf(ff), tt in T) do
+	SpreadDeparturesMinCon(ii, ff, tt) := Pf_min(ff) <= sum(vv in V, rr in Rvi(vv,ii), hh in 0..hf(ff)) x(vv, rr, ((tt+hh)mod nT));
+	SpreadDeparturesMaxCon(ii, ff, tt) := Pf_max(ff) >= sum(vv in V, rr in Rvi(vv,ii), hh in 0..hf(ff)) x(vv, rr, ((tt+hh)mod nT));
+end-do
+
+forall(ii in N, tt in T) do
+	OneDeparturePerDayCon(ii, tt) := sum(vv in V, rr in Rvi(vv, ii)) x(vv, rr, tt) <= 1;
+end-do
+
+(! Symmetry-breaking constraints - NOT USED
+Based on assumption that the DepotCapacity is equal for every day
+forall(tt in T | tt <> 6) do
+	SymmetryBreakingCon(tt) := sum(ii in N, vv in V, rr in Rvi(vv, ii)) x(vv, rr, 6) <= sum(ii in N, vv in V, rr in Rvi(vv, ii)) x(vv, rr, tt);
+end-do 
+!)
+
+! Valid inequalites
+
+declarations
+	ValidInequalityCon1: dynamic array(V) of linctr;
+	ValidInequalityCon2: dynamic array(V) of linctr;
+end-declarations
+
+if (ValidInequalities) then
+	forall(vv in V) do
+		ValidInequalityCon1(vv) := sum(tt in T, rr in Rvl(vv,3)) x(vv,rr,tt) <= 2;
+	end-do
+	
+	forall(vv in V) do
+		ValidInequalityCon2(vv) := sum(tt in T, rr in Rv(vv)) x(vv,rr,tt) <= 3;
+	end-do
+end-if
+
+
+! Symmetry-breaking constraints
+
+declarations
+	SymmetryBreakingCon: linctr;
+end-declarations
+
+if (SymmetryBreaking) then
+	minReqVis := 100;
+	minReqVisIns := 100;
+	forall(ii in N) do
+		if (RequiredVisits(ii) < minReqVis) then
+			minReqVis := RequiredVisits(ii);
+			minReqVisIns := ii;
+		end-if	
+	end-do
+	
+	SymmetryBreakingCon := sum(vv in V, rr in Rvi(vv,minReqVisIns)) x(vv,rr,0) >= 1;
+
+end-if
+
+! Vessel domination
+
+declarations
+	VesselDomCon1: linctr;
+	VesselDomCon2: linctr;
+	VesselDomCon3: linctr;
+	VesselDomCon4: linctr;
+end-declarations
+
+if (VesselDom) then
+	VesselDomCon1 := delta(1) >= delta(2);
+	VesselDomCon2 := delta(1) >= delta(3);
+	VesselDomCon3 := delta(2) >= delta(3);
+	VesselDomCon4 := delta(4) >= delta(3);
+end-if
+	
+
+
+forward procedure CreateOutputFile
+forward procedure WriteProblemInfo
+forward procedure WriteSolution
+forward procedure WriteVesselsUsed
+forward procedure WriteVoyagesUsed
+forward procedure WriteDepartures
+forward procedure WriteBaselineSigma
+forward procedure WriteBaselineDepartures
+forward procedure WriteGamma
+forward procedure WriteParetoFront
+forward procedure WriteElapsedTime
+
+
+StartTime := time(SYS_NOW);
+
+if (not UseEpsilonConstraintMethod) then ! Solve problem without considering change
+	
+	writeln("Running single optimization...");
+	
+
+	! =========================================================Objective function=====================================================================
+	
+	TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr);!  + tt*0.001 ); Uncomment to activate symmetrybreaking: Prefers voyages to start early
+
+	minimize(TotalCost);
+	
+	
+	CreateOutputFile;
+
+	fopen(OutputFile, F_OUTPUT);	
+		WriteProblemInfo;
+		
+		if (getprobstat = XPRS_INF) then
+			writeln("\nNo feasible solution found");
+		
+		else
+			WriteSolution;
+			WriteVesselsUsed;
+			WriteVoyagesUsed;
+			WriteDepartures;
+			WriteBaselineSigma;					
+		end-if
+		
+		WriteElapsedTime;
+		
+	fclose(F_OUTPUT);
+	writeln("Model finished running");
+	
+! Running epsilon-constraint method
+else
+	
+	writeln("Creating Pareto-front using epsilon-constraint method");
+	
+	initializations from BaselineFile
+		BaselineSigma;
+	end-initializations
+	
+	forall(ii in N, tt in T | ii <= nNBaseline) do
+		create(sigma(ii, tt));
+		create(gamma(ii, tt));
+		sigma(ii, tt) is_binary;
+		gamma(ii, tt) is_binary;
+	end-do
+	
+	
+	
+	
+	forall(ii in N, tt in T | ii <= nNBaseline) do
+		XToSigmaCon(ii, tt) := sigma(ii, tt) = sum(vv in V, rr in Rvi(vv, ii)) x(vv, rr, tt);
+		SigmaToGammaCon1(ii, tt) := gamma(ii, tt) >= sigma(ii, tt)-BaselineSigma(ii, tt);
+		SigmaToGammaCon2(ii, tt) := gamma(ii, tt) >= BaselineSigma(ii, tt) - sigma(ii, tt);
+	end-do
+	
+	
+	Change := sum(ii in N, tt in T | ii <= nNBaseline) gamma(ii, tt);
+	
+	! =========================================================Objective function=====================================================================
+	
+	TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr) + Change; ! Add a small cost on change, in order to find the minimum change solution if there are multiple solution with equal cost
+		
+	CreateOutputFile;
+	fopen(OutputFile, F_OUTPUT + F_APPEND);	
+	writeln("Epsilon-constraint method");
+	writeln("Baseline file: " + BaselineFile + "\n");
+	
+	WriteProblemInfo;
+	
+	
+	! =========================================================================================================================	
+	! Adapted epsilon-constraint method
+	Epsilon := nT * nN;
+	iteration := 1;
+	
+	while(Epsilon >= 0) do
+		EpsilonCon := Change <= Epsilon;
+		minimize(TotalCost);
+		
+		UncastedSolutionChange := sum(ii in N, tt in T | ii <= nNBaseline) getsol(gamma(ii, tt));
+		
+		SolutionChange := integer(round(UncastedSolutionChange));
+		
+		
+		writeln("\n!----------------------------------------------------------------------------");
+		writeln("Iteration " + iteration + ": ");
+		writeln("Epsilon: " + Epsilon);
+		
+		if (getprobstat = XPRS_INF) then
+			writeln("\nNo feasible solution found");
+			break;
+		end-if
+		
+		
+		ParetoFront(iteration, 'Epsilon') := Epsilon;
+		ParetoFront(iteration, 'TotalCost') := getobjval-SolutionChange;
+		ParetoFront(iteration, 'TotalChange') := SolutionChange;
+		
+
+		
+		writeln("Change: " + SolutionChange);
+		writeln("Total cost: " + (getobjval-SolutionChange));
+		
+		WriteSolution;
+				
+		
+		WriteVesselsUsed;
+		WriteVoyagesUsed;
+		!WriteBaselineDepartures;
+		WriteDepartures;
+		WriteGamma;
+		
+			
+		
+		if (SolutionChange = 0) then
+			break;
+		end-if
+		
+		Epsilon := SolutionChange - 1;
+		iteration := iteration + 1;
+	end-do
+	
+	
+	WriteParetoFront;	
+	WriteElapsedTime;
+	
+	fclose(F_OUTPUT);
+	writeln("Model finished running");
+end-if
+	
+
+
+! Only procedures for printing output below	
+procedure CreateOutputFile
+	setparam("datetimefmt", "%.y-%0m-%0d %0H.%0M");
+	DateTime := datetime(SYS_NOW);
+	if (not UseEpsilonConstraintMethod) then	
+		OutputFile := OutputFilePath + string(DateTime) + ' ' + ProblemInstance;
+		if (ValidInequalities) then
+			OutputFile := OutputFile + ' VIE ';
+		end-if
+		if (SymmetryBreaking) then
+			OutputFile := OutputFile + ' SB ';
+		end-if
+		if (VesselDom) then
+			OutputFile := OutputFile + ' VD ';
+		end-if
+		OutputFile := OutputFile + '.txt';
+	else 
+		OutputFile := OutputFilePath + 'epsilon\' + string(DateTime) + ' ' + ProblemInstance + '_' + TestCase +  '.txt';	
+	end-if
+	writeln("Writing output to " + OutputFile);
+end-procedure
+
+	
+procedure WriteProblemInfo
+	writeln("!Problem instance: " + ProblemInstance);
+	writeln("!Total visits: " + nVisitsTotal);
+	writeln("!Solved on: " + DateTime);
+end-procedure
+
+procedure WriteSolution
+	nVesselsUsed := sum(vv in V) getsol(delta(vv));
+	nVoyagesUsed := sum(vv in V, rr in Rv(vv), tt in T) getsol(x(vv, rr, tt));
+	
+	
+	writeln("\n!----------------------------------------------------------------------------");
+	
+	if (not UseEpsilonConstraintMethod) then
+		SolTotalCost := getobjval;
+	else
+		SolTotalCost := getobjval-getsol(Change);
+	end-if
+	
+	BestBound := getparam("XPRS_BESTBOUND");
+	OptimalityGap := (getobjval - BestBound)/getobjval;
+	
+	writeln("!Total cost: " + SolTotalCost);
+	writeln("!Optimality gap: " + OptimalityGap);
+	
+	writeln("!Charter cost:\t " + sum(vv in V) TimeCharterCost(vv)*getsol(delta(vv)));
+	writeln("!Sailing cost:\t " + sum(vv in V, rr in Rv(vv), tt in T) VoyageCost(rr) * getsol(x(vv,rr,tt))); 
+	writeln("!Number of vessels used:\t" + nVesselsUsed);
+	writeln("!Number of voyages sailed: " + nVoyagesUsed);
+end-procedure
+
+procedure WriteVesselsUsed
+	writeln("\n!----------------------------------------------------------------------------");	
+	writeln("!Vessels used: \n");
+	nVesselsUsed := 0;
+	
+	forall(vv in V) do
+		writeln("!Vessel " + vv + ": " + getsol(delta(vv)) + ". Cost: " + TimeCharterCost(vv));
+		if (getsol(delta(vv)) > 0.5) then
+			nVesselsUsed := nVesselsUsed + 1;
+		end-if	
+	end-do	
+end-procedure
+
+procedure WriteVoyagesUsed
+	writeln("\n!----------------------------------------------------------------------------");	
+	writeln("!Voyages used: \n");
+	
+	nVoyagesUsed := 0;
+	forall(vv in V, rr in Rv(vv), tt in T) do
+		if (getsol(x(vv,rr,tt)) > 0.5) then
+			writeln("!Vessel " + vv + ", Voyage " + rr + ", " + DayNames(tt) + ". Cost: " + VoyageCost(rr) + ". Duration: " + VoyageDuration(rr));
+			nVoyagesUsed := nVoyagesUsed + 1;
+		end-if	
+	end-do
+end-procedure		
+
+procedure WriteDepartures
+	writeln("\n!----------------------------------------------------------------------------");
+	writeln("!Departures to each installation:");
+	
+	write("\n!\t\t\t");
+	forall(tt in T) do
+		write(DayNames(tt) + "\t");
+	end-do
+	
+	forall(ii in N) do
+		write("\n!Installation " + ii + ":");
+		
+		forall(tt in T) do
+			nDepartures := 0;
+			
+			forall(vv in V, rr in Rvi(vv, ii)| getsol(x(vv, rr,tt)) > 0.5) do
+				nDepartures := nDepartures + 1;
+			end-do
+			write("\t  " + string(nDepartures));		
+		end-do
+	end-do
+end-procedure
+	
+procedure WriteBaselineSigma
+		write("\n\nBaselineSigma: [");
+		forall(ii in N) do
+			writeln("");
+			forall(tt in T) do
+				nDepartures := 0;
+					
+				forall(vv in V, rr in Rvi(vv, ii)| getsol(x(vv, rr,tt)) > 0.5) do
+					nDepartures := nDepartures + 1;
+				end-do
+				write(string(nDepartures) + " ");
+			end-do
+		end-do
+		writeln("\n]");
+end-procedure
+
+procedure WriteBaselineDepartures
+	writeln("\n!----------------------------------------------------------------------------");
+	writeln("!Baseline departures:");
+	
+	write("\n!\t\t\t");
+	forall(tt in T) do
+		write(DayNames(tt) + "\t");
+	end-do
+	
+	forall(ii in N) do
+		write("\n!Installation " + ii + ":");
+		
+		forall(tt in T) do
+			write("\t  " + BaselineSigma(ii, tt));		
+		end-do
+	end-do
+end-procedure
+	
+
+procedure WriteGamma
+	writeln("\n!----------------------------------------------------------------------------");
+	writeln("!Gamma:");
+	
+	write("\n!\t\t\t");
+	forall(tt in T) do
+		write(DayNames(tt) + "\t");
+	end-do
+	
+	forall(ii in N) do
+		write("\n!Installation " + ii + ":");
+		
+		forall(tt in T) do
+			write("\t  " + getsol(gamma(ii, tt)));		
+		end-do
+	end-do
+end-procedure
+
+procedure WriteParetoFront
+	writeln("\n!----------------------------------------------------------------------------");
+	writeln("!Number of Pareto-optimal solutions: " + round( getsize(ParetoFront)/3 ));
+	writeln("!Pareto Front:");
+	
+	forall(sol in 1.. round( getsize(ParetoFront)/3 )) do
+		forall(index in ParetoIndex)do
+			write(string(ParetoFront(sol, index)) + "\t");
+		end-do
+		writeln("");
+	end-do
+end-procedure
+	
+procedure WriteElapsedTime
+	EndTime := time(SYS_NOW);
+	writeln("\nTotal time elapsed: " + ((EndTime-StartTime)/1000));
+end-procedure
+
+end-model
