@@ -39,7 +39,7 @@ public class IO {
 	}
 	
 
-	public void writeOutputToDataFile(ArrayList<Installation> installations, ArrayList<Vessel> vessels, ArrayList<Voyage> voyageSet, HashMap<Vessel,ArrayList<Voyage>> voyageSetByVessel, HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation, HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration, HashMap<Integer, ArrayList<Installation>> installationSetsByFrequency,long executionTime, int removeLongestPairs, int minInstallationsHeur, double capacityFraction) {
+	public void writeOutputToDataFile(ArrayList<Installation> installations, ArrayList<Vessel> vessels, ArrayList<Voyage> voyageSet, HashMap<Vessel,ArrayList<Voyage>> voyageSetByVessel, HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation, HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration, HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack, HashMap<Integer, ArrayList<Installation>> installationSetsByFrequency,long executionTime, int removeLongestPairs, int minInstallationsHeur, double capacityFraction) {
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(generateOutputFilename(numberOfTimeWindows-1, getNumberOfTotalVisits(installations), removeLongestPairs, minInstallationsHeur, capacityFraction), "UTF-8");
@@ -54,6 +54,7 @@ public class IO {
 		writeRv(writer, vessels, voyageSetByVessel);
 		writeRvi(writer,installations, vessels, voyageSetByVesselAndInstallation);
 		writeRvl(writer, vessels, voyageSetByVesselAndDuration);
+		writeRvls(writer, vessels, voyageSetByVesselAndDurationAndSlack);
 		writeNf(writer, installationSetsByFrequency);
 		writeParameters(writer, voyageSet, installations, vessels);
 		writer.close();
@@ -167,6 +168,79 @@ public class IO {
 					Voyage l = voyages.get(k);
 					writer.print(l);
 					if (k!=voyages.size() - 1) {
+						 writer.print(", ");
+					}
+				}
+				writer.print("]");
+				if (j != durations.size() - 1) {
+					 writer.print(", ");
+				}
+			}
+			writer.println("!Vessel: " + vessel.getName());
+		}
+		writer.println("] \n");
+	}
+	
+	
+	private void writeRvls(PrintWriter writer, ArrayList<Vessel> vessels,  HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack) {
+		writer.println("Rvls : [");
+		//prints !l: 
+		writer.print("!l : ");
+		List<Integer> durations = new ArrayList<Integer>();
+		for (Vessel v : voyageSetByVesselAndDurationAndSlack.keySet()) {
+			for (Integer duration : voyageSetByVesselAndDurationAndSlack.get(v).keySet()) {
+				if (! durations.contains(duration)) {
+					durations.add(duration);
+				}
+			}
+		}
+		Collections.sort(durations);
+		for (int i = 0; i < durations.size(); i++) {
+			writer.print(durations.get(i));
+			if (! (i == (durations.size() - 1))) {
+				writer.print(", ");
+			}
+		}
+		writer.println();
+		//prints !s:
+		writer.print("!s : ");
+		List<Integer> slacks = new ArrayList<Integer>();
+		for (Vessel v : voyageSetByVesselAndDurationAndSlack.keySet()) {
+			for (Integer duration : voyageSetByVesselAndDurationAndSlack.get(v).keySet()) {
+				for (Integer slack : voyageSetByVesselAndDurationAndSlack.get(v).get(duration).keySet()) {
+					if (! slacks.contains(slack)) {
+					slacks.add(slack);
+					}
+				}
+			}
+		}
+		Collections.sort(slacks);
+		for (int i = 0; i < slacks.size(); i++) {
+			writer.print(slacks.get(i));
+			if (! (i == (slacks.size() - 1))) {
+				writer.print(", ");
+			}
+		}
+		writer.println();
+		//print the voyages
+		for (int i = 0 ; i < vessels.size(); i++) {
+			Vessel vessel = vessels.get(i);
+			for (int j = 0; j < durations.size(); j++) {
+				Integer duration = durations.get(j);
+				writer.print("[");
+				for (int k = 0; k < slacks.size(); k++) {
+					Integer slack = slacks.get(k);
+					writer.print("[");
+					List<Voyage> voyages = voyageSetByVesselAndDurationAndSlack.get(vessel).get(duration).get(slack);
+					for (int l = 0; l < voyages.size(); l++) {
+						Voyage m = voyages.get(l);
+						writer.print(m);
+						if (l !=voyages.size() - 1) {
+							writer.print(", ");
+						}
+					}
+					writer.print("]");
+					if (k != slacks.size() - 1) {
 						 writer.print(", ");
 					}
 				}

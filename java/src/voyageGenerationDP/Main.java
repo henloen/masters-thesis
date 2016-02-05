@@ -18,13 +18,14 @@ public class Main {
 	private static HashMap<Vessel, ArrayList<Voyage>> voyageSetByVessel;
 	private static HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation;
 	private static HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration;
+	private static HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack;
 	private static IO io;
 	private static long startTime, stopTime;
 	private static String inputFileName = "data/input/Input data.xls",
 			outputFileName = "data/output/"; //sets the folder, see the constructor of IO for the filename format
 	//heuristic parameters
 	private static int removeLongestArcs = 0, minInstallationsHeur = 0, maxArcsRemovedInstallation = 2;
-	private static double capacityFraction = 0.7;
+	private static double capacityFraction = 0;
 	
 	public static void main(String[] args) {
 		startTime = System.nanoTime();
@@ -33,6 +34,7 @@ public class Main {
 		voyageSetByVessel = new HashMap<Vessel, ArrayList<Voyage>>(); //initialize the voyage set, R_v in the mathematical model
 		voyageSetByVesselAndInstallation = new HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and installation, R_vi in the mathematical model
 		voyageSetByVesselAndDuration = new HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and duration, R_vl in the mathematical model
+		voyageSetByVesselAndDurationAndSlack = new HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>>(); //initialize the voyage set indexed by vessel, duration and slack, R_vls in the mathematical model
 		
 		getData();
 		generateVesselSets();
@@ -43,13 +45,14 @@ public class Main {
 		filterByHeuristics(); //filters voyageSetByVessel by reducing the number of voyages
 		generateVoyageSetsByVesselAndInstallation();
 		generateVoyageSetsByVesselAndDuration();
+		generateVoyageSetsByVesselAndDurationAndSlack();
 		generateInstallationSetsByFrequency();
 		
-		
 		//printVoyages(); //helper function to see voyages
+		//printSizeOfSets(); //helper function that prints the size of the differnt sets
 		
 		stopTime = System.nanoTime();
-		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
+		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
 	}	
 	
 	//get data from input file
@@ -150,6 +153,30 @@ public class Main {
 		}
 	}
 	
+	private static void generateVoyageSetsByVesselAndDurationAndSlack() {
+		for (Vessel vessel : voyageSetByVesselAndDuration.keySet()) {
+			HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>> voyageSetByDurationAndSlack = new HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>();
+			for (Integer duration : voyageSetByVesselAndDuration.get(vessel).keySet()) {
+				HashMap<Integer, ArrayList<Voyage>> voyageSetBySlack = new HashMap<Integer, ArrayList<Voyage>>();
+				for (int i = 0; i < 24; i++) {
+					voyageSetBySlack.put(i, new ArrayList<Voyage>());
+				}
+				ArrayList<Voyage> voyages = voyageSetByVesselAndDuration.get(vessel).get(duration); //all voyages for a vessel and a duration
+				for (Voyage voyage : voyages) {
+					Integer tempSlack = (int) voyage.getSlack();
+					ArrayList<Voyage> tempVoyageList = voyageSetBySlack.get(tempSlack);
+					/*if (tempVoyageList == null) {//if no arraylist exists for that slack
+						tempVoyageList = new ArrayList<Voyage>();
+					}*/
+					tempVoyageList.add(voyage);
+					voyageSetBySlack.put(tempSlack,tempVoyageList);
+				}
+				voyageSetByDurationAndSlack.put(duration, voyageSetBySlack);
+			}
+			voyageSetByVesselAndDurationAndSlack.put(vessel, voyageSetByDurationAndSlack);
+		}
+	}
+	
 	private static void generateInstallationSetsByFrequency() {
 		int minFrequency = Integer.MAX_VALUE; //any frequency will be lower than this
 		int maxFrequency = Integer.MIN_VALUE; //any frequency will be higher than this
@@ -188,41 +215,44 @@ public class Main {
 	}
 	
 	private static void printVoyages() {
-		ArrayList<Integer> voyageNumbers = new ArrayList<Integer>();
-		voyageNumbers.add(1407);
-		voyageNumbers.add(1507);
-		voyageNumbers.add(1508);
-		voyageNumbers.add(1508);
-		voyageNumbers.add(827);
-		voyageNumbers.add(861);
-		voyageNumbers.add(1079);
-		HashMap<Integer, Integer> installationNumbers = new HashMap<Integer, Integer>();
-		for (Voyage voyage : voyageSet) {
-			if (voyageNumbers.contains(voyage.getNumber())) {
-				Integer installationNumber = voyage.getVisited().size() - 2;
-				Integer currentValue = installationNumbers.get(installationNumber);
-				if (currentValue == null ) {
-					installationNumbers.put(installationNumber, 1);
+		for (Voyage v : voyageSet) {
+			System.out.println("Voyage duration: " + v.getDepartureTime() + ", Slack: " + v.getSlack());
+		}
+		for (Vessel vessel : voyageSetByVesselAndDurationAndSlack.keySet()) {
+			for (Integer duration : voyageSetByVesselAndDurationAndSlack.get(vessel).keySet()) {
+				for (Integer slack: voyageSetByVesselAndDurationAndSlack.get(vessel).get(duration).keySet()) {
+					ArrayList<Voyage> voyages = voyageSetByVesselAndDurationAndSlack.get(vessel).get(duration).get(slack);
+					System.out.println("Size: " + voyages.size());
+					for (Voyage voyage : voyages) {
+						System.out.println("Voyage: " + voyage.getFullText());
+					}
 				}
-				else {
-					installationNumbers.put(installationNumber, currentValue + 1);
-				}
-				System.out.println(voyage.getFullText());
 			}
 		}
-		HashMap<Integer, Integer> installationNumbers2 = new HashMap<Integer, Integer>();
-		for (Voyage voyage2 : voyageSet) {
-			Integer installationNumber = voyage2.getVisited().size() - 2;
-			Integer currentValue = installationNumbers2.get(installationNumber);
-			if (currentValue == null ) {
-				installationNumbers2.put(installationNumber, 1);
-			}
-			else {
-				installationNumbers2.put(installationNumber, currentValue + 1);
-			}
+	}
+	
+	private static void printSizeOfSets() {
+		int sizeOfVoyageSet = voyageSet.size();
+		int sizeOfVoyageSetByVessel = 0;
+		int sizeOfVoyageSetByVesselAndDuration = 0;
+		int sizeOfVoyageSetByVesselAndDurationAndSlack = 0;
+		for (Vessel v : voyageSetByVessel.keySet()) {
+			sizeOfVoyageSetByVessel += voyageSetByVessel.get(v).size();
 		}
-		System.out.println(installationNumbers);
-		System.out.println(installationNumbers2);
+		for (Vessel v : voyageSetByVesselAndDuration.keySet()) {
+			for (Integer duration : voyageSetByVesselAndDuration.get(v).keySet())
+			sizeOfVoyageSetByVesselAndDuration += voyageSetByVesselAndDuration.get(v).get(duration).size();
+		}
+		for (Vessel v : voyageSetByVesselAndDurationAndSlack.keySet()) {
+			for (Integer duration : voyageSetByVesselAndDurationAndSlack.get(v).keySet())
+				for (Integer slack : voyageSetByVesselAndDurationAndSlack.get(v).get(duration).keySet()) {
+					sizeOfVoyageSetByVesselAndDurationAndSlack += voyageSetByVesselAndDurationAndSlack.get(v).get(duration).get(slack).size();
+				}
+		}
+		System.out.println("VoyageSet:"  + sizeOfVoyageSet);
+		System.out.println("VoyageSetByVessel:"  + sizeOfVoyageSetByVessel);
+		System.out.println("VoyageSetByVesselAndDuration:"  + sizeOfVoyageSetByVesselAndDuration);
+		System.out.println("VoyageSetByVesselAndDurationAndSlack:"  + sizeOfVoyageSetByVesselAndDurationAndSlack);
 	}
 	
 	

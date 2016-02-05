@@ -34,7 +34,7 @@ public class Generator {
 		for (int i = 0; i < installations.size(); i++) {
 			stages.add(new ArrayList<Label>());
 		}
-		Label initialLabel = new Label(1,0,0,16,installations.get(0),null); //departs at 16:00 and has no predecessor
+		Label initialLabel = new Label(1,0,0,16,0,installations.get(0),null); //departs at 16:00 and has no predecessor
 		stages.get(0).add(initialLabel);		
 		//go through all stages and do all feasible extensions
 		for (int i = 0; i < installations.size(); i++) {
@@ -79,15 +79,17 @@ public class Generator {
 		double arrivalTime = currentDepartureTime + sailingTime;
 		double todaysOpeningHour = depot.getTodaysOpeningHour(arrivalTime);
 		double timeVoyageFinished;
+		double slack;
 		if (arrivalTime <= todaysOpeningHour) {
 			timeVoyageFinished = todaysOpeningHour;
 		}
 		else { //assume that the depot opens at the 
-			timeVoyageFinished = todaysOpeningHour + 24; 
+			timeVoyageFinished = todaysOpeningHour + 24;
 		}
 		if (timeVoyageFinished <= maxDuration && timeVoyageFinished >= minDuration) {
 			double finalCost = currentCost + (sailingTime*vessel.getFuelCostSailing());
-			newLabel = new Label(visitedSum, finalCost, label.getCapacityUsed(), timeVoyageFinished, depot, label);
+			slack = Math.floor(timeVoyageFinished - arrivalTime);
+			newLabel = new Label(visitedSum, finalCost, label.getCapacityUsed(), timeVoyageFinished, slack, depot, label);
 		}
 		else {
 			newLabel = null;
@@ -124,7 +126,7 @@ public class Generator {
 		//check that the solution is feasible
 		if (nextDepartureTime <= maxDuration && nextCapacityUsed <= vessel.getCapacity()) {
 			double nextCost = currentCost + (sailingTime*vessel.getFuelCostSailing()) + ((waitingTime+installation.getServiceTime())*vessel.getFuelCostInstallation());
-			return new Label(visitedSum, nextCost, nextCapacityUsed, nextDepartureTime, installation, label);
+			return new Label(visitedSum, nextCost, nextCapacityUsed, nextDepartureTime, 0, installation, label);
 		}
 		else {
 			return null;
@@ -168,7 +170,7 @@ public class Generator {
 	}
 	
 	private Voyage labelToVoyage(Label label) {
-		return new Voyage(label.getCost(), label.getCapacityUsed(), label.getDepartureTime(), label.getVisitedInstallationNumbers());
+		return new Voyage(label.getCost(), label.getCapacityUsed(), label.getDepartureTime(), label.getSlack(), label.getVisitedInstallationNumbers());
 	}
 	
 	private double getDistance(Installation i1, Installation i2) {

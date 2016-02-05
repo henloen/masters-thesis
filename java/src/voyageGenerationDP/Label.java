@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Label {
 	
 	private int visitedSum, labelNumber;
-	private double cost,capacityUsed, departureTime;
+	private double cost,capacityUsed, departureTime, slack;
 	private Installation currentInstallation;
 	private Label predecessor;
 	private static int labelsGenerated = 0;
@@ -16,13 +16,14 @@ public class Label {
 	
 	
 	public Label(int visitedSum, double cost,
-			double capacityUsed, double departureTime,
+			double capacityUsed, double departureTime, double slack, 
 			Installation currentInstallation, Label predecessor) {
 		super();
 		this.visitedSum = visitedSum;
 		this.cost = cost;
 		this.capacityUsed = capacityUsed;
 		this.departureTime = departureTime;
+		this.slack = slack;
 		this.currentInstallation = currentInstallation;
 		this.predecessor = predecessor;
 		labelsGenerated++;
@@ -59,6 +60,12 @@ public class Label {
 	}
 	public void setDepartureTime(double departureTime) {
 		this.departureTime = departureTime;
+	}
+	public double getSlack() {
+		return slack;
+	}
+	public void setSlack(double slack) {
+		this.slack = slack;
 	}
 	public Installation getCurrentInstallation() {
 		return currentInstallation;
