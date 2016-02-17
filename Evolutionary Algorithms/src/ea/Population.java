@@ -1,6 +1,7 @@
 package ea;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Population {
 	
@@ -42,6 +43,11 @@ public class Population {
 		}
 		std /= individuals.size();
 		return Math.sqrt(std);
+	}
+	
+	public Individual getBestIndividual() {
+		Collections.sort(individuals, Collections.reverseOrder());
+		return individuals.get(0);
 	}
 	
 

@@ -1,11 +1,9 @@
 package ea.protocols;
 
-import java.util.ArrayList;
-
-import ea.Individual;
+import ea.Population;
 
 public interface FitnessEvaluationProtocol {
 	
-	public ArrayList<Individual> evaluateFitness(ArrayList<Individual> individuals);
+	public void evaluateFitness(Population population);
 
 }

@@ -8,11 +8,10 @@ import ea.protocols.GenoToPhenoProtocol;
 public class GenoToPhenoOneMax implements GenoToPhenoProtocol {
 
 	@Override
-	public Population convertGenoToPheno(Population population) {
+	public void convertGenoToPheno(Population population) {
 		for (Individual individual : population.getIndividuals()) {
 			setPhenotype(individual);
 		}
-		return population;
 	}
 	
 	private void setPhenotype(Individual individual) {

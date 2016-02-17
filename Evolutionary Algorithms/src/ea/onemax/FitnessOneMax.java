@@ -1,18 +1,16 @@
 package ea.onemax;
 
-import java.util.ArrayList;
-
 import ea.Individual;
+import ea.Population;
 import ea.protocols.FitnessEvaluationProtocol;
 
 public class FitnessOneMax implements FitnessEvaluationProtocol {
 
 	@Override
-	public ArrayList<Individual> evaluateFitness(ArrayList<Individual> individuals) {
-		for (Individual individual : individuals) {
+	public void evaluateFitness(Population population) {
+		for (Individual individual : population.getIndividuals()) {
 			setFitnessIndividual(individual);
 		}
-		return individuals;
 	}
 	
 	private void setFitnessIndividual(Individual individual) {

@@ -5,18 +5,20 @@ import java.util.Collections;
 
 import ea.AdultSelectionProtocol;
 import ea.Individual;
+import ea.Population;
 
 public class AdultSelectionOverproduction implements AdultSelectionProtocol {
 
 	@Override
-	public ArrayList<Individual> selectAdults(ArrayList<Individual> children, ArrayList<Individual> adults, int nAdults) {
-		adults.clear();
-		Collections.sort(children, Collections.reverseOrder());
+	public void selectAdults(Population children, Population adults, int nAdults) {
+		ArrayList<Individual> childIndividuals = children.getIndividuals();
+		ArrayList<Individual> adultIndividuals = new ArrayList<Individual>();
+		Collections.sort(childIndividuals, Collections.reverseOrder());
 		for (int i=0; i<nAdults; i++){
-			Individual adult = children.get(i).clone();
-			adults.add(adult);
+			Individual adult = childIndividuals.get(i).clone();
+			adultIndividuals.add(adult);
 		}
-		return adults;
+		adults.setIndividuals(adultIndividuals);
 	}
 
 }

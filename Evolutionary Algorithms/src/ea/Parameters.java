@@ -5,10 +5,10 @@ public class Parameters {
 	private double mutationRate, crossoverRate;
 	private String problemName,
 	initialPopulationProtocolString, genoToPhenoProtocolString, fitnessEvaluationProtocolString, adultSelectionProtocolString,
-	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, ReproductionProtocolString;
+	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, geneticOperatorProtocolString;
 	
 	
-	
+
 	public Parameters(int nAdults, int nChildren, int nElites, int nGenerations,
 			double mutationRate, double crossoverRate, String problemName,
 			String initialPopulationProtocolString,
@@ -17,7 +17,8 @@ public class Parameters {
 			String adultSelectionProtocolString,
 			String localSearchProtocolString, String stopProtocolString,
 			String parentSelectionProtocolString,
-			String reproductionProtocolString) {
+			String reproductionProtocolString,
+			String geneticOperatorProtocolString) {
 		this.nAdults = nAdults;
 		this.nChildren = nChildren;
 		this.nElites = nElites;
@@ -32,7 +33,16 @@ public class Parameters {
 		this.localSearchProtocolString = localSearchProtocolString;
 		this.stopProtocolString = stopProtocolString;
 		this.parentSelectionProtocolString = parentSelectionProtocolString;
-		ReproductionProtocolString = reproductionProtocolString;
+		this.reproductionProtocolString = reproductionProtocolString;
+		this.geneticOperatorProtocolString = geneticOperatorProtocolString;
+	}
+	
+	public String getGeneticOperatorProtocolString() {
+		return geneticOperatorProtocolString;
+	}
+	
+	public void setGeneticOperatorProtocolString(String geneticOperatorProtocolString) {
+		this.geneticOperatorProtocolString = geneticOperatorProtocolString;
 	}
 	
 	public String toString() {
@@ -163,11 +173,11 @@ public class Parameters {
 	}
 
 	public String getReproductionProtocolString() {
-		return ReproductionProtocolString;
+		return reproductionProtocolString;
 	}
 
 	public void setReproductionProtocolString(String reproductionProtocolString) {
-		ReproductionProtocolString = reproductionProtocolString;
+		this.reproductionProtocolString = reproductionProtocolString;
 	}
 
 	public int getnGenerations() {

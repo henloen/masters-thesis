@@ -16,7 +16,7 @@ public class EAmain {
 		EAmain main = new EAmain();
 		main.initialize();
 		main.createInitialPopulation();
-		main.doEvolutionaryLoop();
+		main.doEvolutionaryLoop(); //have to do one iteration before checking stop criterion
 		while (! main.stoppingCriterion()) {
 			main.doEvolutionaryLoop();
 		}
@@ -40,23 +40,25 @@ public class EAmain {
 		System.out.println("Generation: " + generationNumber);
 		printChildren();
 		// 1. Generate phenotypes from genotypes
-		children = processes.convertGenoToPheno(children);
+		processes.convertGenoToPheno(children);
 		printChildren();
 		// 2. Evaluate the fitness of the children
-		children = processes.evaluateFitness(children);
+		processes.evaluateFitness(children);
 		printChildren();
 		// 2a. Retain the best individuals to next generation
 		// <elitist process>
 		// 2b. Local search?
 		// <local search process>
 		// 3. Select adults
-		adults.setIndividuals(processes.selectAdults(children.getIndividuals(), adults.getIndividuals()));
+		processes.selectAdults(children, adults);
 		printChildren();
 		printAdults();
 		// 4. Select parents
-		ArrayList<ArrayList<Individual>> parents = processes.selectParents(adults.getIndividuals());
+		ArrayList<ArrayList<Individual>> parents = processes.selectParents(adults);
+		printParents(parents);
 		// 5. Reproduction
-		children.setIndividuals(processes.reproduction(adults.getIndividuals()));
+		ArrayList<Individual> offspring = processes.reproduction(parents);
+		children.setIndividuals(offspring);
 		// 5a. Add elite to the next generation
 		// <elitist process>
 
@@ -90,6 +92,12 @@ public class EAmain {
 	public void printPopulation(Population population) {
 		for (Individual individual : population.getIndividuals()) {
 			System.out.println(individual);
+		}
+	}
+	
+	public void printParents(ArrayList<ArrayList<Individual>> parents) {
+		for (ArrayList<Individual> couple : parents) {
+			System.out.println(couple.get(0) + ", " + couple.get(1));
 		}
 	}
 

@@ -76,6 +76,7 @@ public class IO {
 		String stoppingCriterion = parameterHashMap.get("Stopping criterion");
 		String parentSelection = parameterHashMap.get("Parent selection");
 		String reproduction = parameterHashMap.get("Reproduction");
+		String geneticOperator = parameterHashMap.get("Genetic Operator");
 		int nChildren = Integer.parseInt(parameterHashMap.get("Number of children"));
 		int nAdults = Integer.parseInt(parameterHashMap.get("Number of adults"));
 		int nGenerations = Integer.parseInt(parameterHashMap.get("Number of generations"));
@@ -92,7 +93,7 @@ public class IO {
 		}
 		return new Parameters(nAdults, nChildren, nElites, nGenerations, mutationRate,
 				crossoverRate, problemName, initialPopulation, genoToPhenoConverter,
-				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction);
+				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, geneticOperator);
 	}
 	
 }

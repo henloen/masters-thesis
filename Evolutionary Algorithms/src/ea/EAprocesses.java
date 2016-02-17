@@ -6,13 +6,15 @@ import ea.common.AdultSelectionFullGenerational;
 import ea.common.AdultSelectionGenerationalMixing;
 import ea.common.AdultSelectionOverproduction;
 import ea.common.ParentSelectionFitnessProportionate;
+import ea.common.Reproduction;
 import ea.onemax.FitnessOneMax;
+import ea.onemax.GeneticOperatorOneMax;
 import ea.onemax.GenoToPhenoOneMax;
 import ea.onemax.InitialPopulationOneMax;
 import ea.onemax.LocalSearchOneMax;
-import ea.onemax.ReproductionOneMax;
 import ea.onemax.StopOneMax;
 import ea.protocols.FitnessEvaluationProtocol;
+import ea.protocols.GeneticOperatorProtocol;
 import ea.protocols.GenoToPhenoProtocol;
 import ea.protocols.InitialPopulationProtocol;
 import ea.protocols.LocalSearchProtocol;
@@ -30,6 +32,7 @@ public class EAprocesses {
 	private StopProtocol stopProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
+	private GeneticOperatorProtocol geneticOperatorProtocol;
 	
 	private Parameters parameters;
 
@@ -42,16 +45,16 @@ public class EAprocesses {
 		return initialPopulationProtocol.createInitialPopulation(parameters.getnChildren());
 	}
 	
-	public Population convertGenoToPheno(Population children) {
-		return genoToPhenoProtocol.convertGenoToPheno(children);
+	public void convertGenoToPheno(Population children) {
+		genoToPhenoProtocol.convertGenoToPheno(children);
 	}
 	
-	public ArrayList<Individual> evaluateFitness(ArrayList<Individual> population) {
-		return fitnessEvaluationProtocol.evaluateFitness(population);
+	public void evaluateFitness(Population population) {
+		fitnessEvaluationProtocol.evaluateFitness(population);
 	}
 
-	public ArrayList<Individual> selectAdults(ArrayList<Individual> children, ArrayList<Individual> adults) {
-		return adultSelectionProtocol.selectAdults(children, adults, parameters.getnAdults());
+	public void selectAdults(Population children, Population adults) {
+		adultSelectionProtocol.selectAdults(children, adults, parameters.getnAdults());
 	}
 	
 	public ArrayList<Individual> improveIndividual(ArrayList<Individual> children) {
@@ -62,12 +65,12 @@ public class EAprocesses {
 		return stopProtocol.stoppingCriterion();
 	}
 	
-	public ArrayList<ArrayList<Individual>> selectParents(ArrayList<Individual> adults) {
+	public ArrayList<ArrayList<Individual>> selectParents(Population adults) {
 		return parentSelectionProtocol.selectParents(adults, parameters.getnChildren());
 	}
 	
-	public ArrayList<Individual> reproduction(ArrayList<Individual> adults) {
-		return reproductionProtocol.reproduction(adults);
+	public ArrayList<Individual> reproduction(ArrayList<ArrayList<Individual>> parents) {
+		return reproductionProtocol.reproduction(parents, parameters.getCrossoverRate(), parameters.getMutationRate());
 	}	
 	
 	private void selectProtocols() {
@@ -78,6 +81,7 @@ public class EAprocesses {
 		selectLocalSearchProtocol();
 		selectStopProtocol();
 		selectParentSelectionProtocol();
+		selectGeneticOperatorProtocol();
 		selectReproductionProtocol();
 	}
 	
@@ -148,9 +152,18 @@ public class EAprocesses {
 		}
 	}
 	
+	private void selectGeneticOperatorProtocol(){
+		switch (parameters.getGeneticOperatorProtocolString()) {
+		case "OneMax" : geneticOperatorProtocol = new GeneticOperatorOneMax();
+			break;
+		default: geneticOperatorProtocol = null;
+			break;
+	}
+	}
+	
 	private void selectReproductionProtocol() {
 		switch (parameters.getReproductionProtocolString()) {
-			case "OneMax" : reproductionProtocol = new ReproductionOneMax();
+			case "Standard" : reproductionProtocol = new Reproduction(geneticOperatorProtocol);
 				break;
 			default: reproductionProtocol = null;
 				break;

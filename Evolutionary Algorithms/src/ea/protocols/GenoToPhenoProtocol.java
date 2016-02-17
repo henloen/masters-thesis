@@ -4,6 +4,6 @@ import ea.Population;
 
 public interface GenoToPhenoProtocol {
 	
-	public Population convertGenoToPheno(Population individuals);
+	public void convertGenoToPheno(Population individuals);
 
 }

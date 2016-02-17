@@ -4,17 +4,18 @@ import java.util.ArrayList;
 
 import ea.AdultSelectionProtocol;
 import ea.Individual;
+import ea.Population;
 
 public class AdultSelectionFullGenerational implements AdultSelectionProtocol {
 
 	@Override
-	public ArrayList<Individual> selectAdults(ArrayList<Individual> children, ArrayList<Individual> adults, int nAdults) {
-		adults.clear();
-		for (Individual child : children) {
+	public void selectAdults(Population children, Population adults, int nAdults) {
+		ArrayList<Individual> adultIndividuals = new ArrayList<Individual>();
+		for (Individual child : children.getIndividuals()) {
 			Individual adult = child.clone();
-			adults.add(adult);
+			adultIndividuals.add(adult);
 		}
-		return adults;
+		adults.setIndividuals(adultIndividuals);
 	}
 
 }

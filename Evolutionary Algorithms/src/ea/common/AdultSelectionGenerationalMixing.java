@@ -5,21 +5,22 @@ import java.util.Collections;
 
 import ea.AdultSelectionProtocol;
 import ea.Individual;
+import ea.Population;
 
 public class AdultSelectionGenerationalMixing implements AdultSelectionProtocol {
 
 	@Override
-	public ArrayList<Individual> selectAdults(ArrayList<Individual> children, ArrayList<Individual> adults, int nAdults) {
+	public void selectAdults(Population children, Population adults, int nAdults) {
 		ArrayList<Individual> bothPopulations = new ArrayList<Individual>();
-		bothPopulations.addAll(children);
-		bothPopulations.addAll(adults);
-		adults.clear();
+		ArrayList<Individual> adultIndividuals = new ArrayList<Individual>();
+		bothPopulations.addAll(children.getIndividuals());
+		bothPopulations.addAll(adults.getIndividuals());
 		Collections.sort(bothPopulations, Collections.reverseOrder());
 		for (int i=0; i<nAdults; i++){
 			Individual adult = bothPopulations.get(i).clone();
-			adults.add(adult);
+			adultIndividuals.add(adult);
 		}
-		return adults;
+		adults.setIndividuals(adultIndividuals);
 	}
 
 }
