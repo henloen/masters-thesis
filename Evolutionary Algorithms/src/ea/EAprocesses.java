@@ -42,7 +42,7 @@ public class EAprocesses {
 	}
 	
 	public ArrayList<Individual> createInitialPopulation() {
-		return initialPopulationProtocol.createInitialPopulation(parameters.getnChildren());
+		return initialPopulationProtocol.createInitialPopulation(parameters);
 	}
 	
 	public void convertGenoToPheno(Population children) {
@@ -54,15 +54,15 @@ public class EAprocesses {
 	}
 
 	public void selectAdults(Population children, Population adults) {
-		adultSelectionProtocol.selectAdults(children, adults, parameters.getnAdults());
+		adultSelectionProtocol.selectAdults(children, adults, parameters);
 	}
 	
-	public ArrayList<Individual> improveIndividual(ArrayList<Individual> children) {
-		return localSearchProtocol.improveIndividuals(children);
+	public void improveIndividual(Population children) {
+		localSearchProtocol.improveIndividuals(children);
 	}
 	
-	public boolean stoppingCriterion() {
-		return stopProtocol.stoppingCriterion();
+	public boolean stoppingCriterion(Population adults, int generationNumber) {
+		return stopProtocol.stoppingCriterion(adults, generationNumber, parameters);
 	}
 	
 	public ArrayList<ArrayList<Individual>> selectParents(Population adults) {

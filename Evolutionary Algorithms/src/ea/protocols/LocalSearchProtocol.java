@@ -1,9 +1,7 @@
 package ea.protocols;
 
-import java.util.ArrayList;
-
-import ea.Individual;
+import ea.Population;
 
 public interface LocalSearchProtocol {
-	ArrayList<Individual> improveIndividuals(ArrayList<Individual> individuals);
+	public void improveIndividuals(Population individuals);
 }

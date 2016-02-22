@@ -1,7 +1,6 @@
 package ea;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class EAmain {
 	
@@ -27,7 +26,8 @@ public class EAmain {
 		io = new IO();
 		children = new Population();
 		adults = new Population(); //children is initialized in "createInitialPopulation"
-		parameters = io.readInput();
+		parameters = io.readParameters();
+		
 		processes = new EAprocesses(parameters);
 		generationNumber = 0;
 	}
@@ -38,42 +38,36 @@ public class EAmain {
 	
 	public void doEvolutionaryLoop() {
 		System.out.println("Generation: " + generationNumber);
-		printChildren();
 		// 1. Generate phenotypes from genotypes
 		processes.convertGenoToPheno(children);
-		printChildren();
 		// 2. Evaluate the fitness of the children
 		processes.evaluateFitness(children);
-		printChildren();
 		// 2a. Retain the best individuals to next generation
 		// <elitist process>
 		// 2b. Local search?
 		// <local search process>
 		// 3. Select adults
 		processes.selectAdults(children, adults);
-		printChildren();
-		printAdults();
 		// 4. Select parents
 		ArrayList<ArrayList<Individual>> parents = processes.selectParents(adults);
-		printParents(parents);
 		// 5. Reproduction
 		ArrayList<Individual> offspring = processes.reproduction(parents);
 		children.setIndividuals(offspring);
 		// 5a. Add elite to the next generation
 		// <elitist process>
 
-		// Increase generationNumber
-		generationNumber++;
 		// Record generation statistics
 		io.recordGenerationStatistics(generationNumber, adults);
+		// Increase generationNumber
+		generationNumber++;
 	}
 	
 	public boolean stoppingCriterion() {
-		return processes.stoppingCriterion();
+		return processes.stoppingCriterion(adults, generationNumber);
 	}
 	
 	public void terminate() {
-		io.writeOutput();
+		io.writeOutput(parameters);
 	}
 	
 	//helper method during development

@@ -1,12 +1,14 @@
 package ea;
 
+import java.util.HashMap;
+
 public class Parameters {
 	private int nAdults, nChildren, nElites, nGenerations;
 	private double mutationRate, crossoverRate;
 	private String problemName,
 	initialPopulationProtocolString, genoToPhenoProtocolString, fitnessEvaluationProtocolString, adultSelectionProtocolString,
 	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, geneticOperatorProtocolString;
-	
+	private HashMap<String, String> optionalParameters;
 	
 
 	public Parameters(int nAdults, int nChildren, int nElites, int nGenerations,
@@ -18,7 +20,7 @@ public class Parameters {
 			String localSearchProtocolString, String stopProtocolString,
 			String parentSelectionProtocolString,
 			String reproductionProtocolString,
-			String geneticOperatorProtocolString) {
+			String geneticOperatorProtocolString, HashMap<String, String> optionalParameters) {
 		this.nAdults = nAdults;
 		this.nChildren = nChildren;
 		this.nElites = nElites;
@@ -35,8 +37,21 @@ public class Parameters {
 		this.parentSelectionProtocolString = parentSelectionProtocolString;
 		this.reproductionProtocolString = reproductionProtocolString;
 		this.geneticOperatorProtocolString = geneticOperatorProtocolString;
+		this.optionalParameters = optionalParameters;
 	}
 	
+	public HashMap<String, String> getOptionalParameters() {
+		return optionalParameters;
+	}
+
+
+
+	public void setOptionalParameters(HashMap<String, String> optionalParameters) {
+		this.optionalParameters = optionalParameters;
+	}
+
+
+
 	public String getGeneticOperatorProtocolString() {
 		return geneticOperatorProtocolString;
 	}
