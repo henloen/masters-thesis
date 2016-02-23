@@ -227,7 +227,7 @@ public class IO {
 			Vessel vessel = vessels.get(i);
 			for (int j = 0; j < durations.size(); j++) {
 				Integer duration = durations.get(j);
-				writer.print("[");
+
 				for (int k = 0; k < slacks.size(); k++) {
 					Integer slack = slacks.get(k);
 					writer.print("[");
@@ -244,7 +244,6 @@ public class IO {
 						 writer.print(", ");
 					}
 				}
-				writer.print("]");
 				if (j != durations.size() - 1) {
 					 writer.print(", ");
 				}

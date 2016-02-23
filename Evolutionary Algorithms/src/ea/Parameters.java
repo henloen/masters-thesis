@@ -7,9 +7,9 @@ public class Parameters {
 	private double mutationRate, crossoverRate;
 	private String problemName,
 	initialPopulationProtocolString, genoToPhenoProtocolString, fitnessEvaluationProtocolString, adultSelectionProtocolString,
-	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, geneticOperatorProtocolString;
+	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, crossoverOperatorString, mutationOperatorString;
 	private HashMap<String, String> optionalParameters;
-	
+	private HashMap<String, String> problemSpecificParameters;
 
 	public Parameters(int nAdults, int nChildren, int nElites, int nGenerations,
 			double mutationRate, double crossoverRate, String problemName,
@@ -20,7 +20,10 @@ public class Parameters {
 			String localSearchProtocolString, String stopProtocolString,
 			String parentSelectionProtocolString,
 			String reproductionProtocolString,
-			String geneticOperatorProtocolString, HashMap<String, String> optionalParameters) {
+			String crossoverOperatorString,
+			String mutationOperatorString,
+			HashMap<String, String> optionalParameters, HashMap<String, String> problemSpecificParameters) {
+		
 		this.nAdults = nAdults;
 		this.nChildren = nChildren;
 		this.nElites = nElites;
@@ -36,30 +39,36 @@ public class Parameters {
 		this.stopProtocolString = stopProtocolString;
 		this.parentSelectionProtocolString = parentSelectionProtocolString;
 		this.reproductionProtocolString = reproductionProtocolString;
-		this.geneticOperatorProtocolString = geneticOperatorProtocolString;
+		this.crossoverOperatorString = crossoverOperatorString;
+		this.mutationOperatorString= mutationOperatorString;
 		this.optionalParameters = optionalParameters;
+		this.problemSpecificParameters = problemSpecificParameters;
 	}
 	
 	public HashMap<String, String> getOptionalParameters() {
 		return optionalParameters;
 	}
 
+	public HashMap<String, String> getProblemSpecificParameters() {
+		return problemSpecificParameters;
+	}
 
+	public void setProblemSpecificParameters(HashMap<String, String> problemSpecificParameters) {
+		this.problemSpecificParameters = problemSpecificParameters;
+	}
 
 	public void setOptionalParameters(HashMap<String, String> optionalParameters) {
 		this.optionalParameters = optionalParameters;
 	}
-
-
-
-	public String getGeneticOperatorProtocolString() {
-		return geneticOperatorProtocolString;
-	}
 	
-	public void setGeneticOperatorProtocolString(String geneticOperatorProtocolString) {
-		this.geneticOperatorProtocolString = geneticOperatorProtocolString;
+	public String getCrossoverOperatorString() {
+		return crossoverOperatorString;
 	}
-	
+
+	public String getMutationOperatorString() {
+		return mutationOperatorString;
+	}
+
 	public String toString() {
 		String toString = "";
 		toString += "Problem name: " + getProblemName() + "\n";

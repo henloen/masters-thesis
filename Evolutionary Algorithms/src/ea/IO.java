@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Scanner;
 
+import ea.svpp.SVPPIO;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -27,8 +29,22 @@ public class IO {
 	public Parameters readParameters() {
 		HashMap<String, String> parameterHashMap = readParameters(2,3);
 		HashMap<String, String> optionalParameterHashMap = readParameters(2, 3 + parameterHashMap.keySet().size() + 1);
-		Parameters parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap);
+		HashMap<String, String> problemSpecificParametersHashMap = readProblemSpecificInput(parameterHashMap, optionalParameterHashMap);
+		
+		Parameters parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap, problemSpecificParametersHashMap);
+		outputFileName += parameterHashMap.get("Problem name")+ "/";
+		
 		return parameters;
+	}
+	
+	public HashMap<String, String> readProblemSpecificInput(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap ){
+		String problemName = parameterHashMap.get("Problem name");
+		
+		if (problemName.equals("SVPP")){
+			SVPPIO problemSpecificIO = new SVPPIO(optionalParameterHashMap);
+			return problemSpecificIO.readProblemSpecificParameters();
+		}
+		else return null;
 	}
 	
 	public void writeOutput(Parameters parameters){
@@ -114,7 +130,7 @@ public class IO {
 		return parameterHashmap;
 	}
 	
-	private Parameters convertToParametersObject(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap) {
+	private Parameters convertToParametersObject(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap, HashMap<String, String> problemSpecificParametersHashMap) {
 		DecimalFormat df = new DecimalFormat();
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 		symbols.setDecimalSeparator(',');
@@ -129,7 +145,8 @@ public class IO {
 		String stoppingCriterion = parameterHashMap.get("Stopping criterion");
 		String parentSelection = parameterHashMap.get("Parent selection");
 		String reproduction = parameterHashMap.get("Reproduction");
-		String geneticOperator = parameterHashMap.get("Genetic Operator");
+		String crossoverOperator = parameterHashMap.get("Crossover");
+		String mutationOperator = parameterHashMap.get("Mutation");
 		int nChildren = Integer.parseInt(parameterHashMap.get("Number of children"));
 		int nAdults = Integer.parseInt(parameterHashMap.get("Number of adults"));
 		int nGenerations = Integer.parseInt(parameterHashMap.get("Number of generations"));
@@ -146,11 +163,11 @@ public class IO {
 		}
 		return new Parameters(nAdults, nChildren, nElites, nGenerations, mutationRate,
 				crossoverRate, problemName, initialPopulation, genoToPhenoConverter,
-				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, geneticOperator, optionalParameterHashMap);
+				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, crossoverOperator, mutationOperator, optionalParameterHashMap, problemSpecificParametersHashMap);
 	}
 	
 	public String getCurrentTime() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}

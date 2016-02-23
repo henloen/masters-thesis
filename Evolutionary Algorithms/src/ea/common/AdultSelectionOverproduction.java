@@ -3,10 +3,10 @@ package ea.common;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import ea.AdultSelectionProtocol;
 import ea.Individual;
 import ea.Parameters;
 import ea.Population;
+import ea.protocols.AdultSelectionProtocol;
 
 public class AdultSelectionOverproduction implements AdultSelectionProtocol {
 

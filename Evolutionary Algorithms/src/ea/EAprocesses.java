@@ -6,18 +6,21 @@ import ea.common.AdultSelectionFullGenerational;
 import ea.common.AdultSelectionGenerationalMixing;
 import ea.common.AdultSelectionOverproduction;
 import ea.common.ParentSelectionFitnessProportionate;
-import ea.common.Reproduction;
+import ea.common.ReproductionStandard;
+import ea.onemax.CrossoverOneMax;
 import ea.onemax.FitnessOneMax;
-import ea.onemax.GeneticOperatorOneMax;
 import ea.onemax.GenoToPhenoOneMax;
 import ea.onemax.InitialPopulationOneMax;
 import ea.onemax.LocalSearchOneMax;
+import ea.onemax.MutationOneMax;
 import ea.onemax.StopOneMax;
+import ea.protocols.AdultSelectionProtocol;
+import ea.protocols.CrossoverOperator;
 import ea.protocols.FitnessEvaluationProtocol;
-import ea.protocols.GeneticOperatorProtocol;
 import ea.protocols.GenoToPhenoProtocol;
 import ea.protocols.InitialPopulationProtocol;
 import ea.protocols.LocalSearchProtocol;
+import ea.protocols.MutationOperator;
 import ea.protocols.ParentSelectionProtocol;
 import ea.protocols.ReproductionProtocol;
 import ea.protocols.StopProtocol;
@@ -32,7 +35,6 @@ public class EAprocesses {
 	private StopProtocol stopProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
-	private GeneticOperatorProtocol geneticOperatorProtocol;
 	
 	private Parameters parameters;
 
@@ -81,7 +83,6 @@ public class EAprocesses {
 		selectLocalSearchProtocol();
 		selectStopProtocol();
 		selectParentSelectionProtocol();
-		selectGeneticOperatorProtocol();
 		selectReproductionProtocol();
 	}
 	
@@ -152,18 +153,33 @@ public class EAprocesses {
 		}
 	}
 	
-	private void selectGeneticOperatorProtocol(){
-		switch (parameters.getGeneticOperatorProtocolString()) {
-		case "OneMax" : geneticOperatorProtocol = new GeneticOperatorOneMax();
-			break;
-		default: geneticOperatorProtocol = null;
-			break;
+	private CrossoverOperator selectCrossoverOperator(){
+		CrossoverOperator crossoverOperator;
+		
+		// Selecting crossover operator
+		switch (parameters.getCrossoverOperatorString()) {
+		case "OneMax" : return new CrossoverOneMax();
+		default: return null;
+		}
 	}
+	
+	private MutationOperator selectMutationOperator(){
+		MutationOperator mutationOperator;
+		
+		// Selecting mutation operator
+		switch (parameters.getMutationOperatorString()) {
+		case "OneMax" : return new MutationOneMax();
+		default: return null;
+		}
 	}
+	
 	
 	private void selectReproductionProtocol() {
 		switch (parameters.getReproductionProtocolString()) {
-			case "Standard" : reproductionProtocol = new Reproduction(geneticOperatorProtocol);
+			case "Standard" :
+				CrossoverOperator crossoverOperator = selectCrossoverOperator();
+				MutationOperator mutationOperator = selectMutationOperator();
+				reproductionProtocol = new ReproductionStandard(crossoverOperator, mutationOperator);
 				break;
 			default: reproductionProtocol = null;
 				break;

@@ -2,10 +2,10 @@ package ea.common;
 
 import java.util.ArrayList;
 
-import ea.AdultSelectionProtocol;
 import ea.Individual;
 import ea.Parameters;
 import ea.Population;
+import ea.protocols.AdultSelectionProtocol;
 
 public class AdultSelectionFullGenerational implements AdultSelectionProtocol {
 
