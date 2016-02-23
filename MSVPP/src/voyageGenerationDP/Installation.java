@@ -1,6 +1,8 @@
 package voyageGenerationDP;
 
-public class Installation {
+import java.io.Serializable;
+
+public class Installation implements Serializable {
 	private String name;
 	private int number, frequency;
 	private double demand, openingHour, closingHour, serviceTime;

@@ -59,7 +59,7 @@ public class VGMain {
 		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
 		
 		SVPPProblemData problemData = new SVPPProblemData(installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack);
-		//io.serializeProblemInstance(problemData);
+		io.serializeProblemInstance(problemData);
 	}	
 	
 	//get data from input file

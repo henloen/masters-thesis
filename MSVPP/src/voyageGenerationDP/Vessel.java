@@ -1,7 +1,8 @@
 package voyageGenerationDP;
 
+import java.io.Serializable;
 
-public class Vessel implements Comparable<Vessel>{
+public class Vessel implements Comparable<Vessel>, Serializable{
 		private String name;
 		private int capacity, speed, unitFuelCost, timeCharterCost, numberOfDaysAvailable;
 		private double fuelConsumptionSailing, fuelConsumptionDepot, fuelConsumptionInstallation;

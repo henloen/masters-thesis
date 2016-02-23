@@ -1,9 +1,10 @@
 package voyageGenerationDP;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class Voyage implements Comparable<Voyage> {
+public class Voyage implements Comparable<Voyage>, Serializable {
 	
 	private double cost,capacityUsed, departureTime, slack;
 	private int number;

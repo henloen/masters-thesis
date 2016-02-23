@@ -1,7 +1,13 @@
 package ea.svpp;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import voyageGenerationDP.SVPPProblemData;
 
 public class SVPPIO {
 	String problemInstance;
@@ -10,11 +16,31 @@ public class SVPPIO {
 	String inputFilePath = "data/input/";
 	String baselineFilePath = "data/input/baseline";
 	
+	public SVPPProblemData problemData;
+	
 	private HashMap<String, String> problemSpecificParameters;
 	
 	public SVPPIO(HashMap<String, String> optionalParameterHashMap) {
 		this.problemInstance = optionalParameterHashMap.get("Problem instance");
 		this.baselineInstance = optionalParameterHashMap.get("Baseline instance");
+	}
+	
+	public void deserializeSVPPProblemData(){
+		String inputObjectFile = inputFilePath + problemInstance + ".ser";
+		try {
+			// read object from file
+			FileInputStream fis = new FileInputStream(inputObjectFile);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			problemData = (SVPPProblemData) ois.readObject();
+			ois.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public HashMap<String, String> readProblemSpecificParameters(){
@@ -25,7 +51,7 @@ public class SVPPIO {
 	}
 
 	private void readBaselineFile() {
-		String baselineFile = baselineFilePath + baselineInstance;
+		String baselineFile = baselineFilePath + baselineInstance + ".txt";
 		try{
 			Scanner sc = new Scanner(baselineFile);
 			
@@ -52,7 +78,7 @@ public class SVPPIO {
 		}
 	}
  	private void readInputFile() {
-		String inputFile = inputFilePath + problemInstance;
+		String inputFile = inputFilePath + problemInstance + ".txt";
 		try {
 			Scanner sc = new Scanner(inputFile);
 			
