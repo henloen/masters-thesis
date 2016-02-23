@@ -1,6 +1,10 @@
 package voyageGenerationDP;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -38,11 +42,26 @@ public class IO {
 		getParameters();
 	}
 	
+	public void serializeProblemInstance(SVPPProblemData problemData){
+		try {
+			// Write object to file
+			FileOutputStream fos = new FileOutputStream(generateOutputFilename(numberOfTimeWindows-1, getNumberOfTotalVisits(problemData.installations), problemData.removeLongestArcs, problemData.minInstallationsHeur, problemData.capacityFraction, "ser"));
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(problemData);
+			oos.close();
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void writeOutputToDataFile(ArrayList<Installation> installations, ArrayList<Vessel> vessels, ArrayList<Voyage> voyageSet, HashMap<Vessel,ArrayList<Voyage>> voyageSetByVessel, HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation, HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration, HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack, HashMap<Integer, ArrayList<Installation>> installationSetsByFrequency,long executionTime, int removeLongestPairs, int minInstallationsHeur, double capacityFraction) {
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter(generateOutputFilename(numberOfTimeWindows-1, getNumberOfTotalVisits(installations), removeLongestPairs, minInstallationsHeur, capacityFraction), "UTF-8");
+			writer = new PrintWriter(generateOutputFilename(numberOfTimeWindows-1, getNumberOfTotalVisits(installations), removeLongestPairs, minInstallationsHeur, capacityFraction, "txt"), "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Something went wrong when writing to output file");
@@ -57,7 +76,7 @@ public class IO {
 		writeRvls(writer, vessels, voyageSetByVesselAndDurationAndSlack);
 		writeNf(writer, installationSetsByFrequency);
 		writeParameters(writer, voyageSet, installations, vessels);
-		writer.close();
+		writer.close();		
 	}
 	
 	private void writeSummary(PrintWriter writer, ArrayList<Voyage> voyageSet, HashMap<Vessel,ArrayList<Voyage>> voyageSetByVessel, long executionTime) {
@@ -484,7 +503,7 @@ public class IO {
 		return dateFormat.format(date);
 	}
 	
-	public String generateOutputFilename(int numberOfTimeWindows, int totalVisits, int removeLongestPairs, int minInstallationsHeur, double capacityFraction) {
+	public String generateOutputFilename(int numberOfTimeWindows, int totalVisits, int removeLongestPairs, int minInstallationsHeur, double capacityFraction, String fileExtension) {
 		String fileName = outputFileName + getTodaysDate() + " " + (numberOfNodes-1) + "-" + numberOfTimeWindows + "-" + totalVisits;
 		if (removeLongestPairs > 0) {
 			fileName += " longestRemoved " + removeLongestPairs;
@@ -495,7 +514,7 @@ public class IO {
 		if (capacityFraction > 0) {
 			fileName += " minCapacityFraction " + capacityFraction;
 		}
-		return fileName + ".txt";
+		return fileName + "." + fileExtension;
 	}
 
 	public int getMinNumberOfInstallations() {

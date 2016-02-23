@@ -1,5 +1,8 @@
 package voyageGenerationDP;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,7 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Main {
+public class VGMain {
+	
 	
 	private static ArrayList<Installation> installations;
 	private static ArrayList<Vessel> vessels;
@@ -21,8 +25,8 @@ public class Main {
 	private static HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack;
 	private static IO io;
 	private static long startTime, stopTime;
-	private static String inputFileName = "data/input/Input data.xls",
-			outputFileName = "data/output/"; //sets the folder, see the constructor of IO for the filename format
+	private static String inputFileName = "data/voyageGeneration/input/Input data.xls",
+			outputFileName = "data/voyageGeneration/output/"; //sets the folder, see the constructor of IO for the filename format
 	//heuristic parameters
 	private static int removeLongestArcs = 0, minInstallationsHeur = 0, maxArcsRemovedInstallation = 2;
 	private static double capacityFraction = 0;
@@ -53,6 +57,9 @@ public class Main {
 		
 		stopTime = System.nanoTime();
 		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
+		
+		SVPPProblemData problemData = new SVPPProblemData(installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack);
+		//io.serializeProblemInstance(problemData);
 	}	
 	
 	//get data from input file
