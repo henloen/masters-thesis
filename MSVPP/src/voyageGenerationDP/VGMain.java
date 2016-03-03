@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ea.svpp.ProblemDataSVPP;
+
 public class VGMain {
 	
 	
@@ -58,7 +60,7 @@ public class VGMain {
 		stopTime = System.nanoTime();
 		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
 		
-		SVPPProblemData problemData = new SVPPProblemData(installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack);
+		ProblemDataSVPP problemData = new ProblemDataSVPP(installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, io.getDepotCapacity());
 		io.serializeProblemInstance(problemData);
 	}	
 	

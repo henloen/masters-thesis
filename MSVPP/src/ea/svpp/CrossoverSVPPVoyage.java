@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ea.Individual;
 import ea.protocols.CrossoverOperator;
 
-public class SVPPVoyageCrossover extends CrossoverOperator {
+public class CrossoverSVPPVoyage extends CrossoverOperator {
 
 	@Override
 	protected ArrayList<Individual> crossoverCouple(ArrayList<Individual> couple) {

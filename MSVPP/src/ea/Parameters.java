@@ -9,7 +9,10 @@ public class Parameters {
 	initialPopulationProtocolString, genoToPhenoProtocolString, fitnessEvaluationProtocolString, adultSelectionProtocolString,
 	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, crossoverOperatorString, mutationOperatorString;
 	private HashMap<String, String> optionalParameters;
-	private HashMap<String, String> problemSpecificParameters;
+	private HashMap<String, String> problemSpecificParameters; // This may be obsolete, instead input data is loaded into the object problemData
+	private Object problemData;
+	
+
 
 	public Parameters(int nAdults, int nChildren, int nElites, int nGenerations,
 			double mutationRate, double crossoverRate, String problemName,
@@ -43,6 +46,10 @@ public class Parameters {
 		this.mutationOperatorString= mutationOperatorString;
 		this.optionalParameters = optionalParameters;
 		this.problemSpecificParameters = problemSpecificParameters;
+	}
+	
+	public Object getProblemData() {
+		return problemData;
 	}
 	
 	public HashMap<String, String> getOptionalParameters() {

@@ -3,6 +3,9 @@ package voyageGenerationDP;
 import java.io.Serializable;
 
 public class Installation implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private int number, frequency;
 	private double demand, openingHour, closingHour, serviceTime;

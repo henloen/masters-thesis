@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class Voyage implements Comparable<Voyage>, Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private double cost,capacityUsed, departureTime, slack;
 	private int number;
 	private ArrayList<Integer> visited;
@@ -42,6 +44,9 @@ public class Voyage implements Comparable<Voyage>, Serializable {
 	}
 	public static int getNumberOfVoyages() {
 		return numberOfVoyages;
+	}
+	public int getDuration(){
+		return (int) (getDepartureTime() - 8) / 24;
 	}
 	
 	public String getFullText() {

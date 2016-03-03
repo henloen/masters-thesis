@@ -4,10 +4,10 @@ import java.util.Set;
 
 import ea.Phenotype;
 
-public class SVPPPhenotype implements Phenotype {
+public class PhenotypeSVPP implements Phenotype {
 	
-	public final Set<Integer> charteredPSVs;
-	public final Set<int[]> voyagesSailed;
+	private final Set<Integer> charteredPSVs;
+	private final Set<int[]> voyagesSailed;
 	/*
 	 * Each array indicates indices v,r,t for which x_vrt = 1. E.g. if the array[3, 1, 2] is in the Set,
 	 * PSV 3 sails voyage 1 on day 2
@@ -20,26 +20,15 @@ public class SVPPPhenotype implements Phenotype {
 		return null;
 	}
 	
-	public SVPPPhenotype(Set<Integer> charteredPSVs, Set<int[]> voyagesSailed) {
+	public PhenotypeSVPP(Set<Integer> charteredPSVs, Set<int[]> voyagesSailed) {
 		this.charteredPSVs = charteredPSVs;
 		this.voyagesSailed =voyagesSailed;
 	}
 	
-	public int getScheduleCost(){
-		// TODO
-		return 0;
+	public Set<int[]> getVoyagesSailed() {
+		return voyagesSailed;
 	}
-	
-	public int getScheduleRobustness(){
-		// TODO
-		return 0;
-	}
-	
-	public int getSchedulePersistence(){
-		// TODO
-		return 0;
-	}
-	
+
 	public Set<Integer> getCharteredPSVs(){
 		return charteredPSVs;
 	}
@@ -48,5 +37,8 @@ public class SVPPPhenotype implements Phenotype {
 		return charteredPSVs.size();
 	}
 	
+	public int getNumberOfVoyagesSailed(){
+		return voyagesSailed.size();
+	}
 
 }

@@ -17,11 +17,28 @@ public class ReproductionStandard implements ReproductionProtocol {
 		this.mutationOperator = mutationOperator;
 	}
 
-
 	@Override
-	public ArrayList<Individual> reproduction(ArrayList<ArrayList<Individual>> parents, double crossoverRate, double mutationRate) {
-		ArrayList<Individual> offspring = crossoverOperator.crossover(parents, crossoverRate);
-		mutationOperator.mutate(offspring, mutationRate);
+	public ArrayList<Individual> reproduce(ArrayList<ArrayList<Individual>> parents, double crossoverRate, double mutationRate) {
+		ArrayList<Individual> offspring;
+		if (crossoverOperator != null){
+			offspring = crossoverOperator.crossover(parents, crossoverRate);			
+		}
+		else {
+			offspring = copyGeneration(parents);
+		}
+		
+		if (mutationOperator != null){
+			mutationOperator.mutate(offspring, mutationRate);			
+		}
+		
+		return offspring;
+	}
+	
+	private ArrayList<Individual> copyGeneration(ArrayList<ArrayList<Individual>> parents){
+		ArrayList<Individual> offspring = new ArrayList<>();
+		for (ArrayList<Individual> couple : parents) {
+			offspring.addAll(couple);
+		}
 		return offspring;
 	}
 

@@ -24,6 +24,10 @@ import ea.protocols.MutationOperator;
 import ea.protocols.ParentSelectionProtocol;
 import ea.protocols.ReproductionProtocol;
 import ea.protocols.StopProtocol;
+import ea.svpp.FitnessSVPP;
+import ea.svpp.GenoToPhenoSVPP;
+import ea.svpp.InitialPopulationSVPP;
+import ea.svpp.ProblemDataSVPP;
 
 public class EAprocesses {
 	
@@ -60,7 +64,9 @@ public class EAprocesses {
 	}
 	
 	public void improveIndividual(Population children) {
-		localSearchProtocol.improveIndividuals(children);
+		if (localSearchProtocol != null){
+			localSearchProtocol.improveIndividuals(children);			
+		}
 	}
 	
 	public boolean stoppingCriterion(Population adults, int generationNumber) {
@@ -72,7 +78,7 @@ public class EAprocesses {
 	}
 	
 	public ArrayList<Individual> reproduction(ArrayList<ArrayList<Individual>> parents) {
-		return reproductionProtocol.reproduction(parents, parameters.getCrossoverRate(), parameters.getMutationRate());
+		return reproductionProtocol.reproduce(parents, parameters.getCrossoverRate(), parameters.getMutationRate());
 	}	
 	
 	private void selectProtocols() {
@@ -90,6 +96,8 @@ public class EAprocesses {
 		switch (parameters.getInitialPopulationProtocolString()) {
 			case "OneMax": initialPopulationProtocol = new InitialPopulationOneMax();
 				break;
+			case "SVPP": initialPopulationProtocol = new InitialPopulationSVPP();
+				break;
 			default: initialPopulationProtocol = null;
 				break;
 		}
@@ -99,6 +107,8 @@ public class EAprocesses {
 		switch (parameters.getGenoToPhenoProtocolString()) {
 			case "OneMax" : genoToPhenoProtocol = new GenoToPhenoOneMax();
 				break;
+			case "SVPP" : genoToPhenoProtocol = new GenoToPhenoSVPP();
+				break;
 			default: genoToPhenoProtocol = null;
 				break;
 		}
@@ -107,6 +117,11 @@ public class EAprocesses {
 	private void selectFitnessEvaluationProtocol() {
 		switch (parameters.getFitnessEvaluationProtocolString()) {
 			case "OneMax" : fitnessEvaluationProtocol= new FitnessOneMax();
+				break;
+			case "SVPP" :
+				String fitnessFunction = parameters.getOptionalParameters().get("SVPPFitness");
+				ProblemDataSVPP problemData = (ProblemDataSVPP) parameters.getProblemData();
+				fitnessEvaluationProtocol = new FitnessSVPP(problemData, fitnessFunction);
 				break;
 			default: fitnessEvaluationProtocol = null;
 				break;

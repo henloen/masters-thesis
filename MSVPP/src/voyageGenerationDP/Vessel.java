@@ -7,7 +7,8 @@ public class Vessel implements Comparable<Vessel>, Serializable{
 		private int capacity, speed, unitFuelCost, timeCharterCost, numberOfDaysAvailable;
 		private double fuelConsumptionSailing, fuelConsumptionDepot, fuelConsumptionInstallation;
 		
-
+		private static final long serialVersionUID = 1L;
+		
 		public Vessel(String name, int capacity, int speed, int unitFuelCost,
 				double fuelConsumptionSailing, double fuelConsumptionDepot,
 				double fuelConsumptionInstallation, int timeCharterCost, int numberOfDaysAvailable) {

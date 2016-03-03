@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import ea.svpp.ProblemDataSVPP;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -42,7 +43,7 @@ public class IO {
 		getParameters();
 	}
 	
-	public void serializeProblemInstance(SVPPProblemData problemData){
+	public void serializeProblemInstance(ProblemDataSVPP problemData){
 		try {
 			// Write object to file
 			FileOutputStream fos = new FileOutputStream(generateOutputFilename(numberOfTimeWindows-1, getNumberOfTotalVisits(problemData.installations), problemData.removeLongestArcs, problemData.minInstallationsHeur, problemData.capacityFraction, "ser"));
@@ -56,6 +57,10 @@ public class IO {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<Integer> getDepotCapacity() {
+		return depotCapacity;
 	}
 
 	public void writeOutputToDataFile(ArrayList<Installation> installations, ArrayList<Vessel> vessels, ArrayList<Voyage> voyageSet, HashMap<Vessel,ArrayList<Voyage>> voyageSetByVessel, HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation, HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration, HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack, HashMap<Integer, ArrayList<Installation>> installationSetsByFrequency,long executionTime, int removeLongestPairs, int minInstallationsHeur, double capacityFraction) {

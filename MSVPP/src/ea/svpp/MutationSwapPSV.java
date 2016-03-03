@@ -8,15 +8,15 @@ import java.util.Set;
 import ea.Individual;
 import ea.protocols.MutationOperator;
 
-public class SwapPSVMutation extends MutationOperator {
+public class MutationSwapPSV extends MutationOperator {
 	
 	@Override
 	protected void mutateIndividual(Individual individual) {
 		// TODO Auto-generated method stub
-		SVPPPhenotype phenotype = (SVPPPhenotype) individual.getPhenotype();
-		SVPPGenotype genotype = (SVPPGenotype) individual.getGenotype();
+		PhenotypeSVPP phenotype = (PhenotypeSVPP) individual.getPhenotype();
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
-		int numberOfAvailablePSVs = SVPPGenotype.NUMBER_OF_PSVS;
+		int numberOfAvailablePSVs = GenotypeSVPP.NUMBER_OF_PSVS;
 		
 		int PSVToRemove = getRandomIntegerFromSet(phenotype.getCharteredPSVs());
 

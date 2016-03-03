@@ -12,13 +12,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import ea.svpp.SVPPIO;
+import ea.svpp.IO_SVPP;
 import jxl.Sheet;
 import jxl.Workbook;
 
 public class IO {
 
-	String parametersFileName = "data/input/parameters.xls";
+	String parametersFileName = "data/ea/input/EAparameters.xls";
 	String outputFileName = "data/output/";
 	HashMap<Integer, HashMap<String, Double>> generationStatistics;
 	
@@ -41,7 +41,7 @@ public class IO {
 		String problemName = parameterHashMap.get("Problem name");
 		
 		if (problemName.equals("SVPP")){
-			SVPPIO problemSpecificIO = new SVPPIO(optionalParameterHashMap);
+			IO_SVPP problemSpecificIO = new IO_SVPP(optionalParameterHashMap);
 			return problemSpecificIO.readProblemSpecificParameters();
 		}
 		else return null;

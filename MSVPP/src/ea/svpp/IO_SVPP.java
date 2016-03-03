@@ -7,20 +7,18 @@ import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import voyageGenerationDP.SVPPProblemData;
-
-public class SVPPIO {
+public class IO_SVPP {
 	String problemInstance;
 	String baselineInstance;
 	
-	String inputFilePath = "data/input/";
-	String baselineFilePath = "data/input/baseline";
+	String inputFilePath = System.getProperty("user.dir") + "/data/ea/input/SVPP/";
+	String baselineFilePath = System.getProperty("user.dir") + "data/ea/input/SVPP/baseline";
 	
-	public SVPPProblemData problemData;
+	public ProblemDataSVPP problemData;
 	
 	private HashMap<String, String> problemSpecificParameters;
 	
-	public SVPPIO(HashMap<String, String> optionalParameterHashMap) {
+	public IO_SVPP(HashMap<String, String> optionalParameterHashMap) {
 		this.problemInstance = optionalParameterHashMap.get("Problem instance");
 		this.baselineInstance = optionalParameterHashMap.get("Baseline instance");
 	}
@@ -31,7 +29,7 @@ public class SVPPIO {
 			// read object from file
 			FileInputStream fis = new FileInputStream(inputObjectFile);
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			problemData = (SVPPProblemData) ois.readObject();
+			problemData = (ProblemDataSVPP) ois.readObject();
 			ois.close();
 			
 		} catch (FileNotFoundException e) {
