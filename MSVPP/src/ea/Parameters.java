@@ -9,7 +9,6 @@ public class Parameters {
 	initialPopulationProtocolString, genoToPhenoProtocolString, fitnessEvaluationProtocolString, adultSelectionProtocolString,
 	localSearchProtocolString, stopProtocolString, parentSelectionProtocolString, reproductionProtocolString, crossoverOperatorString, mutationOperatorString;
 	private HashMap<String, String> optionalParameters;
-	private HashMap<String, String> problemSpecificParameters; // This may be obsolete, instead input data is loaded into the object problemData
 	private Object problemData;
 	
 
@@ -25,7 +24,7 @@ public class Parameters {
 			String reproductionProtocolString,
 			String crossoverOperatorString,
 			String mutationOperatorString,
-			HashMap<String, String> optionalParameters, HashMap<String, String> problemSpecificParameters) {
+			HashMap<String, String> optionalParameters, Object problemData) {
 		
 		this.nAdults = nAdults;
 		this.nChildren = nChildren;
@@ -45,7 +44,7 @@ public class Parameters {
 		this.crossoverOperatorString = crossoverOperatorString;
 		this.mutationOperatorString= mutationOperatorString;
 		this.optionalParameters = optionalParameters;
-		this.problemSpecificParameters = problemSpecificParameters;
+		this.problemData = problemData;
 	}
 	
 	public Object getProblemData() {
@@ -54,14 +53,6 @@ public class Parameters {
 	
 	public HashMap<String, String> getOptionalParameters() {
 		return optionalParameters;
-	}
-
-	public HashMap<String, String> getProblemSpecificParameters() {
-		return problemSpecificParameters;
-	}
-
-	public void setProblemSpecificParameters(HashMap<String, String> problemSpecificParameters) {
-		this.problemSpecificParameters = problemSpecificParameters;
 	}
 
 	public void setOptionalParameters(HashMap<String, String> optionalParameters) {

@@ -11,16 +11,15 @@ public class IO_SVPP {
 	String problemInstance;
 	String baselineInstance;
 	
-	String inputFilePath = System.getProperty("user.dir") + "/data/ea/input/SVPP/";
-	String baselineFilePath = System.getProperty("user.dir") + "data/ea/input/SVPP/baseline";
+	String inputFilePath = System.getProperty("user.dir") + "\\data\\ea\\input\\SVPP\\";
+	String baselineFilePath = System.getProperty("user.dir") + "\\data\\ea\\input\\SVPP\\baseline\\";
 	
 	public ProblemDataSVPP problemData;
-	
-	private HashMap<String, String> problemSpecificParameters;
 	
 	public IO_SVPP(HashMap<String, String> optionalParameterHashMap) {
 		this.problemInstance = optionalParameterHashMap.get("Problem instance");
 		this.baselineInstance = optionalParameterHashMap.get("Baseline instance");
+		deserializeSVPPProblemData();
 	}
 	
 	public void deserializeSVPPProblemData(){
@@ -41,13 +40,12 @@ public class IO_SVPP {
 		}
 	}
 	
-	public HashMap<String, String> readProblemSpecificParameters(){
-		readInputFile();
-		readBaselineFile();
-		
-		return problemSpecificParameters;
+	public Object readProblemData(){
+		deserializeSVPPProblemData();
+		return problemData;
 	}
 
+	/* MAY BE UNNECESSARY
 	private void readBaselineFile() {
 		String baselineFile = baselineFilePath + baselineInstance + ".txt";
 		try{
@@ -75,6 +73,8 @@ public class IO_SVPP {
 			System.out.println("Something went wrong when reading baseline file " + baselineFile);
 		}
 	}
+	
+	MAY BE UNNECESSARY
  	private void readInputFile() {
 		String inputFile = inputFilePath + problemInstance + ".txt";
 		try {
@@ -109,9 +109,10 @@ public class IO_SVPP {
 		}	
 		catch (Exception e){
 			System.out.println("Something went wrong when reading input file " + inputFile);
+			e.printStackTrace();
 		}
 	}
 	
-	
+*/ 	
 	
 }

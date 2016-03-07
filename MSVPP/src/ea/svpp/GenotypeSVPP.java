@@ -22,7 +22,6 @@ public class GenotypeSVPP implements Genotype {
 	}
 
 	public GenotypeSVPP(int[][] schedule, Set<Integer> charteredPSVs) {
-		super();
 		this.schedule = schedule;
 		this.charteredPSVs = charteredPSVs;
 	}

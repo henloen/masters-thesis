@@ -29,20 +29,20 @@ public class IO {
 	public Parameters readParameters() {
 		HashMap<String, String> parameterHashMap = readParameters(2,3);
 		HashMap<String, String> optionalParameterHashMap = readParameters(2, 3 + parameterHashMap.keySet().size() + 1);
-		HashMap<String, String> problemSpecificParametersHashMap = readProblemSpecificInput(parameterHashMap, optionalParameterHashMap);
+		Object problemData = readProblemData(parameterHashMap, optionalParameterHashMap);
 		
-		Parameters parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap, problemSpecificParametersHashMap);
+		Parameters parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap, problemData);
 		outputFileName += parameterHashMap.get("Problem name")+ "/";
 		
 		return parameters;
 	}
 	
-	public HashMap<String, String> readProblemSpecificInput(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap ){
+	public Object readProblemData(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap){
 		String problemName = parameterHashMap.get("Problem name");
 		
 		if (problemName.equals("SVPP")){
 			IO_SVPP problemSpecificIO = new IO_SVPP(optionalParameterHashMap);
-			return problemSpecificIO.readProblemSpecificParameters();
+			return problemSpecificIO.readProblemData();
 		}
 		else return null;
 	}
@@ -130,7 +130,7 @@ public class IO {
 		return parameterHashmap;
 	}
 	
-	private Parameters convertToParametersObject(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap, HashMap<String, String> problemSpecificParametersHashMap) {
+	private Parameters convertToParametersObject(HashMap<String, String> parameterHashMap, HashMap<String, String> optionalParameterHashMap, Object problemData) {
 		DecimalFormat df = new DecimalFormat();
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 		symbols.setDecimalSeparator(',');
@@ -163,7 +163,7 @@ public class IO {
 		}
 		return new Parameters(nAdults, nChildren, nElites, nGenerations, mutationRate,
 				crossoverRate, problemName, initialPopulation, genoToPhenoConverter,
-				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, crossoverOperator, mutationOperator, optionalParameterHashMap, problemSpecificParametersHashMap);
+				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, crossoverOperator, mutationOperator, optionalParameterHashMap, problemData);
 	}
 	
 	public String getCurrentTime() {

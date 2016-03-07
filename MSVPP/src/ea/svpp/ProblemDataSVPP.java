@@ -13,6 +13,7 @@ public class ProblemDataSVPP implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	public int lengthOfPlanningPeriod;
 	public ArrayList<Installation> installations;
 	public ArrayList<Vessel> vessels;
 	public double[][] distances;
@@ -32,7 +33,7 @@ public class ProblemDataSVPP implements Serializable {
 	public static double capacityFraction = 0;
 	
 	
-	public ProblemDataSVPP(ArrayList<Installation> installations, ArrayList<Vessel> vessels, double[][] distances,
+	public ProblemDataSVPP(int lengthOfPlanningPeriod, ArrayList<Installation> installations, ArrayList<Vessel> vessels, double[][] distances,
 			ArrayList<ArrayList<Vessel>> vesselSets,
 			HashMap<Integer, ArrayList<Installation>> installationSetsByFrequency, ArrayList<Voyage> voyageSet,
 			HashMap<Vessel, ArrayList<Voyage>> voyageSetByVessel,
@@ -40,6 +41,7 @@ public class ProblemDataSVPP implements Serializable {
 			HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration,
 			HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack, ArrayList<Integer> depotCapacity) {
 		
+		this.lengthOfPlanningPeriod = lengthOfPlanningPeriod;
 		this.installations = installations;
 		this.vessels = vessels;
 		this.distances = distances;
@@ -53,7 +55,7 @@ public class ProblemDataSVPP implements Serializable {
 		this.depotCapacity = depotCapacity;
 	}
 	
-	public boolean isFeasibleSchedule(Individual schedule){
+	public boolean isFeasibleSchedule(Individual individual){
 		
 		/*
 		 * 1. All installations are serviced the required number of times
@@ -62,47 +64,63 @@ public class ProblemDataSVPP implements Serializable {
 		 * 4. PSV does not start new voyage before it has returned from another
 		 * 5. Evenly spread departures to each installation
 		 */
-		if (!constraintInstallationVisitsSatisfied(schedule)){
+		System.out.println("Checking feasibility...");
+		if (!constraintInstallationVisitsSatisfied(individual)){
+			System.out.println("Installation visits broken");
 			return false;
-		} else if (!constraintDaysPerPSVSatisfied(schedule)){
+		} else if (!constraintDaysPerPSVSatisfied(individual)){
+			System.out.println("Days per PSV broken");
 			return false;
-		} else if (!constraintDepotCapacitySatisfied(schedule)){
+		} else if (!constraintDepotCapacitySatisfied(individual)){
+			System.out.println("Depot capacity broken");
 			return false;
-		} else if (!constraintOverlappingVoyagesSatisfied(schedule)) {
+		} else if (!constraintOverlappingVoyagesSatisfied(individual)) {
+			System.out.println("Overlapping voyages broken");
 			return false;
-		} else if (!constraintEvenlySpreadDeparturesSatisfied(schedule)){
+		} else if (!constraintEvenlySpreadDeparturesSatisfied(individual)){
+			System.out.println("Evenly spread departures broken");
 			return false;
 		}
 		return true;
 		
 	}
 	
-	public boolean constraintInstallationVisitsSatisfied(Individual schedule){
+	public boolean constraintInstallationVisitsSatisfied(Individual individual){
 		
-		PhenotypeSVPP phenotype = (PhenotypeSVPP) schedule.getPhenotype();
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
+		
 		int[] visitsPerInstallation = new int[installations.size()];
-		
+	
 		// Find number of visits to each installation
-		for (int[] departure : phenotype.getVoyagesSailed()){ // Loop through all departures
-			int voyageNumber = departure[2];
-			Voyage voyage = voyageSet.get(voyageNumber); // Are the voyages in the voyageSet ordered? Yes! That's convenient
-			
-			for (int installation : voyage.getVisited()) {
-				visitsPerInstallation[installation]++; // Add 1 to counter for every installation 
+		for (int PSV : genotype.getcharteredPSVs()){
+			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
+				int voyageNumber = genotype.getSchedule()[PSV][day];
+				
+				if (voyageNumber > 0){
+					Voyage voyage = voyageSet.get(voyageNumber-1); // Are the voyages in the voyageSet ordered? Yes! That's convenient
+																   // Note that voyageNumbers are 1-indexed
+					for (int installation : voyage.getVisited()) {
+						if (installation >= visitsPerInstallation.length){
+							// The visited list in each voyage contains the installation N+1 to indicate 2nd visit at depot, hence this check
+							continue;
+						}
+						visitsPerInstallation[installation]++; // Add 1 to counter for every installation 
+					}
+				}
 			}
 		}
-		
+		// Check that all installations have required number of visits
 		for (Installation installation : installations){
 			int instNumber = installation.getNumber();
-			if (installation.getFrequency() != visitsPerInstallation[instNumber]){
+			if (visitsPerInstallation[instNumber] < installation.getFrequency()){
 				return false;
 			}
 		}
-		return true; // All installations have required number of visits
+		return true; // All installations have the required number of visits
 	}
 
-	private boolean constraintOverlappingVoyagesSatisfied(Individual schedule) {
-		GenotypeSVPP genotype = (GenotypeSVPP) schedule.getGenotype();
+	private boolean constraintOverlappingVoyagesSatisfied(Individual individual) {
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		int[][] scheduleArray = genotype.getSchedule();
 		
@@ -112,7 +130,7 @@ public class ProblemDataSVPP implements Serializable {
 				
 				int voyageStarted = scheduleArray[PSV][day];
 				if (voyageStarted != 0){ // The PSV departs on a new voyage on this day
-					int voyageDuration = voyageSet.get(voyageStarted).getDuration();
+					int voyageDuration = voyageSet.get(voyageStarted-1).getDuration();
 					for (int i = 1; i < voyageDuration; i++){
 						/* Note: Duration includes the day voyage begins. E.g. a PSV starting a 2-day voyage on
 						 * Monday can depart again on Wednesday
@@ -130,8 +148,8 @@ public class ProblemDataSVPP implements Serializable {
 		return true;
 	}
 
-	private boolean constraintDepotCapacitySatisfied(Individual schedule) {
-		GenotypeSVPP genotype = (GenotypeSVPP) schedule.getGenotype();
+	private boolean constraintDepotCapacitySatisfied(Individual individual) {
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		int[][] scheduleArray = genotype.getSchedule();
 		
@@ -147,8 +165,8 @@ public class ProblemDataSVPP implements Serializable {
 		return true;
 	}
 
-	private boolean constraintDaysPerPSVSatisfied(Individual schedule) {
-		GenotypeSVPP genotype = (GenotypeSVPP) schedule.getGenotype();
+	private boolean constraintDaysPerPSVSatisfied(Individual individual) {
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		int[][] scheduleArray = genotype.getSchedule();
 		
@@ -158,7 +176,7 @@ public class ProblemDataSVPP implements Serializable {
 			while (day < GenotypeSVPP.NUMBER_OF_DAYS){
 				int voyageStarted = scheduleArray[PSV][day];
 				if (voyageStarted != 0){
-					int voyageDuration = voyageSet.get(voyageStarted).getDuration();
+					int voyageDuration = voyageSet.get(voyageStarted-1).getDuration();
 					nDaysSailing += voyageDuration;
 					day += voyageDuration;
 				}
@@ -174,7 +192,7 @@ public class ProblemDataSVPP implements Serializable {
 	}
 
 	
-	private boolean constraintEvenlySpreadDeparturesSatisfied(Individual schedule) {
+	private boolean constraintEvenlySpreadDeparturesSatisfied(Individual individual) {
 		/*
 		 * Parameters used for spreading departures
 		 * hf ::	  [6, 2, 2, 3, 1, 0, 0] ! Horizon in which we need to constrain number of departures, given f required visits
@@ -185,7 +203,7 @@ public class ProblemDataSVPP implements Serializable {
 		int[] Pf_min = {0, 0, 1, 2, 1, 0, 0};
 		int[] Pf_max = {1, 1, 3, 4, 2, 1, 1};
 		
-		GenotypeSVPP genotype = (GenotypeSVPP) schedule.getGenotype();
+		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		int[][] scheduleArray = genotype.getSchedule();
 		
 		for (Installation installation : installations){
@@ -200,7 +218,7 @@ public class ProblemDataSVPP implements Serializable {
 							
 						int voyageStarted = scheduleArray[PSV][dayToCheck];
 						if (voyageStarted != 0){
-							if (voyageVisitsInstallation(installation, vessels.get(PSV), voyageSet.get(voyageStarted))){
+							if (voyageVisitsInstallation(installation, vessels.get(PSV), voyageSet.get(voyageStarted-1))){
 								numberOfDeparturesToInstallationInHorizon++;
 							}
 						}

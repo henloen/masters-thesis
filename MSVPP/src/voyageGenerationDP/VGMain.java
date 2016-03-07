@@ -60,7 +60,7 @@ public class VGMain {
 		stopTime = System.nanoTime();
 		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
 		
-		ProblemDataSVPP problemData = new ProblemDataSVPP(installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, io.getDepotCapacity());
+		ProblemDataSVPP problemData = new ProblemDataSVPP(io.getLengthOfPlanningPeriod(), installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, io.getDepotCapacity());
 		io.serializeProblemInstance(problemData);
 	}	
 	

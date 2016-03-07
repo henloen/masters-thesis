@@ -540,6 +540,10 @@ public class IO {
 		return maxNumberOfInstallations;
 	}
 
+	public int getLengthOfPlanningPeriod() {
+		return lengthOfPlanningPeriod;
+	}
+
 	public int getMinDuration() {
 		return minDuration;
 	}

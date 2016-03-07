@@ -9,7 +9,6 @@ import ea.protocols.InitialPopulationProtocol;
 
 public class InitialPopulationOneMax implements InitialPopulationProtocol {
 
-	@Override
 	public ArrayList<Individual> createInitialPopulation(Parameters parameters) {
 		int genotypeLength = Integer.parseInt(parameters.getOptionalParameters().get("Bitstring length"));
 		
@@ -20,6 +19,12 @@ public class InitialPopulationOneMax implements InitialPopulationProtocol {
 			initialPopulation.add(child);
 		}
 		return initialPopulation;
+	}
+
+	@Override
+	public ArrayList<Individual> createInitialPopulation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

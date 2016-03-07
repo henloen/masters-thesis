@@ -6,5 +6,5 @@ import ea.Individual;
 import ea.Parameters;
 
 public interface InitialPopulationProtocol {
-	public ArrayList<Individual> createInitialPopulation(Parameters parameters);
+	public ArrayList<Individual> createInitialPopulation();
 }

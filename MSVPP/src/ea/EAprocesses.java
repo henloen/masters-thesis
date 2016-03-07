@@ -7,6 +7,7 @@ import ea.common.AdultSelectionGenerationalMixing;
 import ea.common.AdultSelectionOverproduction;
 import ea.common.ParentSelectionFitnessProportionate;
 import ea.common.ReproductionStandard;
+import ea.common.StopNGenerations;
 import ea.onemax.CrossoverOneMax;
 import ea.onemax.FitnessOneMax;
 import ea.onemax.GenoToPhenoOneMax;
@@ -48,7 +49,7 @@ public class EAprocesses {
 	}
 	
 	public ArrayList<Individual> createInitialPopulation() {
-		return initialPopulationProtocol.createInitialPopulation(parameters);
+		return initialPopulationProtocol.createInitialPopulation();
 	}
 	
 	public void convertGenoToPheno(Population children) {
@@ -96,7 +97,8 @@ public class EAprocesses {
 		switch (parameters.getInitialPopulationProtocolString()) {
 			case "OneMax": initialPopulationProtocol = new InitialPopulationOneMax();
 				break;
-			case "SVPP": initialPopulationProtocol = new InitialPopulationSVPP();
+			case "SVPP Random":
+				initialPopulationProtocol = new InitialPopulationSVPP(parameters);
 				break;
 			default: initialPopulationProtocol = null;
 				break;
@@ -119,7 +121,7 @@ public class EAprocesses {
 			case "OneMax" : fitnessEvaluationProtocol= new FitnessOneMax();
 				break;
 			case "SVPP" :
-				String fitnessFunction = parameters.getOptionalParameters().get("SVPPFitness");
+				String fitnessFunction = parameters.getOptionalParameters().get("SVPP Fitness");
 				ProblemDataSVPP problemData = (ProblemDataSVPP) parameters.getProblemData();
 				fitnessEvaluationProtocol = new FitnessSVPP(problemData, fitnessFunction);
 				break;
@@ -154,7 +156,7 @@ public class EAprocesses {
 		switch (parameters.getStopProtocolString()) {
 			case "OneMax" : stopProtocol = new StopOneMax();
 				break;
-			default: stopProtocol = null;
+			default: stopProtocol = new StopNGenerations();
 				break;
 		}
 	}
@@ -164,6 +166,19 @@ public class EAprocesses {
 			case "Fitness Proportionate" : parentSelectionProtocol = new ParentSelectionFitnessProportionate();
 				break;
 			default: parentSelectionProtocol = null;
+				break;
+		}
+	}
+	
+	
+	private void selectReproductionProtocol() {
+		switch (parameters.getReproductionProtocolString()) {
+			case "Standard" :
+				CrossoverOperator crossoverOperator = selectCrossoverOperator();
+				MutationOperator mutationOperator = selectMutationOperator();
+				reproductionProtocol = new ReproductionStandard(crossoverOperator, mutationOperator);
+				break;
+			default: reproductionProtocol = null;
 				break;
 		}
 	}
@@ -185,19 +200,6 @@ public class EAprocesses {
 		switch (parameters.getMutationOperatorString()) {
 		case "OneMax" : return new MutationOneMax();
 		default: return null;
-		}
-	}
-	
-	
-	private void selectReproductionProtocol() {
-		switch (parameters.getReproductionProtocolString()) {
-			case "Standard" :
-				CrossoverOperator crossoverOperator = selectCrossoverOperator();
-				MutationOperator mutationOperator = selectMutationOperator();
-				reproductionProtocol = new ReproductionStandard(crossoverOperator, mutationOperator);
-				break;
-			default: reproductionProtocol = null;
-				break;
 		}
 	}
 	
