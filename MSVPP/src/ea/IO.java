@@ -19,7 +19,7 @@ import jxl.Workbook;
 public class IO {
 
 	String parametersFileName = "data/ea/input/EAparameters.xls";
-	String outputFileName = "data/output/";
+	String outputFileName = "data/ea/output/";
 	HashMap<Integer, HashMap<String, Double>> generationStatistics;
 	
 	public IO() {

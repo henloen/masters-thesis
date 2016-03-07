@@ -25,6 +25,8 @@ public class VGMain {
 	private static HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation;
 	private static HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration;
 	private static HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack;
+	private static HashMap<Vessel, HashMap<Set<Integer>, Voyage>> voyageByVesselAndInstallationSet; 
+	
 	private static IO io;
 	private static long startTime, stopTime;
 	private static String inputFileName = "data/voyageGeneration/input/Input data.xls",
@@ -41,6 +43,7 @@ public class VGMain {
 		voyageSetByVesselAndInstallation = new HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and installation, R_vi in the mathematical model
 		voyageSetByVesselAndDuration = new HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and duration, R_vl in the mathematical model
 		voyageSetByVesselAndDurationAndSlack = new HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>>(); //initialize the voyage set indexed by vessel, duration and slack, R_vls in the mathematical model
+		voyageByVesselAndInstallationSet = new HashMap<Vessel, HashMap<Set<Integer>, Voyage>>();
 		
 		getData();
 		generateVesselSets();
@@ -54,13 +57,19 @@ public class VGMain {
 		generateVoyageSetsByVesselAndDurationAndSlack();
 		generateInstallationSetsByFrequency();
 		
+		for (ArrayList<Vessel> vesselSet : vesselSets) {
+			for (Vessel vessel : vesselSet) {
+				generateVoyageByVesselAndInstallationSet(vessel);
+			}
+		}
+		
 		//printVoyages(); //helper function to see voyages
-		//printSizeOfSets(); //helper function that prints the size of the differnt sets
+		//printSizeOfSets(); //helper function that prints the size of the different sets
 		
 		stopTime = System.nanoTime();
 		io.writeOutputToDataFile(installations, vessels, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, installationSetsByFrequency, stopTime - startTime, removeLongestArcs, minInstallationsHeur, capacityFraction); //stopTime-startTime equals the execution time of the program
 		
-		ProblemDataSVPP problemData = new ProblemDataSVPP(io.getLengthOfPlanningPeriod(), installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, io.getDepotCapacity());
+		ProblemDataSVPP problemData = new ProblemDataSVPP(io.getLengthOfPlanningPeriod(), installations, vessels, distances, vesselSets, installationSetsByFrequency, voyageSet, voyageSetByVessel, voyageSetByVesselAndInstallation, voyageSetByVesselAndDuration, voyageSetByVesselAndDurationAndSlack, io.getDepotCapacity(), voyageByVesselAndInstallationSet);
 		io.serializeProblemInstance(problemData);
 	}	
 	
@@ -208,6 +217,21 @@ public class VGMain {
 			}
 			installationSetsByFrequency.put(f, installationList);
 		}
+	}
+	
+	private static void generateVoyageByVesselAndInstallationSet(Vessel vessel){
+		HashMap<Set<Integer>, Voyage> voyagesByInstallationSet = new HashMap<>();
+		
+		ArrayList<Voyage> voyagesForVessel = voyageSetByVessel.get(vessel); 
+		for (Voyage voyage : voyagesForVessel) {
+			Set<Integer> installationSet = new HashSet<>();
+			ArrayList<Integer> visitedInstallations = voyage.getVisited();
+			for (int i = 0; i < visitedInstallations.size()-1; i++) {
+				installationSet.add(visitedInstallations.get(i));
+			}
+			voyagesByInstallationSet.put(installationSet, voyage);
+		}
+		voyageByVesselAndInstallationSet.put(vessel, voyagesByInstallationSet);
 	}
 	
 	private static void filterByHeuristics() {

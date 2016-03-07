@@ -3,6 +3,8 @@ package ea.svpp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import ea.Individual;
 import voyageGenerationDP.Installation;
@@ -25,6 +27,7 @@ public class ProblemDataSVPP implements Serializable {
 	public HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration;
 	public HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack;
 	public ArrayList<Integer> depotCapacity;
+	public HashMap<Vessel, HashMap<Set<Integer>, Voyage>> voyageByVesselAndInstallationSet; 
 
 	public static String inputFileName = "data/input/Input data.xls",
 			outputFileName = "data/output/"; //sets the folder, see the constructor of IO for the filename format
@@ -39,7 +42,9 @@ public class ProblemDataSVPP implements Serializable {
 			HashMap<Vessel, ArrayList<Voyage>> voyageSetByVessel,
 			HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation,
 			HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration,
-			HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack, ArrayList<Integer> depotCapacity) {
+			HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack,
+			ArrayList<Integer> depotCapacity,
+			HashMap<Vessel, HashMap<Set<Integer>, Voyage>> voyageByVesselAndInstallationSet) {
 		
 		this.lengthOfPlanningPeriod = lengthOfPlanningPeriod;
 		this.installations = installations;
@@ -53,6 +58,7 @@ public class ProblemDataSVPP implements Serializable {
 		this.voyageSetByVesselAndDuration = voyageSetByVesselAndDuration;
 		this.voyageSetByVesselAndDurationAndSlack = voyageSetByVesselAndDurationAndSlack;
 		this.depotCapacity = depotCapacity;
+		this.voyageByVesselAndInstallationSet = voyageByVesselAndInstallationSet;
 	}
 	
 	public boolean isFeasibleSchedule(Individual individual){
@@ -206,7 +212,8 @@ public class ProblemDataSVPP implements Serializable {
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		int[][] scheduleArray = genotype.getSchedule();
 		
-		for (Installation installation : installations){
+		for (int inst = 1; inst < installations.size(); inst++){
+			Installation installation = installations.get(inst);
 			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
 				int numberOfDeparturesToInstallationInHorizon = 0;
 				
@@ -235,7 +242,7 @@ public class ProblemDataSVPP implements Serializable {
 	
 	
 	public boolean voyageVisitsInstallation(Installation installation, Vessel vessel, Voyage voyage){
-		ArrayList<Voyage> voyages = voyageSetByVesselAndInstallation.get(installation).get(vessel);		
+		ArrayList<Voyage> voyages = voyageSetByVesselAndInstallation.get(vessel).get(installation);		
 		return voyages.contains(voyage);
 	}
 	

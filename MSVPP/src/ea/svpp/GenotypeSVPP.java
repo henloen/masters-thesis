@@ -28,8 +28,7 @@ public class GenotypeSVPP implements Genotype {
 
 	@Override
 	public Genotype cloneGenotype() {
-		// TODO Auto-generated method stub
-		return null;
+		return new GenotypeSVPP(schedule, charteredPSVs);
 	}
 
 }

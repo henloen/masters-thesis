@@ -16,6 +16,7 @@ public class EAmain {
 		main.initialize();
 		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
+		
 		main.doEvolutionaryLoop(); // have to do one iteration before checking stop criterion
 		while (! main.stoppingCriterion()) {
 			main.doEvolutionaryLoop();

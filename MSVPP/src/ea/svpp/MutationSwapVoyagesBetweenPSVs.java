@@ -8,17 +8,16 @@ import java.util.Set;
 import ea.Individual;
 import ea.protocols.MutationOperator;
 
-public class MutationSwapPSV extends MutationOperator {
+public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 	
 	@Override
 	protected void mutateIndividual(Individual individual) {
-		// TODO Auto-generated method stub
 		PhenotypeSVPP phenotype = (PhenotypeSVPP) individual.getPhenotype();
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		int numberOfAvailablePSVs = GenotypeSVPP.NUMBER_OF_PSVS;
 		
-		int PSVToRemove = getRandomIntegerFromSet(phenotype.getCharteredPSVs());
+		int PSV1 = getRandomIntegerFromSet(phenotype.getCharteredPSVs());
 
 		// Create a set of all unchartered PSVs
 		Set<Integer> uncharteredPSVs = new HashSet<Integer>();

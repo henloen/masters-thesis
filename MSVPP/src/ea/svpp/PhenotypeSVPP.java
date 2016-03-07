@@ -15,9 +15,7 @@ public class PhenotypeSVPP implements Phenotype {
 	
 	@Override
 	public Phenotype clonePhenotype() {
-		// TODO Auto-generated method stub
-		// What do we need this for?
-		return null;
+		return new PhenotypeSVPP(charteredPSVs, voyagesSailed);
 	}
 	
 	public PhenotypeSVPP(Set<Integer> charteredPSVs, Set<int[]> voyagesSailed) {
