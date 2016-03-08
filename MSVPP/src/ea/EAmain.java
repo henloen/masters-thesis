@@ -27,7 +27,7 @@ public class EAmain {
 	public void initialize() {
 		io = new IO();
 		children = new Population();
-		adults = new Population(); //children is initialized in "createInitialPopulation"
+		adults = new Population(); // children is initialized in "createInitialPopulation"
 		parameters = io.readParameters();
 		
 		processes = new EAprocesses(parameters);
@@ -50,6 +50,10 @@ public class EAmain {
 		// <local search process>
 		// 3. Select adults
 		processes.selectAdults(children, adults);
+
+		// Record generation statistics
+		io.recordGenerationStatistics(generationNumber, adults);
+		
 		// 4. Select parents
 		ArrayList<ArrayList<Individual>> parents = processes.selectParents(adults);
 		// 5. Reproduction
@@ -58,8 +62,6 @@ public class EAmain {
 		// 5a. Add elite to the next generation
 		// <elitist process>
 
-		// Record generation statistics
-		io.recordGenerationStatistics(generationNumber, adults);
 		// Increase generationNumber
 		generationNumber++;
 	}

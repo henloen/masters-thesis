@@ -34,6 +34,13 @@ public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 		copyVoyages(PSV2number, PSV1number, genotype.getSchedule(), newSchedule);
 		
 		
+		// Copy voyages which are not swapped
+		for (int PSV = 0; PSV < GenotypeSVPP.NUMBER_OF_PSVS; PSV++){
+			if (PSV == PSV1number || PSV == PSV2number) continue;
+			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
+				newSchedule[PSV][day] = genotype.getSchedule()[PSV][day];
+			}
+		}
 		
 		GenotypeSVPP newGenotype = new GenotypeSVPP(newSchedule);
 		individual.setGenotype(newGenotype); // Note: This also sets phenotype to null and fitness to 0
