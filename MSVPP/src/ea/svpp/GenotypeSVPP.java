@@ -26,6 +26,19 @@ public class GenotypeSVPP implements Genotype {
 		this.charteredPSVs = charteredPSVs;
 	}
 
+	public GenotypeSVPP(int[][] schedule) {
+		this.schedule = schedule;
+		this.charteredPSVs = new HashSet<Integer>();
+		for (int PSV = 0; PSV < GenotypeSVPP.NUMBER_OF_PSVS; PSV++){
+			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
+				if (schedule[PSV][day] != 0){
+					this.charteredPSVs.add(PSV);
+					break;
+				}
+			}
+		}
+	}
+
 	@Override
 	public Genotype cloneGenotype() {
 		return new GenotypeSVPP(schedule, charteredPSVs);

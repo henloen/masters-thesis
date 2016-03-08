@@ -89,10 +89,10 @@ public class FitnessSVPP implements FitnessEvaluationProtocol {
 		
 		case "Cost":
 			PhenotypeSVPP schedule = (PhenotypeSVPP) individual.getPhenotype();
-			individual.setFitness(Double.valueOf(getScheduleCost(schedule)));
+			individual.setFitness(-Double.valueOf(getScheduleCost(schedule)));
 			break;
 		default:
-			individual.setFitness(-1);
+			individual.setFitness(0);
 			break;
 		}
 	}

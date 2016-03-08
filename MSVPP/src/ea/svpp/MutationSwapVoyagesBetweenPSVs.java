@@ -7,41 +7,66 @@ import java.util.Set;
 
 import ea.Individual;
 import ea.protocols.MutationOperator;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 	
+	ProblemDataSVPP problemData;
+	
+	public MutationSwapVoyagesBetweenPSVs(ProblemDataSVPP problemData){
+		this.problemData = problemData;
+	}
+	
 	@Override
 	protected void mutateIndividual(Individual individual) {
-		PhenotypeSVPP phenotype = (PhenotypeSVPP) individual.getPhenotype();
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
-		int numberOfAvailablePSVs = GenotypeSVPP.NUMBER_OF_PSVS;
-		
-		int PSV1 = getRandomIntegerFromSet(phenotype.getCharteredPSVs());
+		// Pick two random PSVs
+		int PSV1number = new Random().nextInt(GenotypeSVPP.NUMBER_OF_PSVS);
+		int PSV2number;
+		do {
+			PSV2number = new Random().nextInt(GenotypeSVPP.NUMBER_OF_PSVS);
+		} while (PSV1number == PSV2number);
 
-		// Create a set of all unchartered PSVs
+		int[][] newSchedule = new int[GenotypeSVPP.NUMBER_OF_PSVS][GenotypeSVPP.NUMBER_OF_DAYS];
+		copyVoyages(PSV1number, PSV2number, genotype.getSchedule(), newSchedule);
+		copyVoyages(PSV2number, PSV1number, genotype.getSchedule(), newSchedule);
+		
+		
+		
+		GenotypeSVPP newGenotype = new GenotypeSVPP(newSchedule);
+		individual.setGenotype(newGenotype); // Note: This also sets phenotype to null and fitness to 0
+	}
+
+/* Create a set of all unchartered PSVs
 		Set<Integer> uncharteredPSVs = new HashSet<Integer>();
 		for (int i = 0; i < numberOfAvailablePSVs; i++) {
 			if (!phenotype.getCharteredPSVs().contains(i)){
 				uncharteredPSVs.add(i);
 			}
 		}
-		
-		// Pick random unchartered PSV to swap voyages with
-		int PSVToAdd = getRandomIntegerFromSet(uncharteredPSVs);
-		
+ */
+
+	public void copyVoyages(int PSV1num, int PSV2num, int[][] oldSchedule, int[][] newSchedule){
+		// Copies voyages(installation visits) from PSV1 to PSV2.
+
+		Vessel PSV2 = problemData.vessels.get(PSV2num);
+		for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
+			int voyageNumber = oldSchedule[PSV1num][day];
+			
+			if (voyageNumber != 0){
+				Voyage voyage = problemData.voyageSet.get(voyageNumber-1);
+				
+				Set<Integer> visitedSet = UtilitiesSVPP.getSetOfVisitedInstallations(voyage);
+				Voyage voyageForPSV2 = problemData.voyageByVesselAndInstallationSet.get(PSV2).get(visitedSet);
+
+				// TODO What if PSV2 cannot sail the voyage?
+				
+				newSchedule[PSV2num][day] = voyageForPSV2.getNumber();
+			}
+		}
 	}
 
-	public Integer getRandomIntegerFromSet(Set<Integer> set){
-		int indexToPick = new Random().nextInt(set.size());
-		int i = 0;
-		for (Integer element : set){
-			if (i == indexToPick){
-				return element;
-			}
-			i++;
-		}
-		return null;
-	}
 	
 }

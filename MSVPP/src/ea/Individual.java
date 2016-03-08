@@ -36,6 +36,8 @@ public class Individual implements Comparable<Individual>{
 	
 	public void setGenotype(Genotype genotype) {
 		this.genotype = genotype;
+		this.phenotype = null;
+		this.fitness = 0;
 	}
 	
 	public Phenotype getPhenotype() {

@@ -28,6 +28,7 @@ import ea.protocols.StopProtocol;
 import ea.svpp.FitnessSVPP;
 import ea.svpp.GenoToPhenoSVPP;
 import ea.svpp.InitialPopulationSVPP;
+import ea.svpp.MutationSwapVoyagesBetweenPSVs;
 import ea.svpp.ProblemDataSVPP;
 
 public class EAprocesses {
@@ -199,6 +200,7 @@ public class EAprocesses {
 		// Selecting mutation operator
 		switch (parameters.getMutationOperatorString()) {
 		case "OneMax" : return new MutationOneMax();
+		case "PSVSwap" : return new MutationSwapVoyagesBetweenPSVs((ProblemDataSVPP) parameters.getProblemData());
 		default: return null;
 		}
 	}
