@@ -11,8 +11,8 @@ public class IO_SVPP {
 	String problemInstance;
 	String baselineInstance;
 	
-	String inputFilePath = System.getProperty("user.dir") + "\\data\\ea\\input\\SVPP\\";
-	String baselineFilePath = System.getProperty("user.dir") + "\\data\\ea\\input\\SVPP\\baseline\\";
+	String inputFilePath = System.getProperty("user.dir") + "/data/ea/input/SVPP/";
+	String baselineFilePath = System.getProperty("user.dir") + "/data/ea/input/SVPP/baseline/";
 	
 	public ProblemDataSVPP problemData;
 	
