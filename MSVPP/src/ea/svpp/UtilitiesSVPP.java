@@ -1,35 +1,70 @@
 package ea.svpp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
 import voyageGenerationDP.Voyage;
 
-public class UtilitiesSVPP {
+public abstract class UtilitiesSVPP {
 	
-	
-	public static Set<Integer> getSetOfVisitedInstallations(Voyage voyage){
-		ArrayList<Integer> visitedInstallations = voyage.getVisited();		
-		HashSet<Integer> visitedSet = new HashSet<>();
-		
-		for (int i = 0; i < visitedInstallations.size()-1; i++){
-			visitedSet.add(visitedInstallations.get(i));
-		}
-		return visitedSet;
+	public static Set<Installation> getSetOfVisitedInstallations(Voyage voyage){
+		ArrayList<Installation> visitedInstallations = voyage.getVisitedInstallations();		
+		return new HashSet<>(visitedInstallations);
 	}
 	
+	public static int getNumberOfDeparturesOnDay(int day, HashMap<Vessel, Voyage[]> schedule){
+		int nDepartures = 0;
+		for (Vessel vessel : schedule.keySet()) {
+			Voyage[] vesselSchedule = schedule.get(vessel);
+			if (vesselSchedule[day] != null) nDepartures++;
+		}
+		return nDepartures;
+	}
 
-	public static Integer getRandomIntegerFromSet(Set<Integer> set){
-		int indexToPick = new Random().nextInt(set.size());
-		int i = 0;
-		for (Integer element : set){
-			if (i == indexToPick){
-				return element;
+	public static boolean moreVisitsRequired(HashMap<Installation, Integer> remainingVisits){
+		for (Installation installation : remainingVisits.keySet()) {
+			if (remainingVisits.get(installation) != 0){
+				return true;
 			}
-			i++;
+		}
+		return false;
+	}
+	
+	public static <T> T pickRandomElementFromList(List<T> list){
+		int randomIndex = new Random().nextInt(list.size());
+		return list.get(randomIndex);
+	}
+	
+	public static <T> T pickRandomElementFromList(List<T> list, Set<T> alreadyPicked){
+		T object;
+		do {
+			int randomIndex = new Random().nextInt(list.size());
+			object = list.get(randomIndex);
+		}
+		while (alreadyPicked.contains(object));
+		
+		return object;
+	}
+
+	public static <T> T pickRandomElementFromSet(Set<T> set) {
+		int randomIndex = new Random().nextInt(set.size());
+		int counter = 0;
+		for (T t : set) {
+			if (counter == randomIndex){
+				return t;
+			}
+			counter++;
 		}
 		return null;
+	}
+
+	public static boolean voyageVisitsInstallation(Voyage voyage, Installation installation){
+		return voyage.getVisitedInstallations().contains(installation);
 	}
 }

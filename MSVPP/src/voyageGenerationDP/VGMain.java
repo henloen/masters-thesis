@@ -15,7 +15,7 @@ import ea.svpp.ProblemDataSVPP;
 public class VGMain {
 	
 	
-	private static ArrayList<Installation> installations;
+	protected static ArrayList<Installation> installations;
 	private static ArrayList<Vessel> vessels;
 	private static double[][] distances;
 	private static ArrayList<ArrayList<Vessel>> vesselSets;
@@ -25,7 +25,7 @@ public class VGMain {
 	private static HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>> voyageSetByVesselAndInstallation;
 	private static HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>> voyageSetByVesselAndDuration;
 	private static HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>> voyageSetByVesselAndDurationAndSlack;
-	private static HashMap<Vessel, HashMap<Set<Integer>, Voyage>> voyageByVesselAndInstallationSet; 
+	private static HashMap<Vessel, HashMap<Set<Installation>, Voyage>> voyageByVesselAndInstallationSet; 
 	
 	private static IO io;
 	private static long startTime, stopTime;
@@ -43,7 +43,7 @@ public class VGMain {
 		voyageSetByVesselAndInstallation = new HashMap<Vessel, HashMap<Installation, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and installation, R_vi in the mathematical model
 		voyageSetByVesselAndDuration = new HashMap<Vessel, HashMap<Integer, ArrayList<Voyage>>>(); //initialize the voyage set indexed by both vessel and duration, R_vl in the mathematical model
 		voyageSetByVesselAndDurationAndSlack = new HashMap<Vessel, HashMap<Integer, HashMap<Integer, ArrayList<Voyage>>>>(); //initialize the voyage set indexed by vessel, duration and slack, R_vls in the mathematical model
-		voyageByVesselAndInstallationSet = new HashMap<Vessel, HashMap<Set<Integer>, Voyage>>();
+		voyageByVesselAndInstallationSet = new HashMap<Vessel, HashMap<Set<Installation>, Voyage>>();
 		
 		getData();
 		generateVesselSets();
@@ -220,15 +220,11 @@ public class VGMain {
 	}
 	
 	private static void generateVoyageByVesselAndInstallationSet(Vessel vessel){
-		HashMap<Set<Integer>, Voyage> voyagesByInstallationSet = new HashMap<>();
+		HashMap<Set<Installation>, Voyage> voyagesByInstallationSet = new HashMap<>();
 		
 		ArrayList<Voyage> voyagesForVessel = voyageSetByVessel.get(vessel); 
 		for (Voyage voyage : voyagesForVessel) {
-			Set<Integer> installationSet = new HashSet<>();
-			ArrayList<Integer> visitedInstallations = voyage.getVisited();
-			for (int i = 0; i < visitedInstallations.size()-1; i++) {
-				installationSet.add(visitedInstallations.get(i));
-			}
+			Set<Installation> installationSet = new HashSet<>(voyage.getVisitedInstallations());
 			voyagesByInstallationSet.put(installationSet, voyage);
 		}
 		voyageByVesselAndInstallationSet.put(vessel, voyagesByInstallationSet);

@@ -6,6 +6,7 @@ import java.util.Set;
 import ea.Individual;
 import ea.Population;
 import ea.protocols.GenoToPhenoProtocol;
+import voyageGenerationDP.Vessel;
 
 public class GenoToPhenoSVPP implements GenoToPhenoProtocol {
 
@@ -17,9 +18,27 @@ public class GenoToPhenoSVPP implements GenoToPhenoProtocol {
 	}
 	
 	private void convertIndividualGenoToPheno(Individual individual){
+		PhenotypeSVPP phenotype = new PhenotypeSVPP((GenotypeSVPP) individual.getGenotype());
+		individual.setPhenotype(phenotype);
+	}
+	/*
+	private void convertIndividualGenoToPheno(Individual individual){
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
+		
 		Set<Integer> charteredPSVs = new HashSet<>();
 		Set<int[]> voyagesSailed = new HashSet<>();
+		
+		for (Vessel vessel : genotype.getCharteredVessels()){
+			charteredPSVs.add(vessel.getName());
+			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
+				Voyage voyage = genotype.getDeparture(vessel, day);
+				if (voyage != null){
+					
+				}
+			}
+		}
+		
+		
 		
 		int[][] schedule = genotype.getSchedule();
 		
@@ -42,4 +61,5 @@ public class GenoToPhenoSVPP implements GenoToPhenoProtocol {
 		PhenotypeSVPP phenotype = new PhenotypeSVPP(charteredPSVs, voyagesSailed);
 		individual.setPhenotype(phenotype);
 	}
+	*/
 }

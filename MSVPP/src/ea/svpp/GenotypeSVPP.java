@@ -1,47 +1,82 @@
 package ea.svpp;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Set;
 
 import ea.Genotype;
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class GenotypeSVPP implements Genotype {
 	
 	public static int NUMBER_OF_PSVS;
 	public static int NUMBER_OF_DAYS;
 	
-	private int[][] schedule = new int[NUMBER_OF_PSVS][NUMBER_OF_DAYS]; // Schedule. 1st dimension is PSVs, 2nd is days. Each element represents the voyage which PSV starts sailing on that day	
-	private Set<Integer> charteredPSVs = new HashSet<Integer>();
+	private HashMap<Vessel, Voyage[]> schedule;
 	
-	public int[][] getSchedule(){
-		return schedule;
+	public Voyage[] getScheduleForPSV(Vessel vessel){
+		if (schedule.get(vessel) != null){
+			return schedule.get(vessel).clone();
+		}
+		else {
+			return new Voyage[NUMBER_OF_DAYS];
+		}
 	}
 	
-	public Set<Integer> getcharteredPSVs(){
-		return charteredPSVs;
+	public Set<Vessel> getCharteredVessels(){
+		return schedule.keySet();
+	}
+	
+	public Voyage getDeparture(Vessel vessel, int day){
+		if (schedule.get(vessel) != null){
+			return schedule.get(vessel)[day];
+		}
+		else {
+			return null;
+		}
 	}
 
-	public GenotypeSVPP(int[][] schedule, Set<Integer> charteredPSVs) {
-		this.schedule = schedule;
-		this.charteredPSVs = charteredPSVs;
+	public int getNumberOfDeparturesOnDay(int day){
+		return UtilitiesSVPP.getNumberOfDeparturesOnDay(day, schedule);
 	}
-
-	public GenotypeSVPP(int[][] schedule) {
-		this.schedule = schedule;
-		this.charteredPSVs = new HashSet<Integer>();
-		for (int PSV = 0; PSV < GenotypeSVPP.NUMBER_OF_PSVS; PSV++){
-			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
-				if (schedule[PSV][day] != 0){
-					this.charteredPSVs.add(PSV);
-					break;
+	
+	public int getNumberOfDaysSailing(Vessel vessel){
+		Voyage[] scheduleForVessel = schedule.get(vessel);
+		int nDaysSailing = 0;
+		int day = 0;
+		while (day < NUMBER_OF_DAYS){
+			Voyage voyage = scheduleForVessel[day];
+			if (voyage != null){
+				nDaysSailing += voyage.getDuration();
+				day += voyage.getDuration();
+			}
+			else day++;
+		}
+		return nDaysSailing;
+	}
+	
+	public int getNumberOfDeparturesToInstallation(Installation installation, int day){
+		int numberOfDeparturesToInstallation = 0;
+		for (Vessel vessel : getCharteredVessels()){
+			
+			Voyage voyageStarted = getDeparture(vessel, day);
+			if (voyageStarted != null){
+				if (UtilitiesSVPP.voyageVisitsInstallation(voyageStarted, installation)){
+					numberOfDeparturesToInstallation++;
 				}
 			}
 		}
+		return numberOfDeparturesToInstallation;
+	}
+	
+	public GenotypeSVPP(HashMap<Vessel, Voyage[]> schedule) {
+		this.schedule = schedule;
 	}
 
 	@Override
 	public Genotype cloneGenotype() {
-		return new GenotypeSVPP(schedule, charteredPSVs);
+		return new GenotypeSVPP(schedule);
 	}
 
 }

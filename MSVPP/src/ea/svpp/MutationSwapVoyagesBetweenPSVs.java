@@ -1,12 +1,11 @@
 package ea.svpp;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.HashMap;
 import java.util.Set;
 
 import ea.Individual;
 import ea.protocols.MutationOperator;
+import voyageGenerationDP.Installation;
 import voyageGenerationDP.Vessel;
 import voyageGenerationDP.Voyage;
 
@@ -23,22 +22,24 @@ public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		// Pick two random PSVs
-		int PSV1number = new Random().nextInt(GenotypeSVPP.NUMBER_OF_PSVS);
-		int PSV2number;
+		Vessel vessel1 = UtilitiesSVPP.pickRandomElementFromList(problemData.vessels);
+		Vessel vessel2;
 		do {
-			PSV2number = new Random().nextInt(GenotypeSVPP.NUMBER_OF_PSVS);
-		} while (PSV1number == PSV2number);
+			vessel2 = UtilitiesSVPP.pickRandomElementFromList(problemData.vessels);
+		} while (vessel1 == vessel2);
 
-		int[][] newSchedule = new int[GenotypeSVPP.NUMBER_OF_PSVS][GenotypeSVPP.NUMBER_OF_DAYS];
-		copyVoyages(PSV1number, PSV2number, genotype.getSchedule(), newSchedule);
-		copyVoyages(PSV2number, PSV1number, genotype.getSchedule(), newSchedule);
+		HashMap<Vessel, Voyage[]> newSchedule = new HashMap<>();
 		
+		copyVoyages(vessel1, vessel2, genotype.getScheduleForPSV(vessel1), newSchedule);
+		copyVoyages(vessel2, vessel1, genotype.getScheduleForPSV(vessel2), newSchedule);
 		
 		// Copy voyages which are not swapped
-		for (int PSV = 0; PSV < GenotypeSVPP.NUMBER_OF_PSVS; PSV++){
-			if (PSV == PSV1number || PSV == PSV2number) continue;
-			for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
-				newSchedule[PSV][day] = genotype.getSchedule()[PSV][day];
+		for (Vessel otherVessel : genotype.getCharteredVessels()){
+			
+			if (otherVessel == vessel1 || otherVessel == vessel2) continue;
+			else {
+				Voyage[] scheduleForVessel = genotype.getScheduleForPSV(otherVessel);
+				newSchedule.put(otherVessel, scheduleForVessel);
 			}
 		}
 		
@@ -46,33 +47,23 @@ public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 		individual.setGenotype(newGenotype); // Note: This also sets phenotype to null and fitness to 0
 	}
 
-/* Create a set of all unchartered PSVs
-		Set<Integer> uncharteredPSVs = new HashSet<Integer>();
-		for (int i = 0; i < numberOfAvailablePSVs; i++) {
-			if (!phenotype.getCharteredPSVs().contains(i)){
-				uncharteredPSVs.add(i);
-			}
-		}
- */
-
-	public void copyVoyages(int PSV1num, int PSV2num, int[][] oldSchedule, int[][] newSchedule){
-		// Copies voyages(installation visits) from PSV1 to PSV2.
-
-		Vessel PSV2 = problemData.vessels.get(PSV2num);
+	public void copyVoyages(Vessel vesselToCopy, Vessel vesselThatCopies, Voyage[] voyagesToCopy, HashMap<Vessel,Voyage[]> newSchedule){
+		// Copies voyages(installation visits) from vesselToCopy to vesselThatCopies
+		
+		Voyage[] newVesselSchedule = new Voyage[GenotypeSVPP.NUMBER_OF_DAYS];
 		for (int day = 0; day < GenotypeSVPP.NUMBER_OF_DAYS; day++){
-			int voyageNumber = oldSchedule[PSV1num][day];
+			Voyage voyage = voyagesToCopy[day];
 			
-			if (voyageNumber != 0){
-				Voyage voyage = problemData.voyageSet.get(voyageNumber-1);
+			if (voyage != null) {
 				
-				Set<Integer> visitedSet = UtilitiesSVPP.getSetOfVisitedInstallations(voyage);
-				Voyage voyageForPSV2 = problemData.voyageByVesselAndInstallationSet.get(PSV2).get(visitedSet);
-
+				Set<Installation> visitedSet = UtilitiesSVPP.getSetOfVisitedInstallations(voyage);
+				Voyage voyageForVessel2 = problemData.voyageByVesselAndInstallationSet.get(vesselThatCopies).get(visitedSet);
+				
+				newVesselSchedule[day] = voyageForVessel2;
 				// TODO What if PSV2 cannot sail the voyage?
-				
-				newSchedule[PSV2num][day] = voyageForPSV2.getNumber();
 			}
 		}
+		newSchedule.put(vesselThatCopies, newVesselSchedule);
 	}
 
 	

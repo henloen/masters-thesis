@@ -11,6 +11,7 @@ public class Voyage implements Comparable<Voyage>, Serializable {
 	private double cost,capacityUsed, departureTime, slack;
 	private int number;
 	private ArrayList<Integer> visited;
+	private ArrayList<Installation> visitedInstallations; // Does not contain depot at end or start
 	private static int numberOfVoyages= 0;
 	
 	public Voyage(double cost, double capacityUsed, double departureTime, double slack, ArrayList<Integer> visited) {
@@ -20,8 +21,18 @@ public class Voyage implements Comparable<Voyage>, Serializable {
 		this.departureTime = departureTime;
 		this.slack = slack;
 		this.visited = visited;
+		
+		visitedInstallations = new ArrayList<>();
+		for (int i = 1; i < visited.size()-1; i++) { // Does not contain depot at end or start
+			int instNum = visited.get(i);
+			visitedInstallations.add(VGMain.installations.get(instNum));
+		}
 		numberOfVoyages++;
 		this.number = numberOfVoyages;
+	}
+	
+	public ArrayList<Installation> getVisitedInstallations(){
+		return visitedInstallations;
 	}
 	
 	public double getCost() {
@@ -42,6 +53,7 @@ public class Voyage implements Comparable<Voyage>, Serializable {
 	public ArrayList<Integer> getVisited() {
 		return visited;
 	}
+	
 	public static int getNumberOfVoyages() {
 		return numberOfVoyages;
 	}

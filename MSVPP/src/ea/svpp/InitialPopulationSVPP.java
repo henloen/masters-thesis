@@ -1,6 +1,7 @@
 package ea.svpp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -51,40 +52,30 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		
 		Individual individual = new Individual(null);
 		
-		int[] remainingVisits = getNumberOfRequiredVisits();
+		HashMap<Installation, Integer> remainingVisits = problemData.getRequiredVisits();
 		
-		for (int i = 0; i < remainingVisits.length; i++) {
-			System.out.println("Installation " + (i+1) + " requires " + remainingVisits[i] + " more visits.");
+		for (Installation installation : remainingVisits.keySet()) {
+			System.out.println("Installation " + installation.getName() + " requires " + remainingVisits.get(installation) + " more visits.");
 		}
 		
 		do {
-			Set<Integer> charteredPSVs = new HashSet<Integer>();
-			int[][] schedule = new int[GenotypeSVPP.NUMBER_OF_PSVS][GenotypeSVPP.NUMBER_OF_DAYS];
+			HashMap<Vessel, Voyage[]> schedule = new HashMap<>();
 			
-			while (moreVisitsRequired(remainingVisits)) {
+			while (UtilitiesSVPP.moreVisitsRequired(remainingVisits)) {
 				
-				int PSV;
-				do {
-					PSV = new Random().nextInt(GenotypeSVPP.NUMBER_OF_PSVS);
-				} while (charteredPSVs.contains(PSV));
+				Vessel vessel = UtilitiesSVPP.pickRandomElementFromList(problemData.vessels, schedule.keySet());
 				
-				charteredPSVs.add(PSV);
-				System.out.println("Chartered PSV " + PSV);
+				System.out.println("Chartered " + vessel.getName());
+				schedule.put(vessel, new Voyage[GenotypeSVPP.NUMBER_OF_DAYS]);
 				
-				Vessel vessel = problemData.vessels.get(PSV);
-				
-				
-				int day = charteredPSVs.size()-1;
-				/* Attempt to spread departures by incrementing starting day for each PSV.
-				 * BUT! 
-				 */
-				// int day = 0;
+				// Spreads departures by incrementing starting day for each PSV.
+				int day = schedule.keySet().size()-1;
 				int remainingDays = vessel.getNumberOfDaysAvailable();
 				
 				while (remainingDays >= 2){
 					// Check if available depot capacity today
 					int depotCapacity = problemData.depotCapacity.get(day);
-					int nDeparturesOnDay = numberOfDeparturesOnDay(schedule, day);
+					int nDeparturesOnDay = UtilitiesSVPP.getNumberOfDeparturesOnDay(day, schedule);
 					if (nDeparturesOnDay >= depotCapacity){
 						day++;
 						day = day % GenotypeSVPP.NUMBER_OF_DAYS; // Start at next week
@@ -92,31 +83,37 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 						continue; // Move on to next day
 					}
 					
-					Set<Integer> installationsToVisit = new HashSet<>();
-					installationsToVisit.add(0); // Add depot to set
-					for (int i = 1; i < remainingVisits.length; i++) {
-						if (remainingVisits[i] > 0) installationsToVisit.add(i);
+					Set<Installation> installationsToVisit = new HashSet<>();
+					for (Installation installation : remainingVisits.keySet()) {
+						if (remainingVisits.get(installation) > 0) installationsToVisit.add(installation);
 					}
 					
 					Voyage voyage = problemData.voyageByVesselAndInstallationSet.get(vessel).get(installationsToVisit);
 	
 					while(voyage == null || remainingDays < voyage.getDuration()){
-						Integer installationToRemove = new Random().nextInt(problemData.installations.size());
-						System.out.println("Removing installation " + installationToRemove);
+						Installation installationToRemove = UtilitiesSVPP.pickRandomElementFromSet(installationsToVisit);
+						//System.out.println("Removing installation " + installationToRemove);
 						installationsToVisit.remove(installationToRemove);
+						
 						voyage = problemData.voyageByVesselAndInstallationSet.get(vessel).get(installationsToVisit);
 					}
 					
-					schedule[PSV][day] = voyage.getNumber(); // Assign voyage to PSV on this day
-					//System.out.println("Voyage " + voyage.getNumber() + " with duration " + voyage.getDuration() + " assigned on day " + day);
+					schedule.get(vessel)[day] = voyage; // Assign voyage to vessel on this day
+					System.out.println("Voyage " + voyage.getNumber() + " with duration " + voyage.getDuration() + " assigned on day " + day);
+					
+					for (Installation installation : voyage.getVisitedInstallations()) {
+						int remVisitsToInstallation = remainingVisits.get(installation);
+						remainingVisits.put(installation, remVisitsToInstallation-1);
+					}
+					
 					day += voyage.getDuration();
 					day = day % GenotypeSVPP.NUMBER_OF_DAYS; // Start at next week
 					remainingDays -= voyage.getDuration();
 				}
 				
-				if (charteredPSVs.size() >= GenotypeSVPP.NUMBER_OF_PSVS) break;
+				if (schedule.keySet().size() >= GenotypeSVPP.NUMBER_OF_PSVS) break;
 			}
-			GenotypeSVPP genotype = new GenotypeSVPP(schedule, charteredPSVs);
+			GenotypeSVPP genotype = new GenotypeSVPP(schedule);
 			individual = new Individual(genotype);
 
 		} while (!problemData.isFeasibleSchedule(individual));
@@ -137,6 +134,7 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		return maxInd;
 	}
 	
+	/* NOT USED AT THE MOMENT
 	public Individual createSingleSolution2(){
 		/* Greedy heuristic:
 		 * 1. Charter random PSVx
@@ -144,7 +142,7 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		 * 3. Assign new random voyage to PSVx on next available day
 		 * 4. If PSVx have no more available days, charter new random PSVy
 		 * 5. Repeat 2-4
-		 */
+		 *
 		Individual individual = new Individual(null);
 		
 		int[] remainingVisits = getNumberOfRequiredVisits();
@@ -207,22 +205,7 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		return individual;
 	}
 	
-	private int numberOfDeparturesOnDay(int[][] schedule, int day){
-		int nDepartures = 0;
-		for (int PSV = 0; PSV < schedule.length; PSV++){
-			if (schedule[PSV][day] > 0) nDepartures++;
-		}
-		return nDepartures;
-	}
-	
-	private boolean moreVisitsRequired(int[] remainingVisits){
-		for (int i = 0; i < remainingVisits.length; i++) {
-			if (remainingVisits[i] != 0){
-				return true;
-			}
-		}
-		return false;
-	}
+	*/
 	
 	private boolean installationsInVoyageRequireVisits(Voyage voyage, int[] remainingVisits){
 		for (int installation : voyage.getVisited()){
@@ -237,17 +220,8 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		return true;
 	}
 	
-	private int[] getNumberOfRequiredVisits(){
-		int[] requiredVisits = new int[problemData.installations.size()];
-		for (int i = 1; i < problemData.installations.size(); i++){ // Depot has no required visits, therefore start on 1
-			Installation installation = problemData.installations.get(i);
-			requiredVisits[i] = installation.getFrequency();
-		}
-		return requiredVisits;
-	}
-	
 	private Voyage getVoyageForInstallationSetAndPSV(Vessel PSV, Set<Installation> installationSet){
-		
+		// TODO ???
 		for (Installation installation : installationSet) {
 		}
 		
