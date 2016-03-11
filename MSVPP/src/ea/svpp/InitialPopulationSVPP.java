@@ -52,14 +52,13 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 		
 		Individual individual = new Individual(null);
 		
-		HashMap<Installation, Integer> remainingVisits = problemData.getRequiredVisits();
-		
-		for (Installation installation : remainingVisits.keySet()) {
-			System.out.println("Installation " + installation.getName() + " requires " + remainingVisits.get(installation) + " more visits.");
-		}
-		
 		do {
+			HashMap<Installation, Integer> remainingVisits = problemData.getRequiredVisits();
 			HashMap<Vessel, Voyage[]> schedule = new HashMap<>();
+			
+			for (Installation installation : remainingVisits.keySet()) {
+				System.out.println(installation.getName() + " requires " + remainingVisits.get(installation) + " visits.");
+			}
 			
 			while (UtilitiesSVPP.moreVisitsRequired(remainingVisits)) {
 				
@@ -92,7 +91,7 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 	
 					while(voyage == null || remainingDays < voyage.getDuration()){
 						Installation installationToRemove = UtilitiesSVPP.pickRandomElementFromSet(installationsToVisit);
-						//System.out.println("Removing installation " + installationToRemove);
+						System.out.println("Removing installation " + installationToRemove);
 						installationsToVisit.remove(installationToRemove);
 						
 						voyage = problemData.voyageByVesselAndInstallationSet.get(vessel).get(installationsToVisit);
@@ -104,6 +103,11 @@ public class InitialPopulationSVPP implements InitialPopulationProtocol {
 					for (Installation installation : voyage.getVisitedInstallations()) {
 						int remVisitsToInstallation = remainingVisits.get(installation);
 						remainingVisits.put(installation, remVisitsToInstallation-1);
+					}
+					
+					if (!UtilitiesSVPP.moreVisitsRequired(remainingVisits)){
+						System.out.println("No more visits required");
+						break;
 					}
 					
 					day += voyage.getDuration();

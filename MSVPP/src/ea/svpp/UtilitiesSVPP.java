@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import jdk.management.resource.internal.inst.SocketOutputStreamRMHooks;
 import voyageGenerationDP.Installation;
 import voyageGenerationDP.Vessel;
 import voyageGenerationDP.Voyage;
@@ -29,6 +30,7 @@ public abstract class UtilitiesSVPP {
 
 	public static boolean moreVisitsRequired(HashMap<Installation, Integer> remainingVisits){
 		for (Installation installation : remainingVisits.keySet()) {
+			//System.out.println(installation.getName() + " requires " + remainingVisits.get(installation) + " more visits");
 			if (remainingVisits.get(installation) != 0){
 				return true;
 			}

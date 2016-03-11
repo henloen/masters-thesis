@@ -93,6 +93,7 @@ public class ProblemDataSVPP implements Serializable {
 	
 	public boolean constraintInstallationVisitsSatisfied(Individual individual){
 		
+		System.out.println("checking installation Visits");
 		GenotypeSVPP genotype = (GenotypeSVPP) individual.getGenotype();
 		
 		HashMap<Installation, Integer> remainingVisits = getRequiredVisits();
@@ -106,7 +107,7 @@ public class ProblemDataSVPP implements Serializable {
 					for (Installation installation : voyage.getVisitedInstallations()) {
 						// Subtract 1 from remaining visits to this installation
 						int remVisitsToInstallation = remainingVisits.get(installation);
-						System.out.println(installation.getName() + " requires " + remVisitsToInstallation);
+//						System.out.println(installation.getName() + " requires " + remVisitsToInstallation);
 						remainingVisits.put(installation, remVisitsToInstallation-1);
 					}
 				}

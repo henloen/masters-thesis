@@ -19,6 +19,7 @@ public class IO_SVPP {
 	public IO_SVPP(HashMap<String, String> optionalParameterHashMap) {
 		this.problemInstance = optionalParameterHashMap.get("Problem instance");
 		this.baselineInstance = optionalParameterHashMap.get("Baseline instance");
+		System.out.println("Solving problem " + problemInstance+ "\n");
 		deserializeSVPPProblemData();
 	}
 	
