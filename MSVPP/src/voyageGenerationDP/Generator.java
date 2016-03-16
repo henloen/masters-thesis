@@ -1,12 +1,14 @@
 package voyageGenerationDP;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Generator {
 	
 	
 	private ArrayList<Installation> installations;
 	private ArrayList<ArrayList<Label>> stages;
+	private ArrayList<HashMap<Installation, HashMap<Integer, ArrayList<Label>>>> dominateLookupHashMaps;
 	private ArrayList<Label> finalStates;
 	private Vessel vessel;
 	private int numberOfGoalNode, minDuration, maxDuration, maxNumberOfInstallations;
@@ -26,6 +28,7 @@ public class Generator {
 		this.installations.add(new Installation(depot.getName() + " Goal", depot.getOpeningHour(), depot.getClosingHour(), depot.getDemand(), 0, 0, numberOfGoalNode));
 		stages = new ArrayList<ArrayList<Label>>();
 		finalStates = new ArrayList<Label>();
+		dominateLookupHashMaps = new ArrayList<HashMap<Installation, HashMap<Integer, ArrayList<Label>>>>();
 	}
 	
 	public ArrayList<Voyage> findCheapestVoyages() {
@@ -33,14 +36,17 @@ public class Generator {
 		//initialize and create initial stage
 		for (int i = 0; i < installations.size(); i++) {
 			stages.add(new ArrayList<Label>());
+			dominateLookupHashMaps.add(new HashMap<Installation, HashMap<Integer, ArrayList<Label>>>());
 		}
 		Label initialLabel = new Label(1,0,0,16,0,installations.get(0),null); //departs at 16:00 and has no predecessor
-		stages.get(0).add(initialLabel);		
+		stages.get(0).add(initialLabel);
 		//go through all stages and do all feasible extensions
 		for (int i = 0; i < installations.size(); i++) {
+			System.out.println("number of labels in stage " + i + ": " + stages.get(i).size());
 			for (Label label : stages.get(i)) {
 				extend(label, i);
 			}
+			System.out.println("done with stage " + i);
 		}
 		//
 		for (Label finalState : finalStates) {
@@ -57,13 +63,13 @@ public class Generator {
 			else if (isGoalNode(installation)) {
 				Label newLabel = extendToFinalState(label, installation);
 				if (newLabel != null) { //null if the extension is infeasible
-					addToSet(newLabel, finalStates);
+					addToSet(newLabel, finalStates, dominateLookupHashMaps.get(stage+1));
 				}
 			}
 			else {
 				Label newLabel = extendToState(label, installation);
 				if (newLabel != null) {//null if the extension is infeasible
-					addToSet(newLabel, stages.get(stage+1));
+					addToSet(newLabel, stages.get(stage+1), dominateLookupHashMaps.get(stage+1));
 				}
 			}
 		}
@@ -133,30 +139,62 @@ public class Generator {
 		}
 	}
 	
-	private void addToSet(Label label, ArrayList<Label> set) {
-		for (Label otherLabel : set) {
+	private void addToSet(Label label, ArrayList<Label> set, HashMap<Installation, HashMap<Integer, ArrayList<Label>>> dominateLookupHashMap) {
+		ArrayList<Label> checkLabels = getCheckingLabels(label, dominateLookupHashMap);
+		for (Label otherLabel : checkLabels) {
 			if (dominates(otherLabel, label)) {
 				return;
 			}
 		}
+		
 		//add it to the set if it's not dominated by any existing states
 		set.add(label);
+		//add to dominateLookupHashMap as well
+		checkLabels.add(label);
+		
 		ArrayList<Label> dominatedLabels = new ArrayList<Label>();
-		for (Label otherLabel : set) {
+		for (Label otherLabel : checkLabels) {
 			if (dominates(label, otherLabel)) {
 				dominatedLabels.add(otherLabel);
 			}
 		}
+		//remove any dominated labels from the set
 		set.removeAll(dominatedLabels);
+		//remove from the dominateLookupHashMap as well, and since all dominated labels have the sqme current installation and visitedSum, we already have the hashmaps needed
+		checkLabels.removeAll(dominatedLabels);
+		//update the dominateLookupHashMap
+		setCheckingLabels(label, checkLabels, dominateLookupHashMap);
+	}
+	
+	private ArrayList<Label> getCheckingLabels(Label label, HashMap<Installation, HashMap<Integer, ArrayList<Label>>> dominateLookupHashMap){
+		HashMap<Integer, ArrayList<Label>> sameCurrentInstallation = dominateLookupHashMap.get(label.getCurrentInstallation());
+		ArrayList<Label> checkLabels;
+		if (sameCurrentInstallation == null) {
+			checkLabels = new ArrayList<Label>();
+		}
+		else {
+			checkLabels = sameCurrentInstallation.get(label.getVisitedSum());
+			if (checkLabels == null) {
+				checkLabels = new ArrayList<Label>();
+			}
+		}
+		return checkLabels;
+	}
+	
+	private void setCheckingLabels(Label label, ArrayList<Label> checkLabels, HashMap<Installation, HashMap<Integer, ArrayList<Label>>> dominateLookupHashMap) {
+		HashMap<Integer, ArrayList<Label>> sameCurrentInstallation = dominateLookupHashMap.get(label.getCurrentInstallation());
+		if (sameCurrentInstallation == null) {
+			sameCurrentInstallation = new HashMap<Integer, ArrayList<Label>>();
+		}
+		sameCurrentInstallation.put(label.getVisitedSum(), checkLabels);
+		dominateLookupHashMap.put(label.getCurrentInstallation(), sameCurrentInstallation);
 	}
 	
 	private boolean dominates(Label label, Label otherLabel) {
 		if (label == otherLabel) { //a label can't dominate itself
 			return false;
 		}
-		return ((label.getCurrentInstallation() == otherLabel.getCurrentInstallation())
-				&& (label.getVisitedSum() == otherLabel.getVisitedSum())
-				&& (label.getCost() <= otherLabel.getCost())
+		return ((label.getCost() <= otherLabel.getCost())
 				&& (label.getDepartureTime() <= otherLabel.getDepartureTime())
 			);
 	}

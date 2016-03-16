@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -405,10 +407,19 @@ public class IO {
 	
 	public double[][] getDistances() {
 		getDistancesData();
+		DecimalFormat df = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator(',');
+		df.setDecimalFormatSymbols(symbols);
 		double[][] distances = new double[distancesData.length][distancesData.length];
 		for (int i=0;i<distancesData.length;i++) {
 			for (int j=0;j<distancesData[i].length;j++) {
-				distances[i][j] = Double.parseDouble(distancesData[i][j]);
+				try {
+					distances[i][j] = df.parse(distancesData[i][j]).doubleValue();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return distances;
@@ -422,7 +433,8 @@ public class IO {
 			Sheet sheet = workbook.getSheet(0);//installations data is expected in the first sheet
 			for (int i=0; i<numberOfNodes;i++) {
 				for (int j=0;j<numberOfInstallationAttributes;j++) {
-					installationsData[i][j] = sheet.getCell((firstColumnOfProblemInstance-1) + j,(firstRowOfProblemInstance-1)+ i).getContents();//add 16 because the installations start at row 17 
+					installationsData[i][j] = sheet.getCell((firstColumnOfProblemInstance-1) + j,(firstRowOfProblemInstance-1)+ i).getContents();//add 16 because the installations start at row 17
+					System.out.println(installationsData[i][j]);
 				}
 			}
 		} catch (Exception e) {

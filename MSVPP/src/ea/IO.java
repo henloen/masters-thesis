@@ -21,6 +21,7 @@ public class IO {
 	String parametersFileName = "data/ea/input/EAparameters.xls";
 	String outputFileName = "data/ea/output/";
 	HashMap<Integer, HashMap<String, Double>> generationStatistics;
+	Parameters parameters;
 	
 	public IO() {
 		generationStatistics = new HashMap<Integer, HashMap<String, Double>>(); //hashmap is chosen to ensure that the statistics are record for the correct generation 
@@ -31,7 +32,7 @@ public class IO {
 		HashMap<String, String> optionalParameterHashMap = readParameters(2, 3 + parameterHashMap.keySet().size() + 1);
 		Object problemData = readProblemData(parameterHashMap, optionalParameterHashMap);
 		
-		Parameters parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap, problemData);
+		parameters = convertToParametersObject(parameterHashMap, optionalParameterHashMap, problemData);
 		outputFileName += parameterHashMap.get("Problem name")+ "/";
 		
 		return parameters;
@@ -73,7 +74,7 @@ public class IO {
 		HashMap<String, Double> statistics = new HashMap<String, Double>();
 		statistics.put("Avg. fitness", population.getAverageFitness());
 		statistics.put("Std. fitness", population.getStandardDeviationFitness());
-		statistics.put("Best fitness", population.getBestIndividual().getFitness());
+		statistics.put("Best fitness", population.getBestIndividual(parameters.isMaximizeFitness()).getFitness());
 		generationStatistics.put(generationNumber, statistics);
 	}
 	
@@ -161,7 +162,8 @@ public class IO {
 			crossoverRate = 0.0;
 			mutationRate = 0.0;
 		}
-		return new Parameters(nAdults, nChildren, nElites, nGenerations, mutationRate,
+		boolean maximizeFitness = Boolean.parseBoolean(parameterHashMap.get("Maximize fitness"));
+		return new Parameters(maximizeFitness, nAdults, nChildren, nElites, nGenerations, mutationRate,
 				crossoverRate, problemName, initialPopulation, genoToPhenoConverter,
 				fitnessFunction, adultSelection, localSearch, stoppingCriterion, parentSelection, reproduction, crossoverOperator, mutationOperator, optionalParameterHashMap, problemData);
 	}

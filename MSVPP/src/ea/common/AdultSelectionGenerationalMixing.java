@@ -15,8 +15,16 @@ public class AdultSelectionGenerationalMixing implements AdultSelectionProtocol 
 		ArrayList<Individual> bothPopulations = new ArrayList<Individual>();
 		ArrayList<Individual> adultIndividuals = new ArrayList<Individual>();
 		bothPopulations.addAll(children.getIndividuals());
-		bothPopulations.addAll(adults.getIndividuals());
-		Collections.sort(bothPopulations, Collections.reverseOrder());
+		
+		if (adults.getIndividuals() != null){
+			bothPopulations.addAll(adults.getIndividuals());
+		}
+		if (parameters.isMaximizeFitness()) {
+			Collections.sort(bothPopulations, Collections.reverseOrder());
+		}
+		else {
+			Collections.sort(bothPopulations);
+		}
 		for (int i=0; i<parameters.getnAdults(); i++){
 			Individual adult = bothPopulations.get(i).clone();
 			adultIndividuals.add(adult);

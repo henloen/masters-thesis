@@ -14,7 +14,12 @@ public class AdultSelectionOverproduction implements AdultSelectionProtocol {
 	public void selectAdults(Population children, Population adults, Parameters parameters) {
 		ArrayList<Individual> childIndividuals = children.getIndividuals();
 		ArrayList<Individual> adultIndividuals = new ArrayList<Individual>();
-		Collections.sort(childIndividuals, Collections.reverseOrder());
+		if (parameters.isMaximizeFitness()){
+			Collections.sort(childIndividuals, Collections.reverseOrder());
+		}
+		else {
+			Collections.sort(childIndividuals);
+		}
 		for (int i=0; i<parameters.getnAdults(); i++){
 			Individual adult = childIndividuals.get(i).clone();
 			adultIndividuals.add(adult);

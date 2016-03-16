@@ -29,7 +29,7 @@ public class VGMain {
 	
 	private static IO io;
 	private static long startTime, stopTime;
-	private static String inputFileName = "data/voyageGeneration/input/Input data.xls",
+	private static String inputFileName = "data/voyageGeneration/input/Input data kopi.xls",
 			outputFileName = "data/voyageGeneration/output/"; //sets the folder, see the constructor of IO for the filename format
 	//heuristic parameters
 	private static int removeLongestArcs = 0, minInstallationsHeur = 0, maxArcsRemovedInstallation = 2;
@@ -105,6 +105,9 @@ public class VGMain {
 	}
 	
 	private static void generateVoyageSetsByVessel(ArrayList<Vessel> vesselSet) {
+		long time1 = System.currentTimeMillis();
+		System.out.println("generating for a vessel...");
+		
 		Vessel maxVessel = vesselSet.get(0); //the first vessel in a vesselset has the highest capacity
 		Generator generator = new Generator(installations, maxVessel, distances, io.getMinDuration(), io.getMaxDuration(), io.getMaxNumberOfInstallations());
 		ArrayList<Voyage> cheapestVoyages = generator.findCheapestVoyages();
@@ -120,7 +123,10 @@ public class VGMain {
 			}
 			voyageSetByVessel.put(tempVessel, tempVoyages);
 		}
-				
+		
+		long time2 = System.currentTimeMillis();
+		System.out.println("done with the vessel...");
+		System.out.println("time spent: " + (time2-time1));
 	}
 	
 	private static void generateVoyageSet() {
