@@ -7,7 +7,7 @@ import java.util.Set;
 public class ProblemData {
 	
 	private HashMap<String, String> problemInstanceParameters, heuristicParameters;
-	private HashMap<String, Integer> depotCapacity; 
+	private HashMap<Integer, Integer> depotCapacity; 
 	private ArrayList<Installation> installations, customerInstallations;
 	private ArrayList<Vessel> vessels;
 	private HashMap<Installation, HashMap<Installation, Double>> distances;
@@ -16,7 +16,7 @@ public class ProblemData {
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
 
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
-			HashMap<String, Integer> depotCapacity,
+			HashMap<Integer, Integer> depotCapacity,
 			HashMap<String, String> heuristicParameters,
 			ArrayList<Installation> installations, ArrayList<Vessel> vessels,
 			HashMap<Installation, HashMap<Installation, Double>> distances) {
@@ -47,7 +47,7 @@ public class ProblemData {
 		return problemInstanceParameters;
 	}
 
-	public HashMap<String, Integer> getDepotCapacity() {
+	public HashMap<Integer, Integer> getDepotCapacity() {
 		return depotCapacity;
 	}
 
@@ -105,7 +105,7 @@ public class ProblemData {
 		}
 		System.out.println();
 		System.out.println("Depot capacity");
-		for (String day : depotCapacity.keySet()) {
+		for (Integer day : depotCapacity.keySet()) {
 			System.out.println(day + ": " + depotCapacity.get(day));
 		}
 		System.out.println();

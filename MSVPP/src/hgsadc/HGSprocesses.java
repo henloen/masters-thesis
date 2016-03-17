@@ -14,7 +14,6 @@ import hgsadc.protocols.ReproductionProtocol;
 import hgsadc.protocols.SurvivorSelectionProtocol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class HGSprocesses {
 	
@@ -33,7 +32,6 @@ public class HGSprocesses {
 	}
 	
 	public ArrayList<Individual> createInitialPopulation() {
-		int initialPopulationSize = problemData.getHeuristicParameterInt("Initial population size");
 		return initialPopulationProtocol.createInitialPopulation();
 	}
 	

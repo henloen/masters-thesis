@@ -14,7 +14,7 @@ public class IO {
 	
 	private String inputFileName;
 	private HashMap<String, String> problemInstanceParameters;
-	private HashMap<String, Integer> depotCapacity;
+	private HashMap<Integer, Integer> depotCapacity;
 	private HashMap<String, String> heuristicParameters;
 	ArrayList<Installation> installations;
 	ArrayList<Vessel> vessels;
@@ -63,11 +63,11 @@ public class IO {
 		return parameterHashmap;
 	}
 	
-	private HashMap<String, Integer> readDepotCapacity(int column, int startRow) {
-		HashMap<String, Integer> depotCapacities = new HashMap<String, Integer>();
+	private HashMap<Integer, Integer> readDepotCapacity(int column, int startRow) {
+		HashMap<Integer, Integer> depotCapacities = new HashMap<Integer, Integer>();
 		HashMap<String, String> stringCapacities = readParameters(column, startRow);
 		for (String day : stringCapacities.keySet()) {
-			depotCapacities.put(day, Integer.parseInt(stringCapacities.get(day)));
+			depotCapacities.put(dayToInt(day), Integer.parseInt(stringCapacities.get(day)));
 		}
 		return depotCapacities;
 	}
@@ -196,6 +196,29 @@ public class IO {
 	
 	private int getNumberOfInstallations() {
 		return Integer.parseInt(problemInstanceParameters.get("Problem size"));
+	}
+	
+	private int dayToInt(String dayString) {
+		int day;
+		switch (dayString) {
+			case "Monday": day = 0;
+				break;
+			case "Tuesday": day = 1;
+				break;
+			case "Wednesday": day = 2;
+				break;
+			case "Thursday": day = 3;
+				break;
+			case "Friday": day = 4;
+				break;
+			case "Saturday": day = 5;
+				break;
+			case "Sunday": day = 6;
+				break;
+			default: day = -1;
+				break;
+		}
+		return day;
 	}
 		
 	

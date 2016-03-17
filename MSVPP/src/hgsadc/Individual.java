@@ -17,4 +17,8 @@ public class Individual {
 		return genotype;
 	}
 	
+	public String toString() {
+		return genotype.toString();
+	}
+	
 }

@@ -16,11 +16,12 @@ import java.util.Set;
 public class InitialPopulationStandard implements InitialPopulationProtocol {
 
 	private ProblemData problemData;
-	private int numberOfRestarts;
+	private int numberOfPatternRestarts, numberOfDepotRestarts;
 	
 	public InitialPopulationStandard(ProblemData problemData) {
 		this.problemData = problemData;
-		numberOfRestarts = 0;
+		numberOfPatternRestarts = 0;
+		numberOfDepotRestarts = 0;
 	}
 	
 	@Override
@@ -33,14 +34,27 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 			individuals.add(individual);
 			System.out.println("");
 		}
-		System.out.println("Number of restarts: " + numberOfRestarts);
+		printIndividuals(individuals);
 		return individuals;
 	}
 	
+	private void printIndividuals(ArrayList<Individual> individuals) {
+		int individualNumber = 1;
+		for (Individual individual : individuals) {
+			System.out.println("Individual " + individualNumber);
+			System.out.println(individual);
+			individualNumber++;
+		}
+		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
+		System.out.println("Number of depot restarts: " + numberOfDepotRestarts);
+		System.out.println();
+	}
+	
 	private Individual createIndividual(){
-		HashMap<Integer, Set<Integer>> installationDepartureChromosome = createInstallationDepartureChromosome();
-		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); 
-		return null;
+		HashMap<Integer, Set<Integer>> installationDepartureChromosome = createInstallationDepartureChromosome(); //the integer is the installation number and the Set<Integer> is the departure days of the installation
+		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); //the integer is the vessel number and the Set<Integer> is the departure days of the vessel
+		HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
+		return new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
 	}
 	
 	private HashMap<Integer, Set<Integer>> createInstallationDepartureChromosome() {
@@ -58,20 +72,44 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		Set<Integer> daysWithDeparture = getDaysWithDeparture(installationDepartureChromosome); //get all days that installations require a departure
 		for (Vessel vessel : problemData.getVessels()) { //for each vessel, choose a random vessel pattern that fits with the installationDepartureChromosome 
 			Set<Integer> randomVesselDeparturePattern = pickRandomVesselDeparturePattern(daysWithDeparture, individualVesselDeparturePatterns);
-			
 			if (randomVesselDeparturePattern==null) { //workaround until a smarter heuristic is created
-				numberOfRestarts++;
+				numberOfPatternRestarts++;
 				return createVesselDepartureChromosome(installationDepartureChromosome);
 			}
-			
 			System.out.println("pattern selected: " + randomVesselDeparturePattern);
 			individualVesselDeparturePatterns.put(vessel.getNumber(), randomVesselDeparturePattern);
 		}
+		if (isDepotConstraintViolated(individualVesselDeparturePatterns)) {
+			numberOfDepotRestarts++;
+			return createVesselDepartureChromosome(installationDepartureChromosome);
+		}
 		return individualVesselDeparturePatterns;
-	}	
+	}
 	
-	
-	
+	private HashMap<Integer, HashMap<Integer, Set<Integer>>> createGiantTourChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome, HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
+		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = getReversedInstallationChromosome(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
+		HashMap<Integer, Set<Integer>> reversedVesselChromosome = getReversedVesselChromosome(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
+		HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome = new HashMap<Integer, HashMap<Integer,Set<Integer>>>();
+		for (Integer day : reversedInstallationChromosome.keySet()) {
+			Set<Integer> installationsToAllocate = reversedInstallationChromosome.get(day);
+			Set<Integer> availableVessels = reversedVesselChromosome.get(day);
+			HashMap<Integer, Set<Integer>> existingVesselAllocations = new HashMap<Integer, Set<Integer>>();
+			for (Integer installation : installationsToAllocate) {
+				Integer randomVessel = Utilities.pickRandomElementFromSet(availableVessels);
+				Set<Integer> existingInstallations = existingVesselAllocations.get(randomVessel);
+				if (existingInstallations == null) {
+					existingInstallations = new HashSet<Integer>(installation);
+				}
+				else {
+					existingInstallations.add(installation);
+				}
+				existingVesselAllocations.put(randomVessel, existingInstallations);
+			}
+			giantTourChromosome.put(day, existingVesselAllocations);
+		}
+		return giantTourChromosome;
+	}
+
 	private Set<Integer> pickRandomVesselDeparturePattern(Set<Integer> daysWithDeparture, HashMap<Integer, Set<Integer>> individualVesselDeparturePatterns) {
 		Set<Integer> unvisitedDays = getUnvisitedDays(daysWithDeparture, individualVesselDeparturePatterns); //the set of days that installations require a departure and no vessel depart on
 		System.out.println("Unvisited days: " + unvisitedDays);
@@ -141,6 +179,60 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 			departureDays.addAll(installationDepartureChromosome.get(installationNumber));
 		}
 		return departureDays;
+	}
+	
+	private boolean isDepotConstraintViolated(HashMap<Integer, Set<Integer>> individualVesselDeparturePatterns) {
+		HashMap<Integer, Integer> departureCount = new HashMap<Integer, Integer>();
+		for (int vesselNumber : individualVesselDeparturePatterns.keySet()) {
+			Set<Integer> selectedPattern = individualVesselDeparturePatterns.get(vesselNumber);
+			for (Integer day : selectedPattern) {
+				Integer dayCount = departureCount.get(day);
+				if (dayCount == null) {
+					departureCount.put(day, 1);
+				}
+				else {
+					departureCount.put(day, dayCount + 1);
+				}
+			}
+		}
+		HashMap<Integer, Integer> depotCapacity = problemData.getDepotCapacity();
+		for (Integer day : departureCount.keySet()) {
+			if (departureCount.get(day) > depotCapacity.get(day)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private HashMap<Integer, Set<Integer>> getReversedInstallationChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome) {
+		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = new HashMap<Integer, Set<Integer>>();
+		for (Integer installation : installationDepartureChromosome.keySet()) {
+			for (Integer day : installationDepartureChromosome.get(installation)) {
+				Set<Integer> existingInstallations = reversedInstallationChromosome.get(day);
+				if (existingInstallations == null) {
+					existingInstallations = new HashSet<Integer>();
+				}
+				existingInstallations.add(installation);
+				reversedInstallationChromosome.put(day, existingInstallations);
+			}
+		}
+		return reversedInstallationChromosome;
+	}
+	
+	
+	private HashMap<Integer, Set<Integer>> getReversedVesselChromosome(HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
+		HashMap<Integer, Set<Integer>> reversedVesselChromosome = new HashMap<Integer, Set<Integer>>();
+		for (Integer vessel : vesselDepartureChromosome.keySet()) {
+			for (Integer day : vesselDepartureChromosome.get(vessel)) {
+				Set<Integer> existingVessels = reversedVesselChromosome.get(day);
+				if (existingVessels == null) {
+					existingVessels = new HashSet<Integer>();
+				}
+				existingVessels.add(vessel);
+				reversedVesselChromosome.put(day, existingVessels);
+			}
+		}
+		return reversedVesselChromosome;
 	}
 	
 
