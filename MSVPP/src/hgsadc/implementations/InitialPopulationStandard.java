@@ -93,19 +93,17 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		for (Integer day : reversedInstallationChromosome.keySet()) {
 			Set<Integer> installationsToAllocate = reversedInstallationChromosome.get(day);
 			Set<Integer> availableVessels = reversedVesselChromosome.get(day);
-			HashMap<Integer, Set<Integer>> existingVesselAllocations = new HashMap<Integer, Set<Integer>>();
+			HashMap<Integer, Set<Integer>> vesselAllocations = new HashMap<Integer, Set<Integer>>();
 			for (Integer installation : installationsToAllocate) {
 				Integer randomVessel = Utilities.pickRandomElementFromSet(availableVessels);
-				Set<Integer> existingInstallations = existingVesselAllocations.get(randomVessel);
+				Set<Integer> existingInstallations = vesselAllocations.get(randomVessel);
 				if (existingInstallations == null) {
-					existingInstallations = new HashSet<Integer>(installation);
+					existingInstallations = new HashSet<Integer>();
 				}
-				else {
-					existingInstallations.add(installation);
-				}
-				existingVesselAllocations.put(randomVessel, existingInstallations);
+				existingInstallations.add(installation);
+				vesselAllocations.put(randomVessel, existingInstallations);
 			}
-			giantTourChromosome.put(day, existingVesselAllocations);
+			giantTourChromosome.put(day, vesselAllocations);
 		}
 		return giantTourChromosome;
 	}
