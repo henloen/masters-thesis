@@ -35,6 +35,7 @@ public class HGSmain {
 
 	private void createInitialPopulation(){
 		ArrayList<Individual> initialPopulation = processes.createInitialPopulation();
+		processes.convertGenotypeToPhenotype(initialPopulation);
 		for (Individual individual : initialPopulation) {
 			addToSubpopulation(individual);
 		}

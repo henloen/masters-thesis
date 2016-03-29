@@ -2,12 +2,14 @@ package hgsadc;
 
 import hgsadc.implementations.DiversificationStandard;
 import hgsadc.implementations.EducationStandard;
+import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
 import hgsadc.implementations.ReproductionStandard;
 import hgsadc.implementations.SurvivorSelectionStandard;
 import hgsadc.protocols.DiversificationProtocol;
 import hgsadc.protocols.EducationProtocol;
+import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.InitialPopulationProtocol;
 import hgsadc.protocols.ParentSelectionProtocol;
 import hgsadc.protocols.ReproductionProtocol;
@@ -19,6 +21,7 @@ public class HGSprocesses {
 	
 	private ProblemData problemData;
 	private InitialPopulationProtocol initialPopulationProtocol;
+	private GenoToPhenoConverterProtocol genoToPhenoConverterProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
 	private EducationProtocol educationProtocol;
@@ -33,6 +36,10 @@ public class HGSprocesses {
 	
 	public ArrayList<Individual> createInitialPopulation() {
 		return initialPopulationProtocol.createInitialPopulation();
+	}
+	
+	public void convertGenotypeToPhenotype(ArrayList<Individual> population) {
+		genoToPhenoConverterProtocol.convertGenotypeToPhenotype(population);
 	}
 	
 	public ArrayList<Individual> selectParents(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
@@ -57,6 +64,7 @@ public class HGSprocesses {
 	
 	private void selectProtocols() {
 		selectInitialPopulationProtocol();
+		selectGenoToPhenoConverterProtocol();
 		selectParentSelectionProtocol();
 		selectReproductionProtocol();
 		selectEducationProtocol();
@@ -69,6 +77,15 @@ public class HGSprocesses {
 			case "standard": initialPopulationProtocol = new InitialPopulationStandard(problemData);
 				break;
 			default: initialPopulationProtocol = null;
+				break;
+		}
+	}
+	
+	private void selectGenoToPhenoConverterProtocol() {
+		switch (problemData.getHeuristicParameters().get("Genotype to phenotype converter protocol")) {
+			case "standard": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
+				break;
+			default: genoToPhenoConverterProtocol = null;
 				break;
 		}
 	}

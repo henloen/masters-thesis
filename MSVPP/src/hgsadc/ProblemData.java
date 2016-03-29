@@ -12,7 +12,7 @@ public class ProblemData {
 	private ArrayList<Vessel> vessels;
 	private HashMap<Installation, HashMap<Installation, Double>> distances;
 	private PatternGenerator patternGenerator;
-	
+	private HashMap<Integer, Installation> installationsByNumber;
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
 
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
@@ -28,6 +28,7 @@ public class ProblemData {
 		this.distances = distances;
 		setCustomerInstallations();
 		this.patternGenerator = new PatternGenerator(customerInstallations);
+		setInstallationsByNumber(); //generate hashmap to easily look up installations by number
 	}
 	
 	public boolean isFeasible(Individual individual) {
@@ -96,6 +97,17 @@ public class ProblemData {
 			}
 		}
 		customerInstallations.remove(depot);
+	}
+	
+	public Installation getInstallationByNumber(Integer number) {
+		return installationsByNumber.get(number);
+	}
+	
+	private void setInstallationsByNumber() {
+		installationsByNumber = new HashMap<Integer, Installation>();
+		for (Installation installation : installations) {
+			installationsByNumber.put(installation.getNumber(), installation);
+		}
 	}
 	
 	public void printProblemData(){

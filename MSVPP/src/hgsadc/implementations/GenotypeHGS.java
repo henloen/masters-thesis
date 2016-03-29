@@ -2,6 +2,7 @@ package hgsadc.implementations;
 
 import hgsadc.protocols.Genotype;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -9,26 +10,26 @@ public class GenotypeHGS implements Genotype {
 
 	private HashMap<Integer, Set<Integer>> installationDeparturePatternChromosome; //the key is an installation number and the value is a set of periods/days
 	private HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome; //the key is a vessel number and the value is a set of periods/days
-	private HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome; //the first key is a period/day, the second key is a vessel number and the value is a set of installation numbers 
+	private HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome; //the first key is a period/day, the second key is a vessel number and the value is a set of installation numbers 
 	
 	public GenotypeHGS(
 			HashMap<Integer, Set<Integer>> installationDeparturePatternChromosome,
 			HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome,
-			HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome) {
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
 		this.installationDeparturePatternChromosome = installationDeparturePatternChromosome;
 		this.vesselDeparturePatternChromosome = vesselDeparturePatternChromosome;
 		this.giantTourChromosome = giantTourChromosome;
 	}
 
-	public HashMap<Integer, Set<Integer>> getInstallationDeparturePattern() {
+	public HashMap<Integer, Set<Integer>> getInstallationDeparturePatternChromosome() {
 		return installationDeparturePatternChromosome;
 	}
 
-	public HashMap<Integer, Set<Integer>> getVesselDeparturePattern() {
+	public HashMap<Integer, Set<Integer>> getVesselDeparturePatternChromosome() {
 		return vesselDeparturePatternChromosome;
 	}
 
-	public HashMap<Integer, HashMap<Integer, Set<Integer>>> getGiantTour() {
+	public HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> getGiantTourChromosome() {
 		return giantTourChromosome;
 	}
 	

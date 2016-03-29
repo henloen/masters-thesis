@@ -53,7 +53,7 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	private Individual createIndividual(){
 		HashMap<Integer, Set<Integer>> installationDepartureChromosome = createInstallationDepartureChromosome(); //the integer is the installation number and the Set<Integer> is the departure days of the installation
 		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); //the integer is the vessel number and the Set<Integer> is the departure days of the vessel
-		HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
 		return new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
 	}
 	
@@ -86,19 +86,19 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		return individualVesselDeparturePatterns;
 	}
 	
-	private HashMap<Integer, HashMap<Integer, Set<Integer>>> createGiantTourChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome, HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
+	private HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> createGiantTourChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome, HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
 		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = getReversedInstallationChromosome(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
 		HashMap<Integer, Set<Integer>> reversedVesselChromosome = getReversedVesselChromosome(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
-		HashMap<Integer, HashMap<Integer, Set<Integer>>> giantTourChromosome = new HashMap<Integer, HashMap<Integer,Set<Integer>>>();
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = new HashMap<Integer, HashMap<Integer,ArrayList<Integer>>>();
 		for (Integer day : reversedInstallationChromosome.keySet()) {
 			Set<Integer> installationsToAllocate = reversedInstallationChromosome.get(day);
 			Set<Integer> availableVessels = reversedVesselChromosome.get(day);
-			HashMap<Integer, Set<Integer>> vesselAllocations = new HashMap<Integer, Set<Integer>>();
+			HashMap<Integer, ArrayList<Integer>> vesselAllocations = new HashMap<Integer, ArrayList<Integer>>();
 			for (Integer installation : installationsToAllocate) {
 				Integer randomVessel = Utilities.pickRandomElementFromSet(availableVessels);
-				Set<Integer> existingInstallations = vesselAllocations.get(randomVessel);
+				ArrayList<Integer> existingInstallations = vesselAllocations.get(randomVessel);
 				if (existingInstallations == null) {
-					existingInstallations = new HashSet<Integer>();
+					existingInstallations = new ArrayList<Integer>();
 				}
 				existingInstallations.add(installation);
 				vesselAllocations.put(randomVessel, existingInstallations);
