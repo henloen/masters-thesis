@@ -45,8 +45,13 @@ public class Population {
 		return Math.sqrt(std);
 	}
 	
-	public Individual getBestIndividual() {
-		Collections.sort(individuals, Collections.reverseOrder());
+	public Individual getBestIndividual(boolean maximizeFitness) {
+		if (maximizeFitness) {
+			Collections.sort(individuals, Collections.reverseOrder());
+		}
+		else {
+			Collections.sort(individuals);
+		}
 		return individuals.get(0);
 	}
 	

@@ -3,6 +3,7 @@ package ea;
 import java.util.HashMap;
 
 public class Parameters {
+	private boolean maximizeFitness;
 	private int nAdults, nChildren, nElites, nGenerations;
 	private double mutationRate, crossoverRate;
 	private String problemName,
@@ -11,21 +12,23 @@ public class Parameters {
 	private HashMap<String, String> optionalParameters;
 	private Object problemData;
 	
+	
+	
 
-
-	public Parameters(int nAdults, int nChildren, int nElites, int nGenerations,
-			double mutationRate, double crossoverRate, String problemName,
+	public Parameters(boolean maximizeFitness, int nAdults, int nChildren,
+			int nElites, int nGenerations, double mutationRate,
+			double crossoverRate, String problemName,
 			String initialPopulationProtocolString,
 			String genoToPhenoProtocolString,
 			String fitnessEvaluationProtocolString,
 			String adultSelectionProtocolString,
 			String localSearchProtocolString, String stopProtocolString,
 			String parentSelectionProtocolString,
-			String reproductionProtocolString,
-			String crossoverOperatorString,
+			String reproductionProtocolString, String crossoverOperatorString,
 			String mutationOperatorString,
 			HashMap<String, String> optionalParameters, Object problemData) {
-		
+
+		this.maximizeFitness = maximizeFitness;
 		this.nAdults = nAdults;
 		this.nChildren = nChildren;
 		this.nElites = nElites;
@@ -42,11 +45,19 @@ public class Parameters {
 		this.parentSelectionProtocolString = parentSelectionProtocolString;
 		this.reproductionProtocolString = reproductionProtocolString;
 		this.crossoverOperatorString = crossoverOperatorString;
-		this.mutationOperatorString= mutationOperatorString;
+		this.mutationOperatorString = mutationOperatorString;
 		this.optionalParameters = optionalParameters;
 		this.problemData = problemData;
 	}
 	
+	public boolean isMaximizeFitness() {
+		return maximizeFitness;
+	}
+
+	public void setMaximizeFitness(boolean maximizeFitness) {
+		this.maximizeFitness = maximizeFitness;
+	}
+
 	public Object getProblemData() {
 		return problemData;
 	}

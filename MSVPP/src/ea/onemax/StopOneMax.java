@@ -9,7 +9,7 @@ public class StopOneMax implements StopProtocol {
 
 	@Override
 	public boolean stoppingCriterion(Population adults, int generationNumber, Parameters parameters) {
-		Individual bestIndividual = adults.getBestIndividual();
+		Individual bestIndividual = adults.getBestIndividual(parameters.isMaximizeFitness());
 		return parameters.getnGenerations() < generationNumber || (bestIndividual.getFitness() == 1);
 	}
 

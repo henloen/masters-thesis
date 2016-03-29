@@ -76,7 +76,7 @@ public class EAprocesses {
 	}
 	
 	public ArrayList<ArrayList<Individual>> selectParents(Population adults) {
-		return parentSelectionProtocol.selectParents(adults, parameters.getnChildren());
+		return parentSelectionProtocol.selectParents(adults, parameters.getnChildren(), parameters);
 	}
 	
 	public ArrayList<Individual> reproduction(ArrayList<ArrayList<Individual>> parents) {

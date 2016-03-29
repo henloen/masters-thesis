@@ -53,7 +53,6 @@ public class EAmain {
 
 		// Record generation statistics
 		io.recordGenerationStatistics(generationNumber, adults);
-		
 		// 4. Select parents
 		ArrayList<ArrayList<Individual>> parents = processes.selectParents(adults);
 		// 5. Reproduction
@@ -77,7 +76,7 @@ public class EAmain {
 	//helper method during development
 	public void printChildren() {
 		System.out.println("Children:");
-		printPopulation(children);		
+		printPopulation(children);
 	}
 	
 	//helper method during development
@@ -89,7 +88,7 @@ public class EAmain {
 	//helper method during development
 	public void printPopulation(Population population) {
 		for (Individual individual : population.getIndividuals()) {
-			System.out.println(individual);
+			System.out.println(individual.getFitness());
 		}
 	}
 	

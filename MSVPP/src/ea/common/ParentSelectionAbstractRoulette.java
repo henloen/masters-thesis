@@ -5,18 +5,19 @@ import java.util.HashMap;
 import java.util.Random;
 
 import ea.Individual;
+import ea.Parameters;
 import ea.Population;
 import ea.protocols.ParentSelectionProtocol;
 
 public abstract class ParentSelectionAbstractRoulette implements ParentSelectionProtocol {
 
 	@Override
-	public ArrayList<ArrayList<Individual>> selectParents(Population adults, int nChildren) {
-		HashMap<Double[], Individual> rouletteWheel = createRouletteWheel(adults);
+	public ArrayList<ArrayList<Individual>> selectParents(Population adults, int nChildren, Parameters parameters) {
+		HashMap<Double[], Individual> rouletteWheel = createRouletteWheel(adults, parameters);
 		return playRoulette(rouletteWheel, nChildren);
 	}
 	
-	public abstract HashMap<Double[], Individual> createRouletteWheel(Population adults);  
+	public abstract HashMap<Double[], Individual> createRouletteWheel(Population adults, Parameters parameters);  
 	
 	private ArrayList<ArrayList<Individual>> playRoulette(HashMap<Double[], Individual> rouletteWheel, int nChildren) {
 		ArrayList<ArrayList<Individual>> parents = new ArrayList<ArrayList<Individual>>();

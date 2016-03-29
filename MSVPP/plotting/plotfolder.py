@@ -6,7 +6,7 @@ import glob
 #run this file by typing "python pythonfolder.py <foldername>" in the command line. All .txt-files in the folder named "foldername" will be plotted and exported
 
 inputFoldername = sys.argv[1]
-inputFolderpath = '../data/output/' + inputFoldername +"/"
+inputFolderpath = '../data/ea/output/' + inputFoldername +"/"
 outputFolderpath = 'plots/'
 outputFileFormat = '.png'
 
