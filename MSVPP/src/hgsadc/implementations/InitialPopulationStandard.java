@@ -42,7 +42,7 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		int individualNumber = 1;
 		for (Individual individual : individuals) {
 			System.out.println("Individual " + individualNumber);
-			System.out.println(individual);
+			System.out.println(individual.getGenotype());
 			individualNumber++;
 		}
 		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);

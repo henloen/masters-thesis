@@ -1,5 +1,8 @@
 package hgsadc;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.Random;
 import java.util.Set;
 
@@ -15,6 +18,20 @@ public class Utilities {
 			counter++;
 		}
 		return null;
+	}
+	
+	public static double parseDouble(String commaSeparatedDouble) {
+		DecimalFormat df = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator(',');
+		df.setDecimalFormatSymbols(symbols);
+		try {
+			return df.parse(commaSeparatedDouble).doubleValue();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.out.println("Something went wrong when parsing doubles");
+			return -1.0;
+		}
 	}
 
 }

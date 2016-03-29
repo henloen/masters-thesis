@@ -1,9 +1,6 @@
 package hgsadc;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -105,7 +102,7 @@ public class IO {
 			HashMap<Installation, Double> installationDistances = new HashMap<Installation, Double>();
 			for (int j = 1; j<distanceData.get(i).size(); j++) {
 				Installation toInstallation = getInstallationByName(headerRow.get(j));
-				installationDistances.put(toInstallation, parseDouble(distanceData.get(i).get(j)));
+				installationDistances.put(toInstallation, Utilities.parseDouble(distanceData.get(i).get(j)));
 			}
 			distances.put(getInstallationByName(distanceData.get(i).get(0)), installationDistances);
 		}
@@ -136,15 +133,15 @@ public class IO {
 	}
 	
 	private Installation convertStringsToInstallation(ArrayList<String> row, int number) {
-		double loadFactor = parseDouble(problemInstanceParameters.get("Load factor"));
+		double loadFactor = Utilities.parseDouble(problemInstanceParameters.get("Load factor"));
 		boolean timeWindows = Boolean.parseBoolean(problemInstanceParameters.get("Time windows"));
 		
 		String name = row.get(0);
 		double openingHour;
 		double closingHour;
 		if (timeWindows) {
-			openingHour = parseDouble(row.get(1));
-			closingHour = parseDouble(row.get(2));
+			openingHour = Utilities.parseDouble(row.get(1));
+			closingHour = Utilities.parseDouble(row.get(2));
 		}
 		else {
 			openingHour = 0;
@@ -152,7 +149,7 @@ public class IO {
 		}
 		double demand = Integer.parseInt(row.get(3)) * loadFactor;
 		int frequency = Integer.parseInt(row.get(4));
-		double serviceTime = parseDouble(row.get(5));
+		double serviceTime = Utilities.parseDouble(row.get(5));
 		return new Installation(name, openingHour, closingHour, demand, frequency, serviceTime, number);
 	}
 	
@@ -161,9 +158,9 @@ public class IO {
 		int capacity = Integer.parseInt(row.get(1));
 		int speed = Integer.parseInt(row.get(2));
 		int unitFuelCost  = Integer.parseInt(row.get(3));
-		double fuelConsumptionSailing = parseDouble(row.get(4));
-		double fuelConsumptionDepot = parseDouble(row.get(5));
-		double fuelConsumptionInstallation = parseDouble(row.get(6));
+		double fuelConsumptionSailing = Utilities.parseDouble(row.get(4));
+		double fuelConsumptionDepot = Utilities.parseDouble(row.get(5));
+		double fuelConsumptionInstallation = Utilities.parseDouble(row.get(6));
 		int timeCharterCost= Integer.parseInt(row.get(7));
 		int numberOfDaysAvailable = Integer.parseInt(row.get(8));
 		return new Vessel(name, capacity, speed, unitFuelCost, fuelConsumptionSailing, fuelConsumptionDepot, fuelConsumptionInstallation, timeCharterCost, numberOfDaysAvailable, number);
@@ -177,20 +174,6 @@ public class IO {
 		installationsByName = new HashMap<String, Installation>();
 		for (Installation installation : installations) {
 			installationsByName.put(installation.getName(), installation);
-		}
-	}
-	
-	private double parseDouble(String commaSeparatedDouble) {
-		DecimalFormat df = new DecimalFormat();
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-		symbols.setDecimalSeparator(',');
-		df.setDecimalFormatSymbols(symbols);
-		try {
-			return df.parse(commaSeparatedDouble).doubleValue();
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("Something went wrong when parsing doubles");
-			return -1.0;
 		}
 	}
 	

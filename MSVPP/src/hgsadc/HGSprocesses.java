@@ -2,6 +2,7 @@ package hgsadc;
 
 import hgsadc.implementations.DiversificationStandard;
 import hgsadc.implementations.EducationStandard;
+import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
@@ -9,6 +10,7 @@ import hgsadc.implementations.ReproductionStandard;
 import hgsadc.implementations.SurvivorSelectionStandard;
 import hgsadc.protocols.DiversificationProtocol;
 import hgsadc.protocols.EducationProtocol;
+import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.InitialPopulationProtocol;
 import hgsadc.protocols.ParentSelectionProtocol;
@@ -17,11 +19,13 @@ import hgsadc.protocols.SurvivorSelectionProtocol;
 
 import java.util.ArrayList;
 
+
 public class HGSprocesses {
 	
 	private ProblemData problemData;
 	private InitialPopulationProtocol initialPopulationProtocol;
 	private GenoToPhenoConverterProtocol genoToPhenoConverterProtocol;
+	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
 	private EducationProtocol educationProtocol;
@@ -40,6 +44,23 @@ public class HGSprocesses {
 	
 	public void convertGenotypeToPhenotype(ArrayList<Individual> population) {
 		genoToPhenoConverterProtocol.convertGenotypeToPhenotype(population);
+		fitnessEvaluationProtocol.setPenalizedCost(population);
+	}
+	
+	public void setPenalizedCost(Individual individual) {
+		fitnessEvaluationProtocol.setPenalizedCost(individual);
+	}
+	
+	public void updateBiasedFitness(ArrayList<Individual> individuals) {
+		fitnessEvaluationProtocol.updateBiasedFitness(individuals);
+	}
+	
+	public void setBiasedFitness(Individual individual, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+		ArrayList<Individual> allIndividuals = new ArrayList<Individual>();
+		allIndividuals.addAll(feasiblePopulation);
+		allIndividuals.addAll(infeasiblePopulation);
+		fitnessEvaluationProtocol.addDistance(individual);
+		updateBiasedFitness(allIndividuals);
 	}
 	
 	public ArrayList<Individual> selectParents(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
@@ -65,6 +86,7 @@ public class HGSprocesses {
 	private void selectProtocols() {
 		selectInitialPopulationProtocol();
 		selectGenoToPhenoConverterProtocol();
+		selectFitnessEvaluationProtocol();
 		selectParentSelectionProtocol();
 		selectReproductionProtocol();
 		selectEducationProtocol();
@@ -86,6 +108,15 @@ public class HGSprocesses {
 			case "standard": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
 				break;
 			default: genoToPhenoConverterProtocol = null;
+				break;
+		}
+	}
+	
+	private void selectFitnessEvaluationProtocol() {
+		switch (problemData.getHeuristicParameters().get("Fitness evaluation protocol")) {
+			case "standard": fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
+				break;
+			default: fitnessEvaluationProtocol = null;
 				break;
 		}
 	}
@@ -134,4 +165,5 @@ public class HGSprocesses {
 				break;
 		}	
 	}
+
 }
