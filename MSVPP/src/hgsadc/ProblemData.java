@@ -137,6 +137,10 @@ public class ProblemData {
 		}
 	}
 	
+	public Set<Integer> getDays() {
+		return depotCapacity.keySet();
+	}
+	
 	public void printProblemData(){
 		System.out.println("Problem instance parameters");
 		for (String name : problemInstanceParameters.keySet()) {
