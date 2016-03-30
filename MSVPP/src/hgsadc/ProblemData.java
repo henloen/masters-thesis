@@ -13,6 +13,7 @@ public class ProblemData {
 	private HashMap<Installation, HashMap<Installation, Double>> distances;
 	private PatternGenerator patternGenerator;
 	private HashMap<Integer, Installation> installationsByNumber;
+	private HashMap<Integer, Vessel> vesselsByNumber;
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
 
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
@@ -29,6 +30,7 @@ public class ProblemData {
 		setCustomerInstallations();
 		this.patternGenerator = new PatternGenerator(customerInstallations);
 		setInstallationsByNumber(); //generate hashmap to easily look up installations by number
+		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
 	}
 	
 	public boolean isFeasible(Individual individual) {
@@ -84,6 +86,20 @@ public class ProblemData {
 		return Integer.parseInt(heuristicParameters.get(parameterName));
 	}
 	
+	public double getHeuristicParameterDouble(String parameterName) {
+		return Utilities.parseDouble(heuristicParameters.get(parameterName));
+	}
+	
+	public int getMinVoyageDurationHours() {
+		int minDays = Integer.parseInt(problemInstanceParameters.get("Minimum duration"));
+		return (minDays * 24) - 8;
+	}
+	
+	public int getMaxVoyageDurationHours() {
+		int maxDays = Integer.parseInt(problemInstanceParameters.get("Maximum duration"));
+		return (maxDays * 24) - 8;
+	}
+	
 	public ArrayList<Installation> getCustomerInstallations() {
 		return customerInstallations;
 	}
@@ -107,6 +123,17 @@ public class ProblemData {
 		installationsByNumber = new HashMap<Integer, Installation>();
 		for (Installation installation : installations) {
 			installationsByNumber.put(installation.getNumber(), installation);
+		}
+	}
+	
+	public Vessel getVesselByNumber(Integer vesselNumber) {
+		return vesselsByNumber.get(vesselNumber);
+	}
+	
+	public void setVesselsByNumber() {
+		vesselsByNumber = new HashMap<Integer, Vessel>();
+		for (Vessel vessel : vessels) {
+			vesselsByNumber.put(vessel.getNumber(), vessel);
 		}
 	}
 	
@@ -162,4 +189,5 @@ public class ProblemData {
 		}
 		System.out.println();
 	}
+
 }

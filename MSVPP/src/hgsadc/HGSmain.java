@@ -36,7 +36,9 @@ public class HGSmain {
 	private void createInitialPopulation(){
 		ArrayList<Individual> initialPopulation = processes.createInitialPopulation();
 		processes.convertGenotypeToPhenotype(initialPopulation);
+		processes.setBiasedFitness(initialPopulation);
 		for (Individual individual : initialPopulation) {
+			System.out.println(individual);
 			addToSubpopulation(individual);
 		}
 	}
@@ -63,6 +65,7 @@ public class HGSmain {
 			infeasiblePopulation.add(individual);
 			checkSubpopulationSize(infeasiblePopulation);
 		}
+		processes.updateBiasedFitness(individual, feasiblePopulation, infeasiblePopulation);
 	}
 	
 	private void adjustPenaltyParameters() {

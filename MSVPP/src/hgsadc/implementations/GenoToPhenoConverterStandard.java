@@ -10,8 +10,6 @@ import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import voyageGenerationDP.Label;
-
 public class GenoToPhenoConverterStandard implements
 		GenoToPhenoConverterProtocol {
 
@@ -31,49 +29,41 @@ public class GenoToPhenoConverterStandard implements
 	private void convertIndividualGenotypeToPhenotype(Individual individual) {
 		GenotypeHGS genotype = (GenotypeHGS) individual.getGenotype();
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = genotype.getGiantTourChromosome();
+		HashMap<Integer, HashMap<Vessel, Voyage>> giantTour = new HashMap<Integer, HashMap<Vessel,Voyage>>();
 		for (Integer day : giantTourChromosome.keySet()) {
+			HashMap<Vessel, Voyage> giantTourDay = new HashMap<Vessel, Voyage>();
 			for (Integer vesselNumber : giantTourChromosome.get(day).keySet()) {
 				ArrayList<Integer> installations = giantTourChromosome.get(day).get(vesselNumber);
 				Vessel vessel = problemData.getVesselByNumber(vesselNumber);
-				Voyage voyage = constructVoyage(installations);
+				Voyage voyage = constructVoyage(installations, vessel);
+				giantTourDay.put(vessel, voyage);
 			}
+			giantTour.put(day, giantTourDay);
 		}
+		PhenotypeHGS phenotype = new PhenotypeHGS(giantTour);
+		individual.setPhenotype(phenotype);
 	}
 	
-	private Voyage constructVoyage(ArrayList<Integer> installations) {
+	/*
+	 * contructVoyage is written without time windows, and thus no waiting time is added.
+	 * Needs to be rewritten later, code that includes time windows can be found in voyageGeneratorDP/Generator
+	 */
+	private Voyage constructVoyage(ArrayList<Integer> installations, Vessel vessel) {
 		Installation fromInstallation = problemData.getInstallationByNumber(0);//the depot is installation number 0
-		double currentDepartureTime = 0;
-		double currentCost = 0;
-		for (Integer installationNumber : installations) {
+		ArrayList<Installation> visitedInstallations = new ArrayList<Installation>();
+		double duration = 0;
+		double cost = 0;
+		double capacityUsed = 0;
+		for (Integer installationNumber : installations) { //the depot is not contained in the list of installations, so a for each loop can be used
 			Installation toInstallation = problemData.getInstallationByNumber(installationNumber);
 			double sailingTime = Math.ceil((problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed()));
-			double arrivalTime = currentDepartureTime + sailingTime;
-			double todaysOpeningHour = toInstallation.getTodaysOpeningHour(arrivalTime);
-			double todaysClosingHour = toInstallation.getTodaysClosingHour(arrivalTime);
-			double waitingTime = 0;
-			int visitedSum = label.getVisitedSum() + (int)Math.pow(2, installation.getNumber());
-			double tomorrowsOpeningHour = todaysOpeningHour+24; //assumes same opening hours every day
-			if (arrivalTime < todaysOpeningHour) {
-				waitingTime = todaysOpeningHour - arrivalTime;
-			}
-			else if (arrivalTime >= todaysClosingHour) {
-				waitingTime = tomorrowsOpeningHour - arrivalTime;
-			}
-			//assumption: no installations have a service time greater than one working day
-			else if (arrivalTime + installation.getServiceTime() > todaysClosingHour) {
-				waitingTime = tomorrowsOpeningHour - todaysClosingHour; //add a night
-			}
-			double nextDepartureTime = arrivalTime + installation.getServiceTime() + waitingTime;
-			double nextCapacityUsed = label.getCapacityUsed() + installation.getDemandPerVisit();
-			//check that the solution is feasible
-			if (nextDepartureTime <= maxDuration && nextCapacityUsed <= vessel.getCapacity()) {
-				double nextCost = currentCost + (sailingTime*vessel.getFuelCostSailing()) + ((waitingTime+installation.getServiceTime())*vessel.getFuelCostInstallation());
-				return new Label(visitedSum, nextCost, nextCapacityUsed, nextDepartureTime, 0, installation, label);
-			}
-			else {
-				return null;
-			}
+			duration += sailingTime + toInstallation.getServiceTime();
+			capacityUsed += toInstallation.getDemandPerVisit();
+			cost += (sailingTime*vessel.getFuelCostSailing()) + (toInstallation.getServiceTime()*vessel.getFuelCostInstallation());
+			visitedInstallations.add(toInstallation);
+			fromInstallation = toInstallation;
 		}
+		return new Voyage(cost, capacityUsed, duration, visitedInstallations);
 	}
 
 }
