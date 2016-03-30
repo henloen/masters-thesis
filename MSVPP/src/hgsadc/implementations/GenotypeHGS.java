@@ -4,6 +4,7 @@ import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GenotypeHGS implements Genotype {
@@ -31,6 +32,23 @@ public class GenotypeHGS implements Genotype {
 
 	public HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> getGiantTourChromosome() {
 		return giantTourChromosome;
+	}
+	
+	public HashMap<Integer, Set<Integer>> getVesselsByInstallation() {
+		HashMap<Integer, Set<Integer>> vesselsByInstallation = new HashMap<Integer, Set<Integer>>();
+		for (Integer installation : installationDeparturePatternChromosome.keySet()) {
+			vesselsByInstallation.put(installation, new HashSet<Integer>());
+		}
+		for (Integer day : giantTourChromosome.keySet()) {
+			for (Integer vessel : giantTourChromosome.get(day).keySet()) {
+				for (Integer installation : giantTourChromosome.get(day).get(vessel)) {
+					Set<Integer> vessels = vesselsByInstallation.get(installation);
+					vessels.add(vessel);
+					vesselsByInstallation.put(installation, vessels);
+				}
+			}
+		}
+		return vesselsByInstallation;
 	}
 	
 	public String toString() {

@@ -39,11 +39,9 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	}
 	
 	private void printIndividuals(ArrayList<Individual> individuals) {
-		int individualNumber = 1;
 		for (Individual individual : individuals) {
-			System.out.println("Individual " + individualNumber);
+			System.out.println("Individual " + individual);
 			System.out.println(individual.getGenotype());
-			individualNumber++;
 		}
 		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
 		System.out.println("Number of depot restarts: " + numberOfDepotRestarts);

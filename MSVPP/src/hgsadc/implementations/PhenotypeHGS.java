@@ -46,6 +46,18 @@ public class PhenotypeHGS implements Phenotype {
 		return durationViolation;
 	}
 	
+	public double getNumberOfInstallationsViolation(int minInstallations, int maxInstallations) {
+		double numberOfInstallationsViolation = 0;
+		for (Integer day : giantTour.keySet()) {
+			for (Vessel vessel : giantTour.get(day).keySet()) {
+				Voyage voyage = giantTour.get(day).get(vessel);
+				int numberOfInstallations = voyage.getVisitedInstallations().size();
+				numberOfInstallationsViolation += Math.max(numberOfInstallations - maxInstallations, minInstallations - numberOfInstallations);
+			}
+		}
+		return numberOfInstallationsViolation;
+	}
+	
 	public String toString() {
 		return "Schedule cost: " + getScheduleCost();
 	}
