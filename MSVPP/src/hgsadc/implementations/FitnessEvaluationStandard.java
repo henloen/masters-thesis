@@ -119,10 +119,10 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		Collections.sort(individuals, new Comparator<Individual>() {
 			public int compare(Individual ind1, Individual ind2) {
 				if (ind1.getDiversityContribution() < ind2.getDiversityContribution()) {
-					return -1;
+					return 1;
 				}
 				else if (ind1.getDiversityContribution() > ind2.getDiversityContribution()) {
-					return 1;
+					return -1;
 				}
 				return 0;
 			}
