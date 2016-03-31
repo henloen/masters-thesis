@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.util.Random;
 import java.util.Set;
 
+import hgsadc.implementations.DayVesselCell;
+
 public class Utilities {
 	
 	public static <T> T pickRandomElementFromSet(Set<T> set) {
@@ -34,4 +36,17 @@ public class Utilities {
 		}
 	}
 
+	public static <T> T pickAndRemoveRandomElementFromSet(Set<T> set) {
+		int randomIndex = new Random().nextInt(set.size());
+		int counter = 0;
+		for (T t : set) {
+			if (counter == randomIndex){
+				set.remove(t);
+				return t;
+			}
+			counter++;
+		}
+		return null;
+	}
+	
 }
