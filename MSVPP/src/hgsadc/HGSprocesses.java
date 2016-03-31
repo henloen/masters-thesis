@@ -51,17 +51,15 @@ public class HGSprocesses {
 		fitnessEvaluationProtocol.setPenalizedCost(individual);
 	}
 	
-	public void updateBiasedFitness(ArrayList<Individual> individuals) {
-		fitnessEvaluationProtocol.updateBiasedFitness(individuals);
+	public void updateBiasedFitness(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
+		fitnessEvaluationProtocol.updateBiasedFitness(entirePopulation);
 	}
 	
-	public void setBiasedFitness(Individual individual, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
-		ArrayList<Individual> allIndividuals = new ArrayList<Individual>();
-		allIndividuals.addAll(feasiblePopulation);
-		allIndividuals.addAll(infeasiblePopulation);
-		fitnessEvaluationProtocol.addDistance(individual);
-		updateBiasedFitness(allIndividuals);
+	public void addDiversityDistance(Individual individual) {
+		fitnessEvaluationProtocol.addDiversityDistance(individual);
 	}
+	
 	
 	public ArrayList<Individual> selectParents(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		return parentSelectionProtocol.selectParents(feasiblePopulation, infeasiblePopulation);

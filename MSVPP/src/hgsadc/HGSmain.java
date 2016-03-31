@@ -36,10 +36,10 @@ public class HGSmain {
 	private void createInitialPopulation(){
 		ArrayList<Individual> initialPopulation = processes.createInitialPopulation();
 		processes.convertGenotypeToPhenotype(initialPopulation);
-		processes.setBiasedFitness(initialPopulation);
+		addToSubpopulation(initialPopulation);
 		for (Individual individual : initialPopulation) {
-			System.out.println(individual);
-			addToSubpopulation(individual);
+			System.out.print("Individual " + individual + " - ");
+			System.out.println(individual.getFullText());
 		}
 	}
 	
@@ -48,7 +48,7 @@ public class HGSmain {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educateOffspring(offspring);
-		addToSubpopulation(offspring);
+		addToSubpopulation(offspring, true);
 		adjustPenaltyParameters();
 		if (diversifyIteration()) {
 			processes.diversify(feasiblePopulation, infeasiblePopulation);
@@ -56,7 +56,7 @@ public class HGSmain {
 		iteration++;
 	}
 	
-	private void addToSubpopulation(Individual individual) {
+	private void addToSubpopulation(Individual individual, boolean updateBiasedFitness) {
 		if (problemData.isFeasible(individual)) {
 			feasiblePopulation.add(individual);
 			checkSubpopulationSize(feasiblePopulation);
@@ -65,7 +65,17 @@ public class HGSmain {
 			infeasiblePopulation.add(individual);
 			checkSubpopulationSize(infeasiblePopulation);
 		}
-		processes.updateBiasedFitness(individual, feasiblePopulation, infeasiblePopulation);
+		processes.addDiversityDistance(individual);
+		if (updateBiasedFitness) {
+			processes.updateBiasedFitness(feasiblePopulation, infeasiblePopulation);
+		}
+	}
+	
+	private void addToSubpopulation(ArrayList<Individual> individuals) {
+		for (Individual individual : individuals) {
+			addToSubpopulation(individual, false);
+		}
+		processes.updateBiasedFitness(feasiblePopulation, infeasiblePopulation);
 	}
 	
 	private void adjustPenaltyParameters() {

@@ -12,11 +12,11 @@ public interface FitnessEvaluationProtocol {
 	//used to calculate the penalized cost of a population
 	public void setPenalizedCost(ArrayList<Individual> individuals);
 	
-	//biased fitness is calculated based on all the other individuals
+	//biased fitness is calculated for all individuals
 	public void updateBiasedFitness(ArrayList<Individual> individuals);
 	
-	//calculate the distance to all other individuals, and update the hamming distance matrix
-	public void addDistance(Individual individual);
+	//calculate the distance to all other individuals and add the individual to the hamming distance matrix
+	public void addDiversityDistance(Individual individual);
 	
 	public double getCapacityViolationPenalty();
 	

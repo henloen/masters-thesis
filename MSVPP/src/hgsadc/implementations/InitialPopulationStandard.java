@@ -39,11 +39,9 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	}
 	
 	private void printIndividuals(ArrayList<Individual> individuals) {
-		int individualNumber = 1;
 		for (Individual individual : individuals) {
-			System.out.println("Individual " + individualNumber);
+			System.out.println("Individual " + individual);
 			System.out.println(individual.getGenotype());
-			individualNumber++;
 		}
 		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
 		System.out.println("Number of depot restarts: " + numberOfDepotRestarts);
@@ -90,16 +88,24 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = getReversedInstallationChromosome(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
 		HashMap<Integer, Set<Integer>> reversedVesselChromosome = getReversedVesselChromosome(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = new HashMap<Integer, HashMap<Integer,ArrayList<Integer>>>();
+		
+		//initializing
+		for (Integer day : problemData.getDays()) {
+			HashMap<Integer, ArrayList<Integer>> vesselAllocations = new HashMap<Integer, ArrayList<Integer>>();
+			for (Integer vessel : vesselDepartureChromosome.keySet()) {
+				vesselAllocations.put(vessel, new ArrayList<Integer>());
+			}
+			giantTourChromosome.put(day, vesselAllocations);
+		}
+		
+		//allocating
 		for (Integer day : reversedInstallationChromosome.keySet()) {
 			Set<Integer> installationsToAllocate = reversedInstallationChromosome.get(day);
 			Set<Integer> availableVessels = reversedVesselChromosome.get(day);
-			HashMap<Integer, ArrayList<Integer>> vesselAllocations = new HashMap<Integer, ArrayList<Integer>>();
+			HashMap<Integer, ArrayList<Integer>> vesselAllocations = giantTourChromosome.get(day); 
 			for (Integer installation : installationsToAllocate) {
 				Integer randomVessel = Utilities.pickRandomElementFromSet(availableVessels);
 				ArrayList<Integer> existingInstallations = vesselAllocations.get(randomVessel);
-				if (existingInstallations == null) {
-					existingInstallations = new ArrayList<Integer>();
-				}
 				existingInstallations.add(installation);
 				vesselAllocations.put(randomVessel, existingInstallations);
 			}

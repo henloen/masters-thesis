@@ -72,6 +72,23 @@ public class GenotypeHGS implements Genotype {
 		return giantTourChromosome;
 	}
 	
+	public HashMap<Integer, Set<Integer>> getVesselsByInstallation() {
+		HashMap<Integer, Set<Integer>> vesselsByInstallation = new HashMap<Integer, Set<Integer>>();
+		for (Integer installation : installationDeparturePatternChromosome.keySet()) {
+			vesselsByInstallation.put(installation, new HashSet<Integer>());
+		}
+		for (Integer day : giantTourChromosome.keySet()) {
+			for (Integer vessel : giantTourChromosome.get(day).keySet()) {
+				for (Integer installation : giantTourChromosome.get(day).get(vessel)) {
+					Set<Integer> vessels = vesselsByInstallation.get(installation);
+					vessels.add(vessel);
+					vesselsByInstallation.put(installation, vessels);
+				}
+			}
+		}
+		return vesselsByInstallation;
+	}
+	
 	public String toString() {
 		String str = getInstallationDeparturePatternChromosomeString();
 		str += getVesselDeparturePatternChromosomeString();
