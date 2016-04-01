@@ -2,10 +2,8 @@ package hgsadc.protocols;
 
 import hgsadc.Individual;
 
-import java.util.ArrayList;
-
 public interface GenoToPhenoConverterProtocol {
 
-	public void convertGenotypeToPhenotype(ArrayList<Individual> population);
+	public void convertGenotypeToPhenotype(Individual individual);
 	
 }

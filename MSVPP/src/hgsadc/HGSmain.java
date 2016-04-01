@@ -36,9 +36,16 @@ public class HGSmain {
 
 	private void createInitialPopulation(){
 		System.out.println("Creating initial population...");
-		ArrayList<Individual> initialPopulation = processes.createInitialPopulation();
-		processes.convertGenotypeToPhenotype(initialPopulation);
-		addToSubpopulation(initialPopulation);
+		int populationSize = problemData.getHeuristicParameterInt("Population size");
+		int initialPopulationSize = 4 * populationSize;
+		for (int i = 0; i < initialPopulationSize; i++) {
+			Individual individual = processes.createIndividual();
+			processes.educate(individual);
+			if (! individual.isFeasible()) {
+				processes.repair(individual, 0.5);
+			}
+			addToSubpopulation(individual);
+		}
 		System.out.println("Initial population:");
 		printPopulation();
 	}
@@ -46,36 +53,30 @@ public class HGSmain {
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
-		processes.educateOffspring(offspring);
-		addToSubpopulation(offspring, true);
+		processes.educate(offspring);
+		addToSubpopulation(offspring);
 		adjustPenaltyParameters();
 		if (diversifyIteration()) {
 			processes.diversify(feasiblePopulation, infeasiblePopulation);
 		}
 		printPopulation();
 	}
-	
-	private void addToSubpopulation(Individual individual, boolean updateBiasedFitness) {
+
+	private void addToSubpopulation(Individual individual) {
 		if (individual.isFeasible()) {
 			feasiblePopulation.add(individual);
-			processes.addDiversityDistance(individual);
-			checkSubpopulationSize(true);
 		}
 		else {
 			infeasiblePopulation.add(individual);
-			processes.addDiversityDistance(individual);
-			checkSubpopulationSize(false);
-		}
-		if (updateBiasedFitness) {
-			processes.updateBiasedFitness(feasiblePopulation, infeasiblePopulation);
-		}
-	}
-	
-	private void addToSubpopulation(ArrayList<Individual> individuals) {
-		for (Individual individual : individuals) {
-			addToSubpopulation(individual, false);
-		}
+		}			
+		processes.addDiversityDistance(individual);
 		processes.updateBiasedFitness(feasiblePopulation, infeasiblePopulation);
+		if (individual.isFeasible()) {
+			checkSubpopulationSize(feasiblePopulation, infeasiblePopulation);
+		}
+		else {
+			checkSubpopulationSize(infeasiblePopulation, feasiblePopulation);
+		}
 	}
 	
 	private void adjustPenaltyParameters() {
@@ -86,19 +87,9 @@ public class HGSmain {
 		return false;
 	}
 	
-	private void checkSubpopulationSize(boolean checkFeasiblePopulation) { //true-> check feasible subpop, false -> check infeasible subpop
-		ArrayList<Individual> subpopulation;
-		ArrayList<Individual> otherSubpopulation;
+	private void checkSubpopulationSize(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation) {
 		int maxSubpopulationSize = problemData.getHeuristicParameterInt("Population size") 
 				+ problemData.getHeuristicParameterInt("Number of offspring in a generation");
-		if (checkFeasiblePopulation) {
-			subpopulation = feasiblePopulation;
-			otherSubpopulation = infeasiblePopulation;
-		}
-		else {
-			subpopulation = infeasiblePopulation;
-			otherSubpopulation = feasiblePopulation;
-		}
 		if (subpopulation.size() >= maxSubpopulationSize) {
 			processes.survivorSelection(subpopulation, otherSubpopulation);
 		}
@@ -107,13 +98,11 @@ public class HGSmain {
 	private void printPopulation() {
 		System.out.println("Feasible subpopulation:");
 		for (Individual individual : feasiblePopulation) {
-			System.out.print("Individual " + individual + " - ");
-			System.out.println(individual.getFullText());
+			System.out.println("Individual " + individual.getFullText());
 		}
 		System.out.println("Infeasible subpopulation:");
 		for (Individual individual : infeasiblePopulation) {
-			System.out.print("Individual " + individual + " - ");
-			System.out.println(individual.getFullText());
+			System.out.println("Individual " + individual.getFullText());
 		}
 		System.out.println("");
 	}

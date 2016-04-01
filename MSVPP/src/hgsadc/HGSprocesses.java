@@ -6,6 +6,7 @@ import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
+import hgsadc.implementations.RepairStandard;
 import hgsadc.implementations.ReproductionStandard;
 import hgsadc.implementations.SurvivorSelectionStandard;
 import hgsadc.protocols.DiversificationProtocol;
@@ -14,21 +15,25 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.InitialPopulationProtocol;
 import hgsadc.protocols.ParentSelectionProtocol;
+import hgsadc.protocols.RepairProtocol;
 import hgsadc.protocols.ReproductionProtocol;
 import hgsadc.protocols.SurvivorSelectionProtocol;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class HGSprocesses {
 	
 	private ProblemData problemData;
+	
 	private InitialPopulationProtocol initialPopulationProtocol;
 	private GenoToPhenoConverterProtocol genoToPhenoConverterProtocol;
 	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
 	private EducationProtocol educationProtocol;
+	private RepairProtocol repairProtocol;
 	private DiversificationProtocol diversificationProtocol;
 	private SurvivorSelectionProtocol survivorSelectionProtocol;
 	
@@ -38,17 +43,15 @@ public class HGSprocesses {
 		selectProtocols();
 	}
 	
-	public ArrayList<Individual> createInitialPopulation() {
-		return initialPopulationProtocol.createInitialPopulation();
+	public Individual createIndividual() {
+		Individual individual = initialPopulationProtocol.createIndividual();
+		convertGenotypeToPhenotype(individual);
+		return individual;
 	}
 	
-	public void convertGenotypeToPhenotype(ArrayList<Individual> population) {
-		genoToPhenoConverterProtocol.convertGenotypeToPhenotype(population);
-		fitnessEvaluationProtocol.setPenalizedCost(population);
-	}
-	
-	public void setPenalizedCost(Individual individual) {
-		fitnessEvaluationProtocol.setPenalizedCost(individual);
+	public void convertGenotypeToPhenotype(Individual individual) {
+		genoToPhenoConverterProtocol.convertGenotypeToPhenotype(individual);
+		fitnessEvaluationProtocol.setPenalizedCostIndividual(individual);
 	}
 	
 	public void updateBiasedFitness(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
@@ -60,7 +63,6 @@ public class HGSprocesses {
 		fitnessEvaluationProtocol.addDiversityDistance(individual);
 	}
 	
-	
 	public ArrayList<Individual> selectParents(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
 		return parentSelectionProtocol.selectParents(entirePopulation);
@@ -70,8 +72,20 @@ public class HGSprocesses {
 		return reproductionProtocol.crossover(parents);
 	}
 
-	public void educateOffspring(Individual offspring) {
-		educationProtocol.educate(offspring);
+	public void educate(Individual individual) {
+		educationProtocol.educate(individual);
+	}
+	
+	public void repair(Individual individual, double probability) {
+		double randomDouble = new Random().nextDouble();
+		if (probability < randomDouble) {
+			repairProtocol.repair(individual);
+		}
+	}
+	
+	public void repair(Individual individual) {
+		double probability = problemData.getHeuristicParameterDouble("Repair rate");
+		repair(individual, probability);
 	}
 
 	public void diversify(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
@@ -82,6 +96,7 @@ public class HGSprocesses {
 		survivorSelectionProtocol.selectSurvivors(subpopulation, otherSubpopulation, fitnessEvaluationProtocol);
 	}
 	
+	
 	private void selectProtocols() {
 		selectInitialPopulationProtocol();
 		selectGenoToPhenoConverterProtocol();
@@ -89,6 +104,7 @@ public class HGSprocesses {
 		selectParentSelectionProtocol();
 		selectReproductionProtocol();
 		selectEducationProtocol();
+		selectRepairProtocol();
 		selectDiversificationProtocol();
 		selectSurvivorSelectionProtocol();
 	}
@@ -143,6 +159,15 @@ public class HGSprocesses {
 			case "standard": educationProtocol = new EducationStandard();
 				break;
 			default: educationProtocol = null;
+				break;
+		}
+	}
+	
+	private void selectRepairProtocol() {
+		switch (problemData.getHeuristicParameters().get("Repair protocol")) {
+			case "standard": repairProtocol = new RepairStandard();
+				break;
+			default: repairProtocol = null;
 				break;
 		}
 	}

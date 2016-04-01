@@ -24,35 +24,20 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		numberOfDepotRestarts = 0;
 	}
 	
-	@Override
-	public ArrayList<Individual> createInitialPopulation() {
-		ArrayList<Individual> individuals = new ArrayList<Individual>();
-		int initialPopulationSize = problemData.getHeuristicParameterInt("Population size"); 
-		for (int i=0; i<initialPopulationSize;i++) {
-			System.out.println("Creating individual " + (i+1)); 
-			Individual individual = createIndividual();
-			individuals.add(individual);
-			System.out.println("");
-		}
-		printIndividuals(individuals);
-		return individuals;
-	}
-	
-	private void printIndividuals(ArrayList<Individual> individuals) {
-		for (Individual individual : individuals) {
-			System.out.println("Individual " + individual);
-			System.out.println(individual.getGenotype());
-		}
-		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
-		System.out.println("Number of depot restarts: " + numberOfDepotRestarts);
-		System.out.println();
-	}
-	
-	private Individual createIndividual(){
+	public  Individual createIndividual(){
 		HashMap<Integer, Set<Integer>> installationDepartureChromosome = createInstallationDepartureChromosome(); //the integer is the installation number and the Set<Integer> is the departure days of the installation
 		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); //the integer is the vessel number and the Set<Integer> is the departure days of the vessel
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
-		return new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
+		Individual individual = new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
+		printIndividual(individual);
+		return individual;
+	}
+	
+	private void printIndividual(Individual individual) {
+		System.out.println("Individual " + individual);
+		System.out.println(individual.getGenotype());
+		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
+		System.out.println("Number of depot restarts: " + numberOfDepotRestarts + "\n");
 	}
 	
 	private HashMap<Integer, Set<Integer>> createInstallationDepartureChromosome() {

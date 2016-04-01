@@ -8,7 +8,6 @@ import hgsadc.protocols.SurvivorSelectionProtocol;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 
@@ -28,6 +27,9 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 		System.out.println("Clones: " + clones);
 		Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 		while (subpopulation.size() > populationSize) {
+			for (Individual individual : subpopulation) {
+				System.out.println(individual.getFullText());
+			}
 			if (clones.size() > 0) {
 				System.out.println("remove clone");
 				System.out.println(subpopulation);
@@ -41,6 +43,8 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 				removeFromSubpopulation(subpopulation, subpopulation.get(0), otherSubpopulation , fitnessEvaluationProtocol);
 				System.out.println(subpopulation);
 			}
+			Collections.sort(clones, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
+			Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 		}
 	}
 	

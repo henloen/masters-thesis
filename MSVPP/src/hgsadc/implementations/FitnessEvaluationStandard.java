@@ -2,6 +2,7 @@ package hgsadc.implementations;
 
 import hgsadc.Individual;
 import hgsadc.ProblemData;
+import hgsadc.Voyage;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.Phenotype;
 
@@ -14,20 +15,33 @@ import java.util.Set;
 
 public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	
-	private double durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty, ncloseProp, nEliteProp;
+	private double ncloseProp, nEliteProp, durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty;
 	private HashMap<Individual, HashMap<Individual, Double>> hammingDistances;
 
 	public FitnessEvaluationStandard(ProblemData problemData) {
 		this.hammingDistances = new HashMap<Individual, HashMap<Individual,Double>>();
+		this.ncloseProp = problemData.getHeuristicParameterDouble("Proportion of individuals considered for distance evaluation");
+		this.nEliteProp = problemData.getHeuristicParameterDouble("Proportion of elite individuals");
 		this.durationViolationPenalty = problemData.getHeuristicParameterDouble("Duration constraint violation penalty");
 		this.capacityViolationPenalty = problemData.getHeuristicParameterDouble("Capacity constraint violation penalty");
 		this.numberOfInstallationsPenalty = problemData.getHeuristicParameterDouble("Number of installations violation penalty");
-		this.ncloseProp = problemData.getHeuristicParameterDouble("Proportion of individuals considered for distance evaluation");
-		this.nEliteProp = problemData.getHeuristicParameterDouble("Proportion of elite individuals");
 	}
 
 	@Override
-	public void setPenalizedCost(Individual individual) {
+	public double getPenalizedCost(Voyage voyage, double durationViolationPenalty, double capacityViolationPenalty,
+			double numberOfInstallationsPenalty) {
+		return voyage.getDurationViolation()*durationViolationPenalty
+				+ voyage.getCapacityViolation()*capacityViolationPenalty
+				+ voyage.getNumberOfInstallationsViolation()*numberOfInstallationsPenalty;
+	}
+	
+	@Override
+	public double getPenalizedCost(Voyage voyage) {
+		return getPenalizedCost(voyage, durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty);
+	}
+	
+	@Override
+	public void setPenalizedCostIndividual(Individual individual, double durationViolationPenalty, double capacityViolationPenalty, double numberOfInstallationsPenalty) {
 		Phenotype phenotype = individual.getPhenotype();
 		double penalizedCost = phenotype.getScheduleCost()
 				+ durationViolationPenalty*phenotype.getDurationViolation() 
@@ -35,14 +49,13 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 				+ numberOfInstallationsPenalty*phenotype.getNumberOfInstallationsViolation();
 		individual.setPenalizedCost(penalizedCost);
 	}
-
-	@Override
-	public void setPenalizedCost(ArrayList<Individual> individuals) {
-		for (Individual individual : individuals) {
-			setPenalizedCost(individual);
-		}
-	}
 	
+	@Override
+	public void setPenalizedCostIndividual(Individual individual) {
+		setPenalizedCostIndividual(individual, durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty);
+	};
+	
+
 	@Override
 	public void addDiversityDistance(Individual individual) {
 		HashMap<Individual, Double> individualHammingDistances = new HashMap<Individual, Double>();
@@ -175,27 +188,39 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		return nclosest;
 	}
 	
-	@Override
-	public double getCapacityViolationPenalty() {
-		return capacityViolationPenalty;
+	public Double getHammingDistance(Individual individual1, Individual individual2) {
+		return hammingDistances.get(individual1).get(individual2);
 	}
-
-	@Override
-	public void setCapacityViolationPenalty(double penalty) {
-		this.capacityViolationPenalty = penalty;
-	}
-
+	
 	@Override
 	public double getDurationViolationPenalty() {
 		return durationViolationPenalty;
 	}
 
 	@Override
-	public void setDurationViolationPenalty(double penalty) {
-		this.durationViolationPenalty = penalty;
+	public double getCapacityViolationPenalty() {
+		return capacityViolationPenalty;
 	}
 
-	public Double getHammingDistance(Individual individual1, Individual individual2) {
-		return hammingDistances.get(individual1).get(individual2);
+	@Override
+	public double getNumberOfInstallationsPenalty() {
+		return numberOfInstallationsPenalty;
+	}
+
+	@Override
+	public void setDurationViolationPenalty(double durationViolationPenalty) {
+		this.durationViolationPenalty = durationViolationPenalty;
+	}
+
+	@Override
+	public void setCapacityViolationPenalty(double capacityViolationPenalty) {
+		this.capacityViolationPenalty = capacityViolationPenalty;
+		
+	}
+
+	@Override
+	public void setNumberOfInstallationsViolationPenalty(
+			double numberOfInstallationsViolationPenalty) {
+		this.ncloseProp = numberOfInstallationsViolationPenalty;
 	}
 }
