@@ -87,16 +87,11 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	private HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> createGiantTourChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome, HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
 		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = getReversedInstallationChromosome(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
 		HashMap<Integer, Set<Integer>> reversedVesselChromosome = getReversedVesselChromosome(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
-		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = new HashMap<Integer, HashMap<Integer,ArrayList<Integer>>>();
 		
+		int nDays = problemData.getLengthOfPlanningPeriod();
+		int nVessels = problemData.getVessels().size();
 		//initializing
-		for (Integer day : problemData.getDays()) {
-			HashMap<Integer, ArrayList<Integer>> vesselAllocations = new HashMap<Integer, ArrayList<Integer>>();
-			for (Integer vessel : vesselDepartureChromosome.keySet()) {
-				vesselAllocations.put(vessel, new ArrayList<Integer>());
-			}
-			giantTourChromosome.put(day, vesselAllocations);
-		}
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = GenotypeHGS.generateEmptyGiantTourChromosome(nDays, nVessels);
 		
 		//allocating
 		for (Integer day : reversedInstallationChromosome.keySet()) {

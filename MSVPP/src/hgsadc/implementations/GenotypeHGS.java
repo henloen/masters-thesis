@@ -5,6 +5,7 @@ import hgsadc.protocols.Genotype;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GenotypeHGS implements Genotype {
@@ -24,20 +25,9 @@ public class GenotypeHGS implements Genotype {
 
 	public GenotypeHGS(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome, int nInstallations, int nVessels) {
 		
-		HashMap<Integer, Set<Integer>> installationDeparturePatternChromosome = generateEmptyChromosome(nInstallations); // Installation --> {Days}
-		HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome = generateEmptyChromosome(nVessels); // Vessel --> {Days}
-		
-		for (int day = 0; day < giantTourChromosome.size(); day++) {
-			HashMap<Integer, ArrayList<Integer>> dayChromosome = giantTourChromosome.get(day);
-			// TODO: Continue here.............
-			for (int vessel = 0; vessel < dayChromosome.size(); vessel++){
-				ArrayList<Integer> dayVesselDepartures = dayChromosome.get(vessel);
-				for (Integer installation : dayVesselDepartures) {
-					installationDeparturePatternChromosome.get(installation).add(day);
-					vesselDeparturePatternChromosome.get(vessel).add(day);
-				}
-			}
-		}
+		List<HashMap<Integer, Set<Integer>>> chromosomes = generateDeparturePatternChromosomesFromGiantTour(giantTourChromosome, nInstallations, nVessels);
+		HashMap<Integer, Set<Integer>>	installationDeparturePatternChromosome = chromosomes.get(0);
+		HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome = chromosomes.get(1);
 		
 		this.installationDeparturePatternChromosome = installationDeparturePatternChromosome;
 		this.vesselDeparturePatternChromosome = vesselDeparturePatternChromosome;
@@ -46,7 +36,36 @@ public class GenotypeHGS implements Genotype {
 	
 	
 	
-	private HashMap<Integer, Set<Integer>> generateEmptyChromosome(int nKeys) {
+	/** 
+	 * @param giantTourChromosome
+	 * @param nInstallations
+	 * @param nVessels
+	 * @return A List containing two elements, 1: installationDepartureChromosome and 2: vessselDepartureChromosome
+	 */
+	public static List<HashMap<Integer, Set<Integer>>> generateDeparturePatternChromosomesFromGiantTour(
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome, int nInstallations, int nVessels) {
+		
+		HashMap<Integer, Set<Integer>> installationDeparturePatternChromosome = generateEmptyChromosome(nInstallations); // Installation --> {Days}
+		HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome = generateEmptyChromosome(nVessels); // Vessel --> {Days}
+		
+		for (int day = 0; day < giantTourChromosome.size(); day++) {
+			HashMap<Integer, ArrayList<Integer>> dayChromosome = giantTourChromosome.get(day);
+			for (int vessel = 0; vessel < dayChromosome.size(); vessel++){
+				ArrayList<Integer> dayVesselDepartures = dayChromosome.get(vessel);
+				for (Integer installation : dayVesselDepartures) {
+					installationDeparturePatternChromosome.get(installation).add(day);
+					vesselDeparturePatternChromosome.get(vessel).add(day);
+				}
+			}
+		}
+		ArrayList<HashMap<Integer, Set<Integer>>> chromosomes = new ArrayList(); 
+		chromosomes.add(installationDeparturePatternChromosome);
+		chromosomes.add(vesselDeparturePatternChromosome);
+		
+		return chromosomes;
+	}
+
+	public static HashMap<Integer, Set<Integer>> generateEmptyChromosome(int nKeys) {
 		HashMap<Integer, Set<Integer>> chromosome = new HashMap<>();
 		for (int i = 1; i <= nKeys; i++){
 			chromosome.put(i, new HashSet<>());
@@ -54,10 +73,18 @@ public class GenotypeHGS implements Genotype {
 		return chromosome;
 	}
 	
-	public static HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> generateEmptyGiantTour(int nDays, int nVessels){
-		// TODO: Implement
-		return null;
-		//HashMap<Integer, HashMap<Integer>>
+	public static HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> generateEmptyGiantTourChromosome(int nDays, int nVessels){
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = new HashMap<>();
+		
+		for (int day = 0; day < nDays; day++) {
+			HashMap<Integer, ArrayList<Integer>> vesselAllocations = new HashMap<>();
+			for (int vessel = 1; vessel <= nVessels; vessel++){
+				vesselAllocations.put(vessel, new ArrayList<Integer>());
+			}
+			giantTourChromosome.put(day, vesselAllocations);
+		}
+		
+		return giantTourChromosome;
 	}
 
 	public HashMap<Integer, Set<Integer>> getInstallationDeparturePatternChromosome() {

@@ -121,7 +121,7 @@ public class PatternGenerator {
 				return false;
 			}
 		}
-		int duration = (lengthOfPlanningPeriod - list.get(list.size()-1)) + list.get(0);//distance to the end of the planning period + distance from the start of the planning periode to the first element
+		int duration = (lengthOfPlanningPeriod - list.get(list.size()-1)) + list.get(0);//distance to the end of the planning period + distance from the start of the planning period to the first element
 		if (duration < minDuration) {
 			return false;
 		}

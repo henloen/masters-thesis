@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 
@@ -35,6 +36,13 @@ public class Utilities {
 			System.out.println("Something went wrong when parsing doubles");
 			return -1.0;
 		}
+	}
+	
+	public static <T> boolean setIsSubsetOfAnySetInCollection(Set<T> setToLookFor, Collection<Set<T>> collectionOfSets){
+		for (Set<T> set : collectionOfSets) {
+			if (set.containsAll(setToLookFor)) return true;
+		}
+		return false;
 	}
 	
 	public static <T> ArrayList<T> getAllElements(ArrayList<T> list1, ArrayList<T> list2) {
