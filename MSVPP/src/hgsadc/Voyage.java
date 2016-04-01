@@ -19,14 +19,18 @@ public class Voyage {
 		this.vessel = vessel;
 		this.vesselDeparturePattern = vesselDeparturePattern;
 		Installation fromInstallation = problemData.getInstallationByNumber(0);//the depot is installation number 0
+		ArrayList<Integer> installationsIncludingDepot = new ArrayList<Integer>(installations);
+		installationsIncludingDepot.add(0);
 		visitedInstallations = new ArrayList<Installation>();
-		for (Integer installationNumber : installations) { //the depot is not contained in the list of installations, so a for each loop can be used
+		for (Integer installationNumber : installationsIncludingDepot) { //the depot is not contained in the list of installations, so a for each loop can be used
 			Installation toInstallation = problemData.getInstallationByNumber(installationNumber);
 			double sailingTime = Math.ceil((problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed()));
 			duration += sailingTime + toInstallation.getServiceTime();
 			capacityUsed += toInstallation.getDemandPerVisit();
 			cost += (sailingTime*vessel.getFuelCostSailing()) + (toInstallation.getServiceTime()*vessel.getFuelCostInstallation());
-			visitedInstallations.add(toInstallation);
+			if (installationNumber != 0) {
+				visitedInstallations.add(toInstallation);
+			}
 			fromInstallation = toInstallation;
 		}
 		setViolations(problemData);
