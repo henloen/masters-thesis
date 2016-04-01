@@ -8,17 +8,19 @@ public class HGSmain {
 	private IO io;
 	private ProblemData problemData;
 	private HGSprocesses processes;
-	private int iteration;
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
 	
 	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
-		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
-		
-		main.doIteration();
+		int iteration = 1;
+		while (iteration <= main.problemData.getHeuristicParameterInt("Iterations")) {
+			System.out.println("Iteration " + iteration);
+			main.doIteration();
+			iteration++;
+		}
 	}
 
 	private void initialize() {
@@ -28,23 +30,20 @@ public class HGSmain {
 		processes = new HGSprocesses(problemData);
 		feasiblePopulation = new ArrayList<Individual>();
 		infeasiblePopulation = new ArrayList<Individual>();
-		iteration = 0;
 		
 		problemData.printProblemData();
 	}
 
 	private void createInitialPopulation(){
+		System.out.println("Creating initial population...");
 		ArrayList<Individual> initialPopulation = processes.createInitialPopulation();
 		processes.convertGenotypeToPhenotype(initialPopulation);
 		addToSubpopulation(initialPopulation);
-		for (Individual individual : initialPopulation) {
-			System.out.print("Individual " + individual + " - ");
-			System.out.println(individual.getFullText());
-		}
+		System.out.println("Initial population:");
+		printPopulation();
 	}
 	
 	private void doIteration() {
-		System.out.println("Iteration: " + iteration);
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educateOffspring(offspring);
@@ -53,19 +52,20 @@ public class HGSmain {
 		if (diversifyIteration()) {
 			processes.diversify(feasiblePopulation, infeasiblePopulation);
 		}
-		iteration++;
+		printPopulation();
 	}
 	
 	private void addToSubpopulation(Individual individual, boolean updateBiasedFitness) {
-		if (problemData.isFeasible(individual)) {
+		if (individual.isFeasible()) {
 			feasiblePopulation.add(individual);
-			checkSubpopulationSize(feasiblePopulation);
+			processes.addDiversityDistance(individual);
+			checkSubpopulationSize(true);
 		}
 		else {
 			infeasiblePopulation.add(individual);
-			checkSubpopulationSize(infeasiblePopulation);
+			processes.addDiversityDistance(individual);
+			checkSubpopulationSize(false);
 		}
-		processes.addDiversityDistance(individual);
 		if (updateBiasedFitness) {
 			processes.updateBiasedFitness(feasiblePopulation, infeasiblePopulation);
 		}
@@ -86,9 +86,35 @@ public class HGSmain {
 		return false;
 	}
 	
-	private void checkSubpopulationSize(ArrayList<Individual> subpopulation) {
-		if (subpopulation.size() >= problemData.getHeuristicParameterInt("Maximum subpopulation size")) {
-			processes.survivorSelection(subpopulation);
+	private void checkSubpopulationSize(boolean checkFeasiblePopulation) { //true-> check feasible subpop, false -> check infeasible subpop
+		ArrayList<Individual> subpopulation;
+		ArrayList<Individual> otherSubpopulation;
+		int maxSubpopulationSize = problemData.getHeuristicParameterInt("Population size") 
+				+ problemData.getHeuristicParameterInt("Number of offspring in a generation");
+		if (checkFeasiblePopulation) {
+			subpopulation = feasiblePopulation;
+			otherSubpopulation = infeasiblePopulation;
 		}
+		else {
+			subpopulation = infeasiblePopulation;
+			otherSubpopulation = feasiblePopulation;
+		}
+		if (subpopulation.size() >= maxSubpopulationSize) {
+			processes.survivorSelection(subpopulation, otherSubpopulation);
+		}
+	}
+	
+	private void printPopulation() {
+		System.out.println("Feasible subpopulation:");
+		for (Individual individual : feasiblePopulation) {
+			System.out.print("Individual " + individual + " - ");
+			System.out.println(individual.getFullText());
+		}
+		System.out.println("Infeasible subpopulation:");
+		for (Individual individual : infeasiblePopulation) {
+			System.out.print("Individual " + individual + " - ");
+			System.out.println(individual.getFullText());
+		}
+		System.out.println("");
 	}
 }

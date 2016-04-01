@@ -3,6 +3,7 @@ package hgsadc.protocols;
 import hgsadc.Individual;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface FitnessEvaluationProtocol {
 
@@ -18,6 +19,8 @@ public interface FitnessEvaluationProtocol {
 	//calculate the distance to all other individuals and add the individual to the hamming distance matrix
 	public void addDiversityDistance(Individual individual);
 	
+	public void removeDiversityDistance(Individual individual);
+	
 	public double getCapacityViolationPenalty();
 	
 	public void setCapacityViolationPenalty(double penalty);
@@ -26,5 +29,6 @@ public interface FitnessEvaluationProtocol {
 	
 	public void setDurationViolationPenalty(double penalty);
 	
+	public Double getHammingDistance(Individual individual1, Individual individual2);
 	
 }

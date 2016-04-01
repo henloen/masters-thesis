@@ -9,8 +9,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 
 	@Override
 	public Individual crossover(ArrayList<Individual> parents) {
-		// TODO Auto-generated method stub
-		return null;
+		return parents.get(0);
 	}
 
 }

@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -19,6 +21,11 @@ public class Utilities {
 			counter++;
 		}
 		return null;
+	}
+	
+	public static <T> T pickRandomElementFromList(List<T> list) {
+		int randomIndex = new Random().nextInt(list.size());
+		return list.get(randomIndex);
 	}
 	
 	public static double parseDouble(String commaSeparatedDouble) {
@@ -40,6 +47,23 @@ public class Utilities {
 		allElements.addAll(list1);
 		allElements.addAll(list2);
 		return allElements;
+	}
+	
+	//sorts so the elements with the lowest biased fitness are first in the list
+	public static Comparator<Individual> getBiasedFitnessComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getBiasedFitness() < ind2.getBiasedFitness()) {
+					return -1;
+				}
+				else if (ind1.getBiasedFitness() > ind2.getBiasedFitness()) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		};
 	}
 
 }
