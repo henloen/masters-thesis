@@ -125,9 +125,9 @@ public class ReproductionStandard implements ReproductionProtocol {
 			int day = cell.day;
 			int vessel = cell.vessel;
 			
-			ArrayList<Integer> departuresInCell = giantTourChromosome.get(day).get(vessel);
+			ArrayList<Integer> departuresInParent2Cell = p2.get(day).get(vessel);
 			
-			for (Integer installation : departuresInCell) {
+			for (Integer installation : departuresInParent2Cell) {
 				if (feasibleInstallationPattern(installation, day, installationChromosome) && availableDepotCapacity(day, giantTourChromosome) && 
 						feasibleVesselPattern(day, vessel, vesselChromosome)){
 					// Add installation to voyage
@@ -150,8 +150,17 @@ public class ReproductionStandard implements ReproductionProtocol {
 			
 			Set<DayVesselCell> admissibleCells = getAdmissibleCells(installation, installationChromosome, vesselChromosome, giantTourChromosome);
 			
-			DayVesselCell bestInsertion = getBestInsertion(installation, admissibleCells, giantTourChromosome);
-			insertInstallation(installation, bestInsertion, giantTourChromosome, installationChromosome, vesselChromosome);
+			DayVesselCell bestInsertionCell = getBestInsertion(installation, admissibleCells, giantTourChromosome);
+			insertInstallation(installation, bestInsertionCell, giantTourChromosome, installationChromosome, vesselChromosome);
+			
+			int remVisitsToInstallation = remainingVisits.get(installation)-1;
+			if (remVisitsToInstallation == 0){
+				remainingVisits.remove(installation);
+			}
+			else {
+				remainingVisits.put(installation, remVisitsToInstallation);
+			}
+			
 		}
 		
 		GenotypeHGS offspringGenotype = new GenotypeHGS(vesselChromosome, installationChromosome, giantTourChromosome);		
