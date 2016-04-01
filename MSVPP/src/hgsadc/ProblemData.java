@@ -2,10 +2,16 @@ package hgsadc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
+
+import hgsadc.implementations.DayVesselCell;
 
 public class ProblemData {
 	
+	private int lengthOfPlanningPeriod;
+	
+
 	private HashMap<String, String> problemInstanceParameters, heuristicParameters;
 	private HashMap<Integer, Integer> depotCapacity; 
 	private ArrayList<Installation> installations, customerInstallations;
@@ -15,7 +21,8 @@ public class ProblemData {
 	private HashMap<Integer, Installation> installationsByNumber;
 	private HashMap<Integer, Vessel> vesselsByNumber;
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
-
+	private HashSet<DayVesselCell> allDayVesselCells;
+	
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
 			HashMap<Integer, Integer> depotCapacity,
 			HashMap<String, String> heuristicParameters,
@@ -31,17 +38,32 @@ public class ProblemData {
 		this.patternGenerator = new PatternGenerator(customerInstallations);
 		setInstallationsByNumber(); //generate hashmap to easily look up installations by number
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
+		allDayVesselCells = generateAllDayVesselCells();
 	}
 	
-	
+	private HashSet<DayVesselCell> generateAllDayVesselCells() {
+		HashSet<DayVesselCell> allDayVesselCells = new HashSet<>();
+		for (int day = 0; day < lengthOfPlanningPeriod; day++){
+			for (int vessel = 0; vessel < vessels.size(); vessel++) {
+				DayVesselCell cell = new DayVesselCell(day, vessel);
+				allDayVesselCells.add(cell);
+			}
+		}
+		return allDayVesselCells;
+	}
+
 	public void generatePatterns() {
-		int lengthOfPlanningPeriod = Integer.parseInt(problemInstanceParameters.get("Length of planning period"));
+		lengthOfPlanningPeriod = Integer.parseInt(problemInstanceParameters.get("Length of planning period"));
 		int minDuration = Integer.parseInt(problemInstanceParameters.get("Minimum duration"));
 		int maxDuration = Integer.parseInt(problemInstanceParameters.get("Maximum duration"));
 		installationDeparturePatterns = patternGenerator.generateInstallationDeparturePatterns(lengthOfPlanningPeriod);
 		vesselDeparturePatterns = patternGenerator.generateVesselDeparturePatterns(minDuration, maxDuration, lengthOfPlanningPeriod);
 	}
 
+	public int getLengthOfPlanningPeriod() {
+		return lengthOfPlanningPeriod;
+	}
+	
 	public HashMap<String, String> getProblemInstanceParameters() {
 		return problemInstanceParameters;
 	}
@@ -137,6 +159,10 @@ public class ProblemData {
 		}
 	}
 	
+	public HashSet<DayVesselCell> getAllDayVesselCells() {
+		return allDayVesselCells;
+	}
+
 	public Set<Integer> getDays() {
 		return depotCapacity.keySet();
 	}

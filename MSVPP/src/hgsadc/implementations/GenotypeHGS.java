@@ -22,6 +22,44 @@ public class GenotypeHGS implements Genotype {
 		this.giantTourChromosome = giantTourChromosome;
 	}
 
+	public GenotypeHGS(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome, int nInstallations, int nVessels) {
+		
+		HashMap<Integer, Set<Integer>> installationDeparturePatternChromosome = generateEmptyChromosome(nInstallations); // Installation --> {Days}
+		HashMap<Integer, Set<Integer>> vesselDeparturePatternChromosome = generateEmptyChromosome(nVessels); // Vessel --> {Days}
+		
+		for (int day = 0; day < giantTourChromosome.size(); day++) {
+			HashMap<Integer, ArrayList<Integer>> dayChromosome = giantTourChromosome.get(day);
+			// TODO: Continue here.............
+			for (int vessel = 0; vessel < dayChromosome.size(); vessel++){
+				ArrayList<Integer> dayVesselDepartures = dayChromosome.get(vessel);
+				for (Integer installation : dayVesselDepartures) {
+					installationDeparturePatternChromosome.get(installation).add(day);
+					vesselDeparturePatternChromosome.get(vessel).add(day);
+				}
+			}
+		}
+		
+		this.installationDeparturePatternChromosome = installationDeparturePatternChromosome;
+		this.vesselDeparturePatternChromosome = vesselDeparturePatternChromosome;
+		this.giantTourChromosome = giantTourChromosome;
+	}
+	
+	
+	
+	private HashMap<Integer, Set<Integer>> generateEmptyChromosome(int nKeys) {
+		HashMap<Integer, Set<Integer>> chromosome = new HashMap<>();
+		for (int i = 1; i <= nKeys; i++){
+			chromosome.put(i, new HashSet<>());
+		}
+		return chromosome;
+	}
+	
+	public static HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> generateEmptyGiantTour(int nDays, int nVessels){
+		// TODO: Implement
+		return null;
+		//HashMap<Integer, HashMap<Integer>>
+	}
+
 	public HashMap<Integer, Set<Integer>> getInstallationDeparturePatternChromosome() {
 		return installationDeparturePatternChromosome;
 	}
