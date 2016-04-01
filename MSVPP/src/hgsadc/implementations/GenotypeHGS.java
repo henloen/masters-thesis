@@ -50,7 +50,7 @@ public class GenotypeHGS implements Genotype {
 		
 		for (int day = 0; day < giantTourChromosome.size(); day++) {
 			HashMap<Integer, ArrayList<Integer>> dayChromosome = giantTourChromosome.get(day);
-			for (int vessel = 0; vessel < dayChromosome.size(); vessel++){
+			for (int vessel = 1; vessel <= dayChromosome.size(); vessel++){
 				ArrayList<Integer> dayVesselDepartures = dayChromosome.get(vessel);
 				for (Integer installation : dayVesselDepartures) {
 					installationDeparturePatternChromosome.get(installation).add(day);
@@ -119,7 +119,7 @@ public class GenotypeHGS implements Genotype {
 	public String toString() {
 		String str = getInstallationDeparturePatternChromosomeString();
 		str += getVesselDeparturePatternChromosomeString();
-		str += getGiantTourChromosomeString();
+		str += getGiantTourChromosomeString(giantTourChromosome);
 		return str;
 	}
 	
@@ -139,7 +139,7 @@ public class GenotypeHGS implements Genotype {
 		return str;
 	}
 	
-	private String getGiantTourChromosomeString() {
+	public static String getGiantTourChromosomeString(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
 		String str = "Giant tour:" + "\n";
 		for (Integer day : giantTourChromosome.keySet()) {
 			str += "Day " + day + ": ";

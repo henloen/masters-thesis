@@ -69,7 +69,9 @@ public class HGSprocesses {
 	}
 
 	public Individual generateOffspring(ArrayList<Individual> parents) {
-		return reproductionProtocol.crossover(parents);
+		Individual individual = reproductionProtocol.crossover(parents);
+		convertGenotypeToPhenotype(individual);
+		return individual;
 	}
 
 	public void educate(Individual individual) {

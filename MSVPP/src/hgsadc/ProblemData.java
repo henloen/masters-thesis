@@ -10,8 +10,6 @@ import hgsadc.implementations.DayVesselCell;
 public class ProblemData {
 	
 	private int lengthOfPlanningPeriod;
-	
-
 	private HashMap<String, String> problemInstanceParameters, heuristicParameters;
 	private HashMap<Integer, Integer> depotCapacity; 
 	private ArrayList<Installation> installations, customerInstallations;
@@ -38,13 +36,14 @@ public class ProblemData {
 		this.patternGenerator = new PatternGenerator(customerInstallations);
 		setInstallationsByNumber(); //generate hashmap to easily look up installations by number
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
+		lengthOfPlanningPeriod = depotCapacity.size();
 		allDayVesselCells = generateAllDayVesselCells();
 	}
 	
 	private HashSet<DayVesselCell> generateAllDayVesselCells() {
 		HashSet<DayVesselCell> allDayVesselCells = new HashSet<>();
 		for (int day = 0; day < lengthOfPlanningPeriod; day++){
-			for (int vessel = 0; vessel < vessels.size(); vessel++) {
+			for (int vessel = 1; vessel <= vessels.size(); vessel++) {
 				DayVesselCell cell = new DayVesselCell(day, vessel);
 				allDayVesselCells.add(cell);
 			}
