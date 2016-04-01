@@ -19,5 +19,5 @@ public interface Phenotype {
 	public void setNumberOfInstallationsViolation(double numberOfInstallationsViolation);
 	
 	public boolean isFeasible();
-
+	
 }

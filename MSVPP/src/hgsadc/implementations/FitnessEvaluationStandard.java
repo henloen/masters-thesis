@@ -30,7 +30,8 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	@Override
 	public double getPenalizedCost(Voyage voyage, double durationViolationPenalty, double capacityViolationPenalty,
 			double numberOfInstallationsPenalty) {
-		return voyage.getDurationViolation()*durationViolationPenalty
+		return voyage.getCost()
+				+ voyage.getDurationViolation()*durationViolationPenalty
 				+ voyage.getCapacityViolation()*capacityViolationPenalty
 				+ voyage.getNumberOfInstallationsViolation()*numberOfInstallationsPenalty;
 	}

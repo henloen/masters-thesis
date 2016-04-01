@@ -5,6 +5,7 @@ import hgsadc.ProblemData;
 import hgsadc.Vessel;
 import hgsadc.Voyage;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
+import hgsadc.protocols.Phenotype;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +42,29 @@ public class GenoToPhenoConverterStandard implements
 			giantTour.put(day, giantTourDay);
 		}
 		PhenotypeHGS phenotype = new PhenotypeHGS(giantTour);
+		setViolations(phenotype, giantTour);
 		individual.setPhenotype(phenotype);
+	}
+	
+	private void setViolations(Phenotype phenotype, HashMap<Integer, HashMap<Vessel, Voyage>> giantTour) {
+		double scheduleCost = 0;
+		double durationViolation = 0;
+		double capacityViolation = 0;
+		double numberOfInstallationsViolation = 0;
+		for (Integer day : giantTour.keySet()){
+			for (Vessel vessel : giantTour.get(day).keySet()) {
+				Voyage voyage = giantTour.get(day).get(vessel);
+				if (voyage != null) {
+					scheduleCost += voyage.getCost();
+					durationViolation += voyage.getDurationViolation();
+					capacityViolation += voyage.getCapacityViolation();
+					numberOfInstallationsViolation += voyage.getNumberOfInstallationsViolation();
+				}
+			}
+		}
+		phenotype.setScheduleCost(scheduleCost);
+		phenotype.setDurationViolation(durationViolation);
+		phenotype.setCapacityViolation(capacityViolation);
+		phenotype.setNumberOfInstallationsViolation(numberOfInstallationsViolation);
 	}
 }
