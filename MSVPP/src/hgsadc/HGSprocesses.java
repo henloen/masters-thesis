@@ -147,7 +147,7 @@ public class HGSprocesses {
 
 	private void selectReproductionProtocol() {
 		switch (problemData.getHeuristicParameters().get("Reproduction protocol")) {
-			case "standard": reproductionProtocol = new ReproductionStandard();
+			case "standard": reproductionProtocol = new ReproductionStandard(problemData, fitnessEvaluationProtocol);
 				break;
 			default: reproductionProtocol = null;
 				break;

@@ -24,6 +24,13 @@ public class DayVesselCell {
 			return false;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "(" + day + ", " + vessel + ")";
+	}
+	
+	
 	
 	
 }

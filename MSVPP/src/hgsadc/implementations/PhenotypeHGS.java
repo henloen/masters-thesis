@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class PhenotypeHGS implements Phenotype {
 	
-	private HashMap<Integer, HashMap<Vessel, Voyage>> giantTour; //the integer is the day of departure
+	private HashMap<Integer, HashMap<Vessel, Voyage>> giantTour; // the integer is the day of departure
 	private double scheduleCost, capacityViolation, durationViolation, numberOfInstallationsViolation;
 	
 	public PhenotypeHGS(HashMap<Integer, HashMap<Vessel, Voyage>> giantTour) {

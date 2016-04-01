@@ -11,21 +11,30 @@ import hgsadc.Individual;
 import hgsadc.Installation;
 import hgsadc.ProblemData;
 import hgsadc.Utilities;
+import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.ReproductionProtocol;
 
 public class ReproductionStandard implements ReproductionProtocol {
 	
 	private ProblemData problemData;
+	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	
+	public ReproductionStandard(ProblemData problemData, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
+		this.problemData = problemData;
+		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
+	}
+
 	@Override
 	public Individual crossover(ArrayList<Individual> parents) {
 		
-		
+		System.out.println("Starting crossover of parents " + parents.get(0) + " and " + parents.get(1));
 		// Step 0: Inheritance rule
 		int nDays = problemData.getLengthOfPlanningPeriod();
 		int nVessels = problemData.getVessels().size();
 		int numberOfCells = nDays * nVessels;
 		int nInstallations = problemData.getCustomerInstallations().size();
+		
+		System.out.println("nVessels: " + nVessels + " nDays: " + nDays + " nCells: " + numberOfCells + " nInstallations: " + nInstallations);
 		
 		int randomNumber1 = new Random().nextInt(numberOfCells);
 		int randomNumber2 = new Random().nextInt(numberOfCells);
@@ -33,6 +42,8 @@ public class ReproductionStandard implements ReproductionProtocol {
 		// Making sure n1 < n2
 		int n1 = randomNumber1 < randomNumber2 ? randomNumber1 : randomNumber2;
 		int n2 = randomNumber1 < randomNumber2 ? randomNumber2 : randomNumber1;
+		
+		System.out.println("n1: " + n1 + ", n2: " + n2);
 		
 		Set<DayVesselCell> allCells = (Set<DayVesselCell>) problemData.getAllDayVesselCells().clone();
 		
@@ -51,6 +62,10 @@ public class ReproductionStandard implements ReproductionProtocol {
 		// The rest of the cells will be a mix of parent 1 and parent 2
 		Set<DayVesselCell> cellsToCopyFromBoth = allCells; // Delta_mix
 		
+		System.out.println("Delta1: " + Utilities.printCells(cellsToCopyFromP1));
+		System.out.println("Delta2: " + Utilities.printCells(cellsToCopyFromP2));
+		System.out.println("DeltaMix: " + Utilities.printCells(cellsToCopyFromBoth));
+		
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>>  p1 = ((GenotypeHGS) parents.get(0).getGenotype()).getGiantTourChromosome(); // First parent 
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>>  p2 = ((GenotypeHGS) parents.get(1).getGenotype()).getGiantTourChromosome(); // Second parent
 		
@@ -61,6 +76,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		for (DayVesselCell cell : cellsToCopyFromP1) {
 			ArrayList<Integer> departuresToCopy = p1.get(cell.day).get(cell.vessel);
 			giantTourChromosome.get(cell.day).put(cell.vessel, departuresToCopy);
+			System.out.println("Copying cell " + cell + " from ");
 		}
 		// Copy from Delta_mix, parent 1
 		for (DayVesselCell cell : cellsToCopyFromBoth) {
@@ -88,8 +104,6 @@ public class ReproductionStandard implements ReproductionProtocol {
 			giantTourChromosome.get(cell.day).put(cell.vessel, departuresToCopy);
 		}
 		
-		
-
 		// Step 2: Inherit data from p2
 		Set<DayVesselCell> cellsToCopyFromP2OrBoth = new HashSet<>(cellsToCopyFromP2);  // Delta_2 U Delta_mix
 		cellsToCopyFromP2OrBoth.addAll(cellsToCopyFromBoth);
@@ -140,15 +154,36 @@ public class ReproductionStandard implements ReproductionProtocol {
 			insertInstallation(installation, bestInsertion, giantTourChromosome, installationChromosome, vesselChromosome);
 		}
 		
+		GenotypeHGS offspringGenotype = new GenotypeHGS(vesselChromosome, installationChromosome, giantTourChromosome);		
 		
-		
-		
-		
-		GenotypeHGS offspring = new GenotypeHGS(giantTourChromosome, nInstallations, nVessels);
-				
-		return null;
+		return new Individual(offspringGenotype);
 	}
 	
+	private HashMap<Integer, Integer> getRemainingVisits(HashMap<Integer, Set<Integer>> installationChromosome) {
+		
+		HashMap<Integer, Integer> remainingVisits = new HashMap<Integer, Integer>();
+		for (Integer installation : installationChromosome.keySet()) {
+			int requiredVisits = problemData.getInstallationByNumber(installation).getFrequency();
+			int remainingVisitsForInstallation = requiredVisits - installationChromosome.get(installation).size();
+			
+			if (remainingVisitsForInstallation > 0){
+				remainingVisits.put(installation, remainingVisitsForInstallation);
+			}
+		}
+		return remainingVisits;
+	}
+
+	private void insertInstallation(Integer installation, DayVesselCell cellToInsertInto,
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome,
+			HashMap<Integer, Set<Integer>> installationChromosome, HashMap<Integer, Set<Integer>> vesselChromosome) {
+
+		int day = cellToInsertInto.day;
+		int vessel = cellToInsertInto.vessel;
+		giantTourChromosome.get(day).get(vessel).add(installation); // Adding to end of voyage
+		installationChromosome.get(installation).add(day);
+		vesselChromosome.get(vessel).add(day);
+	}
+
 	/**
 	 * 
 	 * @param installation
@@ -159,7 +194,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 	private DayVesselCell getBestInsertion(Integer installation, Set<DayVesselCell> admissibleCells,
 			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
 		
-		DayVesselCell bestCell;
+		DayVesselCell bestCell = null;
 		int bestCost = Integer.MAX_VALUE;
 		for (DayVesselCell cell : admissibleCells) {
 			int insertionCost = getInsertionCost(installation, cell, giantTourChromosome);
@@ -175,7 +210,6 @@ public class ReproductionStandard implements ReproductionProtocol {
 	private int getInsertionCost(Integer installation, DayVesselCell cell,
 			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
 		// TODO Auto-generated method stub
-		
 		
 		return 0;
 	}

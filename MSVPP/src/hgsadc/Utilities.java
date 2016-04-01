@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import hgsadc.implementations.DayVesselCell;
+
 public class Utilities {
 	
 	public static <T> T pickRandomElementFromSet(Set<T> set) {
@@ -85,6 +87,14 @@ public class Utilities {
 			counter++;
 		}
 		return null;
+	}
+
+	public static String printCells(Set<DayVesselCell> setOfCells) {
+		String str = "";
+		for (DayVesselCell cell : setOfCells) {
+			str += cell.toString() + " ";
+		}
+		return str;
 	}
 	
 }
