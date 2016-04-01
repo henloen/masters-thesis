@@ -10,17 +10,14 @@ public class HGSmain {
 	private HGSprocesses processes;
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
 	
+	private int iteration;
+	
 	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
 		main.createInitialPopulation();
-		int iteration = 1;
-		while (iteration <= main.problemData.getHeuristicParameterInt("Iterations")) {
-			System.out.println("Iteration " + iteration);
-			main.doIteration();
-			iteration++;
-		}
+		main.runEvolutionaryLoop();
 	}
 
 	private void initialize() {
@@ -30,6 +27,7 @@ public class HGSmain {
 		processes = new HGSprocesses(problemData);
 		feasiblePopulation = new ArrayList<Individual>();
 		infeasiblePopulation = new ArrayList<Individual>();
+		iteration = 1;
 		
 		problemData.printProblemData();
 	}
@@ -50,6 +48,15 @@ public class HGSmain {
 		printPopulation();
 	}
 	
+	private void runEvolutionaryLoop() {
+		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
+		while (iteration <= maxIterations) {
+			System.out.println("Iteration " + iteration);
+			doIteration();
+			iteration++;
+		}
+	}
+	
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
@@ -60,6 +67,7 @@ public class HGSmain {
 			processes.diversify(feasiblePopulation, infeasiblePopulation);
 		}
 		printPopulation();
+		iteration++;
 	}
 
 	private void addToSubpopulation(Individual individual) {
@@ -80,10 +88,13 @@ public class HGSmain {
 	}
 	
 	private void adjustPenaltyParameters() {
-		//TO-DO
+		//TODO
 	}
 	
+	
+	
 	private boolean diversifyIteration() {
+		//TODO
 		return false;
 	}
 	

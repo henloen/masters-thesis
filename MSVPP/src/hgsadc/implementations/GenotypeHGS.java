@@ -58,7 +58,7 @@ public class GenotypeHGS implements Genotype {
 				}
 			}
 		}
-		ArrayList<HashMap<Integer, Set<Integer>>> chromosomes = new ArrayList(); 
+		ArrayList<HashMap<Integer, Set<Integer>>> chromosomes = new ArrayList<HashMap<Integer,Set<Integer>>>(); 
 		chromosomes.add(installationDeparturePatternChromosome);
 		chromosomes.add(vesselDeparturePatternChromosome);
 		
