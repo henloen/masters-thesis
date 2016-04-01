@@ -27,7 +27,7 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	@Override
 	public ArrayList<Individual> createInitialPopulation() {
 		ArrayList<Individual> individuals = new ArrayList<Individual>();
-		int initialPopulationSize = problemData.getHeuristicParameterInt("Initial population size"); 
+		int initialPopulationSize = problemData.getHeuristicParameterInt("Population size"); 
 		for (int i=0; i<initialPopulationSize;i++) {
 			System.out.println("Creating individual " + (i+1)); 
 			Individual individual = createIndividual();
@@ -74,7 +74,6 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 				numberOfPatternRestarts++;
 				return createVesselDepartureChromosome(installationDepartureChromosome);
 			}
-			System.out.println("pattern selected: " + randomVesselDeparturePattern);
 			individualVesselDeparturePatterns.put(vessel.getNumber(), randomVesselDeparturePattern);
 		}
 		if (isDepotConstraintViolated(individualVesselDeparturePatterns)) {
@@ -106,22 +105,26 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 			}
 			giantTourChromosome.put(day, vesselAllocations);
 		}
+		
+		//shuffle sequence of visits
+		for (Integer day : giantTourChromosome.keySet()) {
+			for (Integer vessel : giantTourChromosome.get(day).keySet()) {
+				ArrayList<Integer> installationsToVisit = giantTourChromosome.get(day).get(vessel);
+				Collections.shuffle(installationsToVisit);
+			}
+		}
+		
 		return giantTourChromosome;
 	}
 
 	private Set<Integer> pickRandomVesselDeparturePattern(Set<Integer> daysWithDeparture, HashMap<Integer, Set<Integer>> individualVesselDeparturePatterns) {
 		Set<Integer> unvisitedDays = getUnvisitedDays(daysWithDeparture, individualVesselDeparturePatterns); //the set of days that installations require a departure and no vessel depart on
-		System.out.println("Unvisited days: " + unvisitedDays);
 		int alreadyVisitedDaysAvailable = getAlreadyVisitedDaysAvailable(individualVesselDeparturePatterns, unvisitedDays); //the number of days that already have visits that the vessel pattern can contain
 		Set<Integer> possibleNumberOfDepartures = getPossibleNumberOfDepartures(unvisitedDays, individualVesselDeparturePatterns, alreadyVisitedDaysAvailable); //the set of number of departures that a valid vessel pattern can have, e.g. if it's the last vessel and there are still 3 unvisited days, the vessel pattern must have 3 depatures
 		int unvisitedDaysThatNeedsVisit = Collections.min(possibleNumberOfDepartures);
-		System.out.println("Number of unvisited days that needs visit:" + unvisitedDaysThatNeedsVisit);
-		System.out.println("Possible number of departures: " + possibleNumberOfDepartures);
 		int numberOfVesselDepartures = Utilities.pickRandomElementFromSet(possibleNumberOfDepartures); //select a random number from the set of possible number of departures
-		System.out.println("Number of departures picked: " + numberOfVesselDepartures);
 		Set<Set<Integer>> allPatternsForNumberOfDepartures = problemData.getVesselDeparturePatterns().get(numberOfVesselDepartures);
 		Set<Set<Integer>> possibleVesselDeparturePatterns = getPossibleVesselPatterns(allPatternsForNumberOfDepartures, individualVesselDeparturePatterns, unvisitedDays, unvisitedDaysThatNeedsVisit ); //get all vessel patterns with the selected number of departures that visit enough of the unvisited installations, e.g. if it's the last vessel the pattern has to visit all unvisited installations
-		System.out.println("Number of possible patterns: " + possibleVesselDeparturePatterns.size());
 		if (possibleVesselDeparturePatterns.size()==0) { //workaround until a smarter heuristic is fixed
 			System.out.println("No possible patterns, start over!");
 			return null;

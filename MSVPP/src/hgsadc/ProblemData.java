@@ -52,11 +52,6 @@ public class ProblemData {
 		return allDayVesselCells;
 	}
 
-	public boolean isFeasible(Individual individual) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	public void generatePatterns() {
 		lengthOfPlanningPeriod = Integer.parseInt(problemInstanceParameters.get("Length of planning period"));
 		int minDuration = Integer.parseInt(problemInstanceParameters.get("Minimum duration"));
@@ -115,12 +110,16 @@ public class ProblemData {
 	
 	public int getMinVoyageDurationHours() {
 		int minDays = Integer.parseInt(problemInstanceParameters.get("Minimum duration"));
-		return (minDays * 24) - 8;
+		return getMaxVoyageDurationHoursFromDays(minDays);
 	}
 	
 	public int getMaxVoyageDurationHours() {
 		int maxDays = Integer.parseInt(problemInstanceParameters.get("Maximum duration"));
-		return (maxDays * 24) - 8;
+		return getMaxVoyageDurationHoursFromDays(maxDays);
+	}
+	
+	public int getMaxVoyageDurationHoursFromDays(int days) {
+		return (days * 24) - 8;
 	}
 	
 	public ArrayList<Installation> getCustomerInstallations() {
@@ -191,7 +190,7 @@ public class ProblemData {
 		System.out.println();
 		System.out.println("Vessels");
 		for (Vessel vessel : vessels) {
-			System.out.println(vessel);
+			System.out.println(vessel.fullText());
 		}
 		System.out.println();
 		System.out.println("Distance matrix");
@@ -220,5 +219,4 @@ public class ProblemData {
 		}
 		System.out.println();
 	}
-
 }

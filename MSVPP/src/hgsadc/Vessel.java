@@ -60,6 +60,10 @@ public class Vessel {
 	}
 	
 	public String toString() {
+		return "Vessel "+number;
+	}
+	
+	public String fullText() {
 		return "Name: " + name + ", number: " + number + ", capacity: " + capacity + ", speed: " + speed + ", unit fuel cost: " + unitFuelCost + 
 				", fuel consumption sailing: " + fuelConsumptionSailing + ", fuel consumption depot: " + fuelConsumptionDepot +
 				", fuel consumption installation" + fuelConsumptionInstallation + ", time charter cost: " + timeCharterCost + 

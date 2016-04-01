@@ -3,6 +3,7 @@ package hgsadc.implementations;
 import hgsadc.Individual;
 import hgsadc.ProblemData;
 import hgsadc.protocols.FitnessEvaluationProtocol;
+import hgsadc.protocols.Phenotype;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,12 +14,10 @@ import java.util.Set;
 
 public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	
-	private ProblemData problemData;
 	private double durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty, ncloseProp, nEliteProp;
 	private HashMap<Individual, HashMap<Individual, Double>> hammingDistances;
 
 	public FitnessEvaluationStandard(ProblemData problemData) {
-		this.problemData = problemData;
 		this.hammingDistances = new HashMap<Individual, HashMap<Individual,Double>>();
 		this.durationViolationPenalty = problemData.getHeuristicParameterDouble("Duration constraint violation penalty");
 		this.capacityViolationPenalty = problemData.getHeuristicParameterDouble("Capacity constraint violation penalty");
@@ -29,13 +28,11 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 
 	@Override
 	public void setPenalizedCost(Individual individual) {
-		PhenotypeHGS phenotype = (PhenotypeHGS) individual.getPhenotype();
-		int minNumberOfInstallations = Integer.parseInt(problemData.getProblemInstanceParameters().get("Minimum number of installations"));
-		int maxNumberOfInstallations = Integer.parseInt(problemData.getProblemInstanceParameters().get("Maximum number of installations"));
+		Phenotype phenotype = individual.getPhenotype();
 		double penalizedCost = phenotype.getScheduleCost()
-				+ durationViolationPenalty*phenotype.getDurationViolation(problemData.getMinVoyageDurationHours(), problemData.getMaxVoyageDurationHours()) 
+				+ durationViolationPenalty*phenotype.getDurationViolation() 
 				+ capacityViolationPenalty*phenotype.getCapacityViolation()
-				+ numberOfInstallationsPenalty*phenotype.getNumberOfInstallationsViolation(minNumberOfInstallations, maxNumberOfInstallations);
+				+ numberOfInstallationsPenalty*phenotype.getNumberOfInstallationsViolation();
 		individual.setPenalizedCost(penalizedCost);
 	}
 
@@ -57,6 +54,14 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 			hammingDistances.put(existingIndividual, exisitingIndividualDistances);
 		}
 		hammingDistances.put(individual, individualHammingDistances);
+	}
+	
+	@Override
+	public void removeDiversityDistance(Individual individual) {
+		hammingDistances.remove(individual);
+		for (Individual otherIndividual : hammingDistances.keySet()) {
+			hammingDistances.get(otherIndividual).remove(individual);
+		}
 	}
 	
 	//if visited on different days: +1
@@ -190,4 +195,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		this.durationViolationPenalty = penalty;
 	}
 
+	public Double getHammingDistance(Individual individual1, Individual individual2) {
+		return hammingDistances.get(individual1).get(individual2);
+	}
 }

@@ -62,7 +62,8 @@ public class HGSprocesses {
 	
 	
 	public ArrayList<Individual> selectParents(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
-		return parentSelectionProtocol.selectParents(feasiblePopulation, infeasiblePopulation);
+		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
+		return parentSelectionProtocol.selectParents(entirePopulation);
 	}
 
 	public Individual generateOffspring(ArrayList<Individual> parents) {
@@ -77,8 +78,8 @@ public class HGSprocesses {
 		diversificationProtocol.diversify(feasiblePopulation, infeasiblePopulation);
 	}
 
-	public void survivorSelection(ArrayList<Individual> subpopulation) {
-		survivorSelectionProtocol.selectSurvivors(subpopulation);
+	public void survivorSelection(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation) {
+		survivorSelectionProtocol.selectSurvivors(subpopulation, otherSubpopulation, fitnessEvaluationProtocol);
 	}
 	
 	private void selectProtocols() {
@@ -130,7 +131,7 @@ public class HGSprocesses {
 
 	private void selectReproductionProtocol() {
 		switch (problemData.getHeuristicParameters().get("Reproduction protocol")) {
-			case "binary tournament": reproductionProtocol = new ReproductionStandard();
+			case "standard": reproductionProtocol = new ReproductionStandard();
 				break;
 			default: reproductionProtocol = null;
 				break;
@@ -157,7 +158,7 @@ public class HGSprocesses {
 
 	private void selectSurvivorSelectionProtocol() {
 		switch (problemData.getHeuristicParameters().get("Survivor selection protocol")) {
-			case "standard": survivorSelectionProtocol = new SurvivorSelectionStandard();
+			case "standard": survivorSelectionProtocol = new SurvivorSelectionStandard(problemData);
 				break;
 			default: survivorSelectionProtocol = null;
 				break;

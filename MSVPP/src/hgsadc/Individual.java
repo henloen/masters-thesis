@@ -1,5 +1,7 @@
 package hgsadc;
 
+import java.text.DecimalFormat;
+
 import hgsadc.protocols.Genotype;
 import hgsadc.protocols.Phenotype;
 
@@ -45,8 +47,11 @@ public class Individual {
 	}
 	
 	public String getFullText() {
-		return "Biased fitness: " + biasedFitness + ", penalized cost: " + penalizedCost + ", cost rank: " + costRank +
-				", diversity contribution: " + diversityContribution + ", diversity rank: " + diversityRank;
+		DecimalFormat numberFormat = new DecimalFormat("0.00");
+		return "Biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + numberFormat.format(penalizedCost)
+				+ ", cost rank: " + costRank + ", diversity contribution: "
+				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
+				+ ", feasible: " + isFeasible();
 	}
 
 	public double getDiversityContribution() {
@@ -79,6 +84,10 @@ public class Individual {
 
 	public void setBiasedFitness(double biasedFitness) {
 		this.biasedFitness = biasedFitness;
+	}
+	
+	public boolean isFeasible() {
+		return phenotype.isFeasible();
 	}
 	
 	/*

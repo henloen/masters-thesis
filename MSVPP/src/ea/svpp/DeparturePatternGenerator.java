@@ -14,7 +14,7 @@ public class DeparturePatternGenerator {
 	public static int[] Pf_min = {0, 0, 1, 2, 1, 0, 0};
 	public static int[] Pf_max = {1, 1, 3, 4, 2, 1, 1};
 	
-	public static void main(String[] args){
+	/*public static void main(String[] args){
 		
 		HashMap<Integer, ArrayList<int[]>> feasibleDeparturePatterns = new HashMap<>();
 		
@@ -30,7 +30,7 @@ public class DeparturePatternGenerator {
 			}
 		}
 		
-	}
+	}*/
 	
 	private static long binomial(int n, int k)
     {
@@ -42,5 +42,4 @@ public class DeparturePatternGenerator {
             b=b*m/i;
         return b;
     }
-}
 }
