@@ -69,6 +69,10 @@ public class HGSprocesses {
 	public Individual generateOffspring(ArrayList<Individual> parents) {
 		Individual individual = reproductionProtocol.crossover(parents);
 		convertGenotypeToPhenotype(individual);
+		if (!individual.isFeasible()){
+			repair(individual, problemData.getHeuristicParameterDouble("Repair rate"));
+		}
+		
 		return individual;
 	}
 
@@ -114,10 +118,10 @@ public class HGSprocesses {
 		selectFitnessEvaluationProtocol();
 		selectParentSelectionProtocol();
 		selectReproductionProtocol();
+		initializePenaltyAdjustmentProtocol();
 		selectEducationProtocol();
 		selectDiversificationProtocol();
 		selectSurvivorSelectionProtocol();
-		initializePenaltyAdjustmentProtocol();
 	}
 
 	private void initializePenaltyAdjustmentProtocol() {
@@ -172,7 +176,7 @@ public class HGSprocesses {
 
 	private void selectEducationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Education protocol")) {
-			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol);
+			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol);
 				break;
 			default: educationProtocol = null;
 				break;

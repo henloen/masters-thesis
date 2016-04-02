@@ -18,12 +18,14 @@ public class EducationStandard implements EducationProtocol {
 
 	private ProblemData problemData;
 	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
+	private PenaltyAdjustmentProtocol penaltyAdjustmentProtcol;
 	private boolean isRepair;
 	private int penaltyMultiplier;
 	
-	public EducationStandard(ProblemData problemdata, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
+	public EducationStandard(ProblemData problemdata, FitnessEvaluationProtocol fitnessEvaluationProtocol, PenaltyAdjustmentProtocol penaltyAdjustmentProtocol) {
 		this.problemData = problemdata;
 		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
+		this.penaltyAdjustmentProtcol = penaltyAdjustmentProtocol;
 		this.isRepair = false;
 		this.penaltyMultiplier = 1;
 	}
@@ -33,6 +35,10 @@ public class EducationStandard implements EducationProtocol {
 		routeImprovement(individual);
 		patternImprovement(individual);
 		routeImprovement(individual);
+		
+		if (!isRepair){
+			penaltyAdjustmentProtcol.countAddedIndividual(individual);
+		}
 	}
 	
 	@Override
@@ -40,6 +46,7 @@ public class EducationStandard implements EducationProtocol {
 		isRepair = true;
 		this.penaltyMultiplier = penaltyMultiplier;
 		
+		System.out.println("Repairing individual " + individual);
 		educate(individual);
 		
 		isRepair = false;

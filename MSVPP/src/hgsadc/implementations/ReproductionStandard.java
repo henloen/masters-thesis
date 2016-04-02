@@ -181,11 +181,11 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		if (foundFeasibleFillIn){
 			GenotypeHGS offspringGenotype = new GenotypeHGS(installationChromosome, vesselChromosome, giantTourChromosome);
-			/*
+			/*System.out.println("==================================================");
 			System.out.println("Offspring: ");
 			System.out.println(offspringGenotype);
 			System.out.println("Total number of crossover restarts: " + NUMBER_OF_CROSSOVER_RESTARTS);
-			 */
+			*/
 			return new Individual(offspringGenotype);
 		}
 		else {
