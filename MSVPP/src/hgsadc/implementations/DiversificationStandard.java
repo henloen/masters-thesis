@@ -7,11 +7,17 @@ import hgsadc.protocols.DiversificationProtocol;
 
 public class DiversificationStandard implements DiversificationProtocol {
 
-	@Override
-	public void diversify(ArrayList<Individual> feasiblePopulation,
-			ArrayList<Individual> infeasiblePopulation) {
-		// TODO Auto-generated method stub
-
+	private int iterationsBeforeDiversify; // Number of iterations without improvement before diversifying
+	private int iterationsWithoutImprovement;
+	
+	
+	public DiversificationStandard(int iterationsBeforeDiversify) {
+		this.iterationsBeforeDiversify = iterationsBeforeDiversify;
+		this.iterationsWithoutImprovement = 0;
 	}
-
+	
+	@Override
+	public boolean isDiversifyIteration(){
+		return iterationsWithoutImprovement >= iterationsBeforeDiversify;
+	}
 }
