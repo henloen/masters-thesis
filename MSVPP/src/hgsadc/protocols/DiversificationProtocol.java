@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface DiversificationProtocol {
 
-	boolean isDiversifyIteration();
+	void diversify(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation);
 
 }

@@ -19,22 +19,18 @@ public class PhenotypeHGS implements Phenotype {
 		return giantTour;
 	}
 
-	@Override
 	public double getScheduleCost() {
 		return scheduleCost;
 	}
 
-	@Override
 	public double getCapacityViolation() {
 		return capacityViolation;
 	}
 
-	@Override
 	public double getDurationViolation() {
 		return durationViolation;
 	}
-
-	@Override
+	
 	public double getNumberOfInstallationsViolation() {
 		return numberOfInstallationsViolation;
 	}
@@ -55,24 +51,10 @@ public class PhenotypeHGS implements Phenotype {
 		this.numberOfInstallationsViolation = numberOfInstallationsViolation;
 	}
 
-	@Override
 	public boolean isFeasible() {
-		return (isCapacityFeasible() && isDurationFeasible() && isNumberOfInstallationsFeasible());
-	}
-
-	@Override
-	public boolean isCapacityFeasible(){
-		return capacityViolation == 0;
-	}
-
-	@Override
-	public boolean isDurationFeasible(){
-		return durationViolation == 0;
-	}
-
-	@Override
-	public boolean isNumberOfInstallationsFeasible(){
-		return numberOfInstallationsViolation == 0;
+		return ((capacityViolation == 0)
+				&& (durationViolation == 0)
+				&& (numberOfInstallationsViolation == 0));
 	}
 	
 	public String toString() {

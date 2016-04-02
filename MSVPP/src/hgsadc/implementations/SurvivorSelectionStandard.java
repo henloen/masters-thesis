@@ -19,29 +19,17 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 	
 	@Override
 	public void selectSurvivors(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
-		System.out.println("Select survivors");
 		int populationSize = problemData.getHeuristicParameterInt("Population size");
 		ArrayList<Individual> clones = getClones(subpopulation, fitnessEvaluationProtocol);
 		//sorts the clones and the subpopulation so that the individuals with the highest biased fitness are first
 		Collections.sort(clones, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
-		System.out.println("Clones: " + clones);
 		Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 		while (subpopulation.size() > populationSize) {
-			for (Individual individual : subpopulation) {
-				System.out.println(individual.getFullText());
-			}
 			if (clones.size() > 0) {
-				System.out.println("remove clone");
-				System.out.println(subpopulation);
-				System.out.println(clones.get(0));
 				removeFromSubpopulation(subpopulation, clones.remove(0), otherSubpopulation, fitnessEvaluationProtocol);
-				System.out.println(subpopulation);
 			}
 			else {
-				System.out.println("remove other");
-				System.out.println(subpopulation);
 				removeFromSubpopulation(subpopulation, subpopulation.get(0), otherSubpopulation , fitnessEvaluationProtocol);
-				System.out.println(subpopulation);
 			}
 			Collections.sort(clones, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 			Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
