@@ -158,7 +158,7 @@ public class HGSprocesses {
 
 	private void selectEducationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Education protocol")) {
-			case "standard": educationProtocol = new EducationStandard();
+			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol);
 				break;
 			default: educationProtocol = null;
 				break;

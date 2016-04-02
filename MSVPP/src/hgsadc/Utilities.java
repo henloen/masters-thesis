@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -75,6 +76,14 @@ public class Utilities {
 			}
 		};
 	}
+	
+	public static <K> Comparator<Map.Entry<K, Double>> getMapEntryWithDoubleComparator() {
+		return new Comparator<Map.Entry<K, Double>>() {
+			public int compare(Map.Entry<K, Double> o1, Map.Entry<K,Double> o2) {
+				return (o1.getValue()).compareTo(o2.getValue());
+			}
+		};
+	}
 
 	public static <T> T pickAndRemoveRandomElementFromSet(Set<T> set) {
 		int randomIndex = new Random().nextInt(set.size());
@@ -95,6 +104,13 @@ public class Utilities {
 			str += cell.toString() + " ";
 		}
 		return str;
+	}
+
+	public static <T> T pickAndRemoveRandomElementFromList(
+			ArrayList<T> list) {
+		T element = pickRandomElementFromList(list);
+		list.remove(element);
+		return element;
 	}
 	
 }

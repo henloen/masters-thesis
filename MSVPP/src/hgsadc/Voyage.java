@@ -9,6 +9,7 @@ public class Voyage {
 	
 	private double cost,capacityUsed, duration, durationViolation, capacityViolation, numberOfInstallationsViolation;
 	private ArrayList<Installation> visitedInstallations; // Does not contain depot at end or start
+	private ArrayList<Integer> installations;
 	private Vessel vessel;
 	private int departureDay;
 	private Set<Integer> vesselDeparturePattern;
@@ -18,6 +19,7 @@ public class Voyage {
 		this.departureDay = departureDay;
 		this.vessel = vessel;
 		this.vesselDeparturePattern = vesselDeparturePattern;
+		this.installations = installations;
 		Installation fromInstallation = problemData.getInstallationByNumber(0);//the depot is installation number 0
 		ArrayList<Integer> installationsIncludingDepot = new ArrayList<Integer>(installations);
 		installationsIncludingDepot.add(0);
@@ -106,6 +108,14 @@ public class Voyage {
 
 	public double getNumberOfInstallationsViolation() {
 		return numberOfInstallationsViolation;
+	}
+	
+	public int getDepartureDay() {
+		return departureDay;
+	}
+	
+	public ArrayList<Integer> getInstallations() {
+		return installations;
 	}
 
 	/*

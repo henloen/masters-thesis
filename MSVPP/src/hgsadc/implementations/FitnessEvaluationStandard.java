@@ -2,6 +2,7 @@ package hgsadc.implementations;
 
 import hgsadc.Individual;
 import hgsadc.ProblemData;
+import hgsadc.Utilities;
 import hgsadc.Voyage;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.Phenotype;
@@ -178,11 +179,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	private ArrayList<Individual> getnClosest(Individual individual, int nclose) {
 		ArrayList<Individual> nclosest = new ArrayList<Individual>();
 		ArrayList<Map.Entry<Individual, Double>> otherIndividuals = new ArrayList<Map.Entry<Individual, Double>>(hammingDistances.get(individual).entrySet());
-		Collections.sort(otherIndividuals, new Comparator<Map.Entry<Individual, Double>>() {
-			public int compare (Map.Entry<Individual, Double> ind1, Map.Entry<Individual, Double> ind2) {
-				return (ind1.getValue().compareTo(ind2.getValue()));
-			}
-		});
+		Collections.sort(otherIndividuals, Utilities.getMapEntryWithDoubleComparator());
 		for (int i = 0; i < nclose; i++) {
 			nclosest.add(otherIndividuals.get(i).getKey());
 		}

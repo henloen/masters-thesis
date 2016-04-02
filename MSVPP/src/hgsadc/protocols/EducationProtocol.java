@@ -4,6 +4,6 @@ import hgsadc.Individual;
 
 public interface EducationProtocol {
 
-	public void educate(Individual offspring);
-
+	public void educate(Individual individual);
+	
 }

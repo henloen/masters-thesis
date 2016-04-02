@@ -1,5 +1,10 @@
 package hgsadc.protocols;
 
+import hgsadc.Vessel;
+import hgsadc.Voyage;
+
+import java.util.HashMap;
+
 public interface Phenotype {
 	
 	public double getScheduleCost();
@@ -17,6 +22,8 @@ public interface Phenotype {
 	public double getNumberOfInstallationsViolation();
 	
 	public void setNumberOfInstallationsViolation(double numberOfInstallationsViolation);
+	
+	public HashMap<Integer, HashMap<Vessel, Voyage>> getGiantTour();
 	
 	public boolean isFeasible();
 	

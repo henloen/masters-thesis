@@ -59,6 +59,7 @@ public class HGSmain {
 	
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
+		System.out.println(parents);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
 		addToSubpopulation(offspring);
@@ -90,8 +91,6 @@ public class HGSmain {
 	private void adjustPenaltyParameters() {
 		//TODO
 	}
-	
-	
 	
 	private boolean diversifyIteration() {
 		//TODO
