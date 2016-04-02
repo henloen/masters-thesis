@@ -16,8 +16,11 @@ public class HGSmain {
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
+		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
 		main.runEvolutionaryLoop();
+		System.out.println("Initial population:");
+		main.printPopulation();
 	}
 
 	private void initialize() {
@@ -33,7 +36,6 @@ public class HGSmain {
 	}
 
 	private void createInitialPopulation(){
-		System.out.println("Creating initial population...");
 		int populationSize = problemData.getHeuristicParameterInt("Population size");
 		int initialPopulationSize = 4 * populationSize;
 		for (int i = 0; i < initialPopulationSize; i++) {
@@ -44,8 +46,6 @@ public class HGSmain {
 			}
 			addToSubpopulation(individual);
 		}
-		System.out.println("Initial population:");
-		printPopulation();
 	}
 	
 	private void runEvolutionaryLoop() {
@@ -63,12 +63,17 @@ public class HGSmain {
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
 		addToSubpopulation(offspring);
-		adjustPenaltyParameters();
-		if (diversifyIteration()) {
-			processes.diversify(feasiblePopulation, infeasiblePopulation);
+		processes.adjustPenaltyParameters();
+		if (processes.isDiversifyIteration()) {
+			diversify(feasiblePopulation, infeasiblePopulation);
 		}
 		printPopulation();
 		iteration++;
+	}
+
+	private void diversify(ArrayList<Individual> feasiblePopulation2, ArrayList<Individual> infeasiblePopulation2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void addToSubpopulation(Individual individual) {
@@ -86,15 +91,6 @@ public class HGSmain {
 		else {
 			checkSubpopulationSize(infeasiblePopulation, feasiblePopulation);
 		}
-	}
-	
-	private void adjustPenaltyParameters() {
-		//TODO
-	}
-	
-	private boolean diversifyIteration() {
-		//TODO
-		return false;
 	}
 	
 	private void checkSubpopulationSize(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation) {

@@ -24,6 +24,8 @@ public class EducationStandard implements EducationProtocol {
 	public EducationStandard(ProblemData problemdata, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
 		this.problemData = problemdata;
 		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
+		this.isRepair = false;
+		this.penaltyMultiplier = 1;
 	}
 	
 	@Override
@@ -31,6 +33,17 @@ public class EducationStandard implements EducationProtocol {
 		routeImprovement(individual);
 		patternImprovement(individual);
 		routeImprovement(individual);
+	}
+	
+	@Override
+	public void repairEducate(Individual individual, int penaltyMultiplier){
+		isRepair = true;
+		this.penaltyMultiplier = penaltyMultiplier;
+		
+		educate(individual);
+		
+		isRepair = false;
+		this.penaltyMultiplier = 1;
 	}
 	
 	private void routeImprovement(Individual individual) {

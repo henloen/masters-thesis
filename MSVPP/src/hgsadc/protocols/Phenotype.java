@@ -26,5 +26,11 @@ public interface Phenotype {
 	public HashMap<Integer, HashMap<Vessel, Voyage>> getGiantTour();
 	
 	public boolean isFeasible();
+
+	boolean isCapacityFeasible();
+
+	boolean isDurationFeasible();
+
+	boolean isNumberOfInstallationsFeasible();
 	
 }
