@@ -4,6 +4,8 @@ import hgsadc.Vessel;
 import hgsadc.Voyage;
 import hgsadc.protocols.Phenotype;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class PhenotypeHGS implements Phenotype {
@@ -77,6 +79,32 @@ public class PhenotypeHGS implements Phenotype {
 	
 	public String toString() {
 		return "Schedule cost: " + getScheduleCost();
+	}
+	
+	public String getScheduleString() {
+		String str = "";
+		ArrayList<Integer> days = new ArrayList<Integer>(giantTour.keySet());
+		Collections.sort(days);
+		for (Integer day : days) {
+			str += "Day: " + day + " - ";
+			ArrayList<Vessel> vessels = new ArrayList<Vessel>(giantTour.get(day).keySet());
+			Collections.sort(vessels);
+			for (int i = 0; i < vessels.size(); i++) {
+				str += "vessel " + vessels.get(i).getNumber() + ": ";
+				Voyage voyage = giantTour.get(day).get(vessels.get(i));
+				if (voyage == null) {
+					str += "-";
+				}
+				else {
+					str += voyage.getInstallations() + " dur: " + voyage.getDuration();
+				}
+				if (i < vessels.size()-1) { //don't add a comma after the last vessel
+					str += ", ";
+				}
+			}
+			str += "\n";
+		}
+		return str;
 	}
 
 }

@@ -19,7 +19,6 @@ public class HGSmain {
 		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
 		main.runEvolutionaryLoop();
-		System.out.println("Initial population:");
 		main.printPopulation();
 	}
 
@@ -49,8 +48,7 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
-		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
-		while (iteration <= maxIterations) {
+		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
 			iteration++;
@@ -72,9 +70,8 @@ public class HGSmain {
 
 	private void diversify(ArrayList<Individual> feasiblePopulation2, ArrayList<Individual> infeasiblePopulation2) {
 		// TODO Auto-generated method stub
-		
 	}
-
+	
 	private void addToSubpopulation(Individual individual) {
 		if (individual.isFeasible()) {
 			feasiblePopulation.add(individual);
@@ -100,15 +97,24 @@ public class HGSmain {
 		}
 	}
 	
+	private boolean stoppingCriterion() {
+		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
+		return (iteration > maxIterations) 
+				|| (feasiblePopulation.size() > 0);
+	}
+	
 	private void printPopulation() {
 		System.out.println("Feasible subpopulation:");
 		for (Individual individual : feasiblePopulation) {
 			System.out.println("Individual " + individual.getFullText());
+			System.out.println(individual.getPhenotype().getScheduleString());
 		}
 		System.out.println("Infeasible subpopulation:");
 		for (Individual individual : infeasiblePopulation) {
 			System.out.println("Individual " + individual.getFullText());
+			System.out.println(individual.getPhenotype().getScheduleString());
 		}
 		System.out.println("");
+		System.out.println("Number of feasible individuals: " + feasiblePopulation.size());
 	}
 }

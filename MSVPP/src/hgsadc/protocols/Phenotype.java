@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 public interface Phenotype {
 	
+	public String getScheduleString();
+	
 	public double getScheduleCost();
 	
 	public void setScheduleCost(double scheduleCost);
