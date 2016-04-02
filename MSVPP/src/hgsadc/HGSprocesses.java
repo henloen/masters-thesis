@@ -6,7 +6,7 @@ import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
-import hgsadc.implementations.PenaltyAdjustmentProtocol;
+import hgsadc.implementations.RepairStandard;
 import hgsadc.implementations.ReproductionStandard;
 import hgsadc.implementations.SurvivorSelectionStandard;
 import hgsadc.protocols.DiversificationProtocol;
@@ -15,6 +15,7 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.InitialPopulationProtocol;
 import hgsadc.protocols.ParentSelectionProtocol;
+import hgsadc.protocols.RepairProtocol;
 import hgsadc.protocols.ReproductionProtocol;
 import hgsadc.protocols.SurvivorSelectionProtocol;
 
@@ -32,9 +33,10 @@ public class HGSprocesses {
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
 	private EducationProtocol educationProtocol;
+	private RepairProtocol repairProtocol;
 	private DiversificationProtocol diversificationProtocol;
 	private SurvivorSelectionProtocol survivorSelectionProtocol;
-	private PenaltyAdjustmentProtocol penaltyAdjustmentProtocol;
+	
 
 	public HGSprocesses(ProblemData problemData) {
 		this.problemData = problemData;
@@ -76,21 +78,10 @@ public class HGSprocesses {
 		educationProtocol.educate(individual);
 	}
 	
-	public void adjustPenaltyParameters() {
-		penaltyAdjustmentProtocol.adjustPenalties(fitnessEvaluationProtocol);
-	}
-	
 	public void repair(Individual individual, double probability) {
 		double randomDouble = new Random().nextDouble();
 		if (probability < randomDouble) {
-			
-			int penaltyMultiplier = 10;
-			educationProtocol.repairEducate(individual, penaltyMultiplier);
-			
-			if (!individual.isFeasible()){
-				penaltyMultiplier = 100;
-				educationProtocol.repairEducate(individual, penaltyMultiplier);
-			}
+			repairProtocol.repair(individual);
 		}
 	}
 	
@@ -99,10 +90,10 @@ public class HGSprocesses {
 		repair(individual, probability);
 	}
 
-	public boolean isDiversifyIteration() {
-		return diversificationProtocol.isDiversifyIteration();
+	public void diversify(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+		diversificationProtocol.diversify(feasiblePopulation, infeasiblePopulation);
 	}
-	
+
 	public void survivorSelection(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation) {
 		survivorSelectionProtocol.selectSurvivors(subpopulation, otherSubpopulation, fitnessEvaluationProtocol);
 	}
@@ -115,14 +106,9 @@ public class HGSprocesses {
 		selectParentSelectionProtocol();
 		selectReproductionProtocol();
 		selectEducationProtocol();
+		selectRepairProtocol();
 		selectDiversificationProtocol();
 		selectSurvivorSelectionProtocol();
-		initializePenaltyAdjustmentProtocol();
-	}
-
-	private void initializePenaltyAdjustmentProtocol() {
-		double targetFeasibleProportion = problemData.getHeuristicParameterDouble("Reference proportion of feasible individuals");
-		penaltyAdjustmentProtocol = new PenaltyAdjustmentProtocol(targetFeasibleProportion);
 	}
 
 	private void selectInitialPopulationProtocol() {
@@ -179,9 +165,18 @@ public class HGSprocesses {
 		}
 	}
 	
+	private void selectRepairProtocol() {
+		switch (problemData.getHeuristicParameters().get("Repair protocol")) {
+			case "standard": repairProtocol = new RepairStandard();
+				break;
+			default: repairProtocol = null;
+				break;
+		}
+	}
+	
 	private void selectDiversificationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Diversification protocol")) {
-			case "standard": diversificationProtocol = new DiversificationStandard(problemData.getHeuristicParameterInt("Iterations before diversify"));
+			case "standard": diversificationProtocol = new DiversificationStandard();
 				break;
 			default: diversificationProtocol = null;
 				break;
@@ -196,7 +191,5 @@ public class HGSprocesses {
 				break;
 		}	
 	}
-
-
 
 }

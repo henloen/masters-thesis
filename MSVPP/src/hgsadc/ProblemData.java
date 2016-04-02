@@ -136,27 +136,6 @@ public class ProblemData {
 		customerInstallations.remove(depot);
 	}
 	
-	public double getAverageDemand(){
-		double totalDemand = 0;
-		for (Installation installation : customerInstallations) {
-			totalDemand += installation.getDemand();
-		}
-		return totalDemand/installations.size();
-	}
-	
-	public double getAverageDistanceBetweenInstallations(){
-		double totalDistance = 0;
-		int nDistances = 0;
-		for (Installation inst1 : distances.keySet()){
-			HashMap<Installation, Double> distancesFromInst1 = distances.get(inst1);
-			for (Installation inst2 : distancesFromInst1.keySet()){
-				totalDistance += distancesFromInst1.get(inst2);
-			}
-			nDistances += distancesFromInst1.size();
-		}
-		return totalDistance / nDistances;
-	}
-	
 	public Installation getInstallationByNumber(Integer number) {
 		return installationsByNumber.get(number);
 	}
