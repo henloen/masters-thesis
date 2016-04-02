@@ -31,7 +31,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 	@Override
 	public Individual crossover(ArrayList<Individual> parents) {
 		
-		System.out.println("Starting crossover of parents " + parents.get(0) + " and " + parents.get(1));
+		//System.out.println("Starting crossover of parents " + parents.get(0) + " and " + parents.get(1));
 		// Step 0: Inheritance rule
 		int nDays = problemData.getLengthOfPlanningPeriod();
 		int nVessels = problemData.getVessels().size();
@@ -76,7 +76,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = GenotypeHGS.generateEmptyGiantTourChromosome(nDays, nVessels);
 		
 		// Step 1: Inherit data from p1
-		System.out.println("Step 1: Inherit data from p1");
+		//System.out.println("Step 1: Inherit data from p1");
 		// Copy from Delta_1
 		for (DayVesselCell cell : cellsToCopyFromP1) {
 			ArrayList<Integer> departuresToCopy = p1.get(cell.day).get(cell.vessel);
@@ -118,7 +118,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		}
 		
 		// Step 2: Inherit data from p2
-		System.out.println("Step 2: Inherit data from p2");
+		//System.out.println("Step 2: Inherit data from p2");
 		Set<DayVesselCell> cellsToCopyFromP2OrBoth = new HashSet<>(cellsToCopyFromP2);  // Delta_2 U Delta_mix
 		cellsToCopyFromP2OrBoth.addAll(cellsToCopyFromBoth);
 		
@@ -167,7 +167,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		//System.out.println("==============================================");
 		//System.out.println("Current chromosome " + GenotypeHGS.getGiantTourChromosomeString(giantTourChromosome));
 		
-		System.out.println("Step 3: Complete installation services");
+		//System.out.println("Step 3: Complete installation services");
 		/* Step 3: Complete installation services
 		 * 	Make sure all installations have required number of visits
 		 *  While there are unserviced installations:
@@ -181,10 +181,11 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		if (foundFeasibleFillIn){
 			GenotypeHGS offspringGenotype = new GenotypeHGS(installationChromosome, vesselChromosome, giantTourChromosome);
-			System.out.println("==================================================");
+			/*
 			System.out.println("Offspring: ");
 			System.out.println(offspringGenotype);
 			System.out.println("Total number of crossover restarts: " + NUMBER_OF_CROSSOVER_RESTARTS);
+			 */
 			return new Individual(offspringGenotype);
 		}
 		else {

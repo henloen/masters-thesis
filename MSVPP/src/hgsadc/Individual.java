@@ -51,6 +51,7 @@ public class Individual {
 		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + numberFormat.format(penalizedCost)
 				+ ", cost rank: " + costRank + ", diversity contribution: "
 				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
+				+ ", capviol: " + phenotype.getCapacityViolation() + ", durviol: " + phenotype.getDurationViolation() + ", numViol: " + phenotype.getNumberOfInstallationsViolation()
 				+ ", feasible: " + isFeasible();
 	}
 

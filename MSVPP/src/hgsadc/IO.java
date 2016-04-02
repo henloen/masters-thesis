@@ -100,7 +100,7 @@ public class IO {
 		setInstallationsByName();
 		for (int i = 1; i<getNumberOfInstallations()+2; i++){ //+1 because of the depot and +1 because of the header row
 			HashMap<Installation, Double> installationDistances = new HashMap<Installation, Double>();
-			for (int j = 1; j<distanceData.get(i).size(); j++) {
+			for (int j = 1; j<getNumberOfInstallations()+2; j++) {
 				Installation toInstallation = getInstallationByName(headerRow.get(j));
 				installationDistances.put(toInstallation, Utilities.parseDouble(distanceData.get(i).get(j)));
 			}

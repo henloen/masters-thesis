@@ -16,7 +16,6 @@ public class ParentSelectionBinaryTournament implements ParentSelectionProtocol 
 		//does not check whether parent1 and parent2 are the same individual
 		parents.add(parent1);
 		parents.add(parent2);
-		System.out.println("Parents: " + parents);
 		return parents;
 	}
 	
