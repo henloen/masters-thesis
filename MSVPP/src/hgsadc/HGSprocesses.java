@@ -28,7 +28,7 @@ public class HGSprocesses {
 	
 	private InitialPopulationProtocol initialPopulationProtocol;
 	private GenoToPhenoConverterProtocol genoToPhenoConverterProtocol;
-	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
+	FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	private ParentSelectionProtocol parentSelectionProtocol;
 	private ReproductionProtocol reproductionProtocol;
 	private EducationProtocol educationProtocol;
@@ -199,6 +199,23 @@ public class HGSprocesses {
 			default: survivorSelectionProtocol = null;
 				break;
 		}	
+	}
+	
+	public void recordDiversification() {
+		diversificationProtocol.addDiversification();
+		diversificationProtocol.resetCounter();
+	}
+
+	public void updateDiversificationCounter(double bestPenalizedCost) {
+		diversificationProtocol.updateCounterSinceLastImprovement(bestPenalizedCost);
+		
+	}
+
+	public String getRunStatistics() {
+		String stats = "";
+		stats += "Number of diversifications: " + diversificationProtocol.getNumberOfDiversifications();
+		stats += "\nNumber of crossover restarts: " + ReproductionStandard.NUMBER_OF_CROSSOVER_RESTARTS;
+		return stats;
 	}
 
 

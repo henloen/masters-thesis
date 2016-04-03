@@ -3,6 +3,7 @@ package hgsadc.implementations;
 import hgsadc.Individual;
 import hgsadc.ProblemData;
 import hgsadc.Utilities;
+import hgsadc.HGSmain;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.SurvivorSelectionProtocol;
 
@@ -26,10 +27,10 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 		Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 		while (subpopulation.size() > populationSize) {
 			if (clones.size() > 0) {
-				removeFromSubpopulation(subpopulation, clones.remove(0), otherSubpopulation, fitnessEvaluationProtocol);
+				HGSmain.removeFromSubpopulation(subpopulation, clones.remove(0), otherSubpopulation, fitnessEvaluationProtocol, true);
 			}
 			else {
-				removeFromSubpopulation(subpopulation, subpopulation.get(0), otherSubpopulation , fitnessEvaluationProtocol);
+				HGSmain.removeFromSubpopulation(subpopulation, subpopulation.get(0), otherSubpopulation , fitnessEvaluationProtocol, true);
 			}
 			Collections.sort(clones, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
 			Collections.sort(subpopulation, Collections.reverseOrder(Utilities.getBiasedFitnessComparator()));
@@ -51,10 +52,4 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 		return clones;
 	}
 	
-	private void removeFromSubpopulation(ArrayList<Individual> subpopulation, Individual individual, ArrayList<Individual> otherSubpopulation, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
-		subpopulation.remove(individual);
-		fitnessEvaluationProtocol.removeDiversityDistance(individual);
-		fitnessEvaluationProtocol.updateBiasedFitness(Utilities.getAllElements(subpopulation, otherSubpopulation));
-	}
-
 }
