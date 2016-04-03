@@ -77,6 +77,22 @@ public class Utilities {
 		};
 	}
 	
+	public static Comparator<? super Individual> getPenalizedCostComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {
+					return -1;
+				}
+				else if (ind1.getPenalizedCost() > ind2.getPenalizedCost()) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		};
+	}
+	
 	public static <K> Comparator<Map.Entry<K, Double>> getMapEntryWithDoubleComparator() {
 		return new Comparator<Map.Entry<K, Double>>() {
 			public int compare(Map.Entry<K, Double> o1, Map.Entry<K,Double> o2) {
@@ -112,5 +128,6 @@ public class Utilities {
 		list.remove(element);
 		return element;
 	}
+
 	
 }

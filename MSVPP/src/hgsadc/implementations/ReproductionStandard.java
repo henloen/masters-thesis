@@ -21,7 +21,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 	
 	private ProblemData problemData;
 	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
-	private static int NUMBER_OF_CROSSOVER_RESTARTS = 0;
+	public static int NUMBER_OF_CROSSOVER_RESTARTS = 0;
 	
 	public ReproductionStandard(ProblemData problemData, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
 		this.problemData = problemData;

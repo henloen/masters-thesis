@@ -89,6 +89,21 @@ public class Individual {
 	public boolean isFeasible() {
 		return phenotype.isFeasible();
 	}
+
+	public String getFullSchedule() {
+		String str = getFullText();
+		str += getViolationsString();
+		str += genotype.toString();
+		return str;
+	}
+	
+	public String getViolationsString(){
+		String str = "\nViolations:";
+		str += "\nCapacity violation: " + phenotype.getCapacityViolation();
+		str += "\nDuration violation: " + phenotype.getDurationViolation();
+		str += "\nNumber of installations violation: " + phenotype.getNumberOfInstallationsViolation();
+		return "\n" + str;
+	}
 	
 	/*
 	public String toString() {
