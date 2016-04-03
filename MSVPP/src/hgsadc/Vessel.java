@@ -1,6 +1,6 @@
 package hgsadc;
 
-public class Vessel implements Comparable<Vessel> {
+public class Vessel {
 	
 	private String name;
 	private int capacity, speed, unitFuelCost, timeCharterCost, numberOfDaysAvailable, number;
@@ -57,10 +57,6 @@ public class Vessel implements Comparable<Vessel> {
 	
 	public int getNumber() {
 		return number;
-	}
-	
-	public int compareTo(Vessel otherVessel) {
-		return this.number - otherVessel.getNumber();
 	}
 	
 	public String toString() {

@@ -51,10 +51,7 @@ public class Individual {
 		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + numberFormat.format(penalizedCost)
 				+ ", cost rank: " + costRank + ", diversity contribution: "
 				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
-				 + ", capviol: " + numberFormat.format(phenotype.getCapacityViolation())
-				 + ", durviol: " + numberFormat.format(phenotype.getDurationViolation())
-				 + ", numViol: " + numberFormat.format(phenotype.getNumberOfInstallationsViolation())
-				 + ", feasible: " + isFeasible();
+				+ ", feasible: " + isFeasible();
 	}
 
 	public double getDiversityContribution() {
@@ -91,6 +88,21 @@ public class Individual {
 	
 	public boolean isFeasible() {
 		return phenotype.isFeasible();
+	}
+
+	public String getFullSchedule() {
+		String str = getFullText();
+		str += getViolationsString();
+		str += genotype.toString();
+		return str;
+	}
+	
+	public String getViolationsString(){
+		String str = "\nViolations:";
+		str += "\nCapacity violation: " + phenotype.getCapacityViolation();
+		str += "\nDuration violation: " + phenotype.getDurationViolation();
+		str += "\nNumber of installations violation: " + phenotype.getNumberOfInstallationsViolation();
+		return "\n" + str;
 	}
 	
 	/*

@@ -238,16 +238,5 @@ public class ProblemData {
 			}
 		}
 		System.out.println();
-		for (Installation inst1 : distances.keySet()) {
-			System.out.println(inst1);
-			/*for (Installation inst2 : distances.get(inst1).keySet()) {
-				if (inst2 != null) {
-					System.out.println(inst2.getNumber());
-				}
-				else {
-					System.out.println("null");
-			}
-				}*/
-		}
 	}
 }

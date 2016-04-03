@@ -29,7 +29,7 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); //the integer is the vessel number and the Set<Integer> is the departure days of the vessel
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
 		Individual individual = new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
-		//printIndividual(individual);
+		printIndividual(individual);
 		return individual;
 	}
 	
