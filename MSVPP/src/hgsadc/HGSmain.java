@@ -52,7 +52,7 @@ public class HGSmain {
 			System.out.println("Tough luck, no feasible solutions in final population");
 		}
 		else {
-			System.out.println(bestFeasibleSolution.getFullSchedule());
+			System.out.println(bestFeasibleSolution);
 		}
 		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
 		System.out.println("==================== Best infeasible solution found ==========================");
@@ -60,7 +60,7 @@ public class HGSmain {
 			System.out.println("Hmmm, no infeasible solutions in final population");
 		}
 		else {
-			System.out.println(bestInfeasibleSolution.getFullSchedule());
+			System.out.println(bestInfeasibleSolution);
 		}
 	}
 

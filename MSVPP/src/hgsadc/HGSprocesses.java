@@ -214,7 +214,6 @@ public class HGSprocesses {
 	public String getRunStatistics() {
 		String stats = "";
 		stats += "Number of diversifications: " + diversificationProtocol.getNumberOfDiversifications();
-		stats += "\nNumber of crossover restarts: " + ReproductionStandard.NUMBER_OF_CROSSOVER_RESTARTS;
 		return stats;
 	}
 
