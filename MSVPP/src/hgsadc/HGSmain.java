@@ -23,7 +23,6 @@ public class HGSmain {
 		main.createInitialPopulation();
 		main.runEvolutionaryLoop();
 		System.out.println("Final population:");
-		System.out.println("Initial population:");
 		main.printPopulation();
 		
 		main.printRunStatistics();
@@ -34,7 +33,16 @@ public class HGSmain {
 		System.out.println("====================== Run complete ===========================");
 		System.out.println("Number of iterations: " + iteration);
 		System.out.println(processes.getRunStatistics());
+	}
+
+	private Individual getBestSolution(ArrayList<Individual> subpopulation) {
+		if (subpopulation.size() == 0){
+			return null;
+		}
 		
+		Comparator<Individual> penCostComparator = (Comparator<Individual>) Utilities.getPenalizedCostComparator();
+		subpopulation.sort(penCostComparator);
+		return subpopulation.get(0);
 	}
 
 	private void printBestSolutions() {
@@ -56,15 +64,6 @@ public class HGSmain {
 		}
 	}
 
-	private Individual getBestSolution(ArrayList<Individual> subpopulation) {
-		if (subpopulation.size() == 0){
-			return null;
-		}
-		
-		Comparator<Individual> penCostComparator = (Comparator<Individual>) Utilities.getPenalizedCostComparator();
-		subpopulation.sort(penCostComparator);
-		return subpopulation.get(0);
-	}
 	
 	private Individual getBestSolution(){
 		Individual bestFeasible = getBestSolution(feasiblePopulation);
