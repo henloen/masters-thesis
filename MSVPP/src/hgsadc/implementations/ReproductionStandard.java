@@ -79,7 +79,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		// Copy from Delta_1
 		for (DayVesselCell cell : cellsToCopyFromP1) {
 			ArrayList<Integer> departuresToCopy = p1.get(cell.day).get(cell.vessel);
-			giantTourChromosome.get(cell.day).put(cell.vessel, departuresToCopy);
+			giantTourChromosome.get(cell.day).put(cell.vessel, new ArrayList<Integer>(departuresToCopy));
 			//System.out.println("Copying cell " + cell + " from p1");
 		}
 		// Copy from Delta_mix, parent 1
