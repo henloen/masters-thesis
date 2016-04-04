@@ -217,6 +217,14 @@ public class HGSprocesses {
 		stats += "\nNumber of crossover restarts: " + reproductionProtocol.getNumberOfCrossoverRestarts();
 		return stats;
 	}
+	
+	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+		
+	}
+	
+	public void exportRunStatistics() {
+		
+	}
 
 
 

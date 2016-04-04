@@ -113,6 +113,7 @@ public class HGSmain {
 			}
 			addToSubpopulation(individual);
 		}
+		processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
 	}
 	
 	private void runEvolutionaryLoop() {
@@ -120,7 +121,9 @@ public class HGSmain {
 			System.out.println("Iteration " + iteration);
 			doIteration();
 			iteration++;
+			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
 		}
+		processes.exportRunStatistics();
 		System.out.println();
 	}
 	
@@ -135,7 +138,6 @@ public class HGSmain {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
 		//printPopulation();
-		iteration++;
 	}
 
 	private void updateDiversificationCounter() {
