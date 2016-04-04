@@ -4,7 +4,7 @@ import hgsadc.protocols.DiversificationProtocol;
 
 public class DiversificationStandard implements DiversificationProtocol {
 
-	private int iterationsBeforeDiversify; // Number of iterations without improvement before diversifying
+	private final int iterationsBeforeDiversify; // Number of iterations without improvement before diversifying
 	private int iterationsWithoutImprovement;
 	private double bestSolution;
 	private int numberOfDiversifications;
@@ -13,6 +13,7 @@ public class DiversificationStandard implements DiversificationProtocol {
 		this.iterationsBeforeDiversify = iterationsBeforeDiversify;
 		this.iterationsWithoutImprovement = 0;
 		this.numberOfDiversifications = 0;
+		bestSolution = Double.MAX_VALUE;
 	}
 	
 	@Override
@@ -32,10 +33,15 @@ public class DiversificationStandard implements DiversificationProtocol {
 	
 	@Override
 	public void updateCounterSinceLastImprovement(double newBestSolution){
-		if (newBestSolution <= bestSolution){
+		System.out.println("Current best solution : " + bestSolution);
+		System.out.println("New best solution: " + newBestSolution);
+		if (newBestSolution < bestSolution){
+			System.out.println("New solution is better");
 			bestSolution = newBestSolution;
 			resetCounter();
 		}
+		iterationsWithoutImprovement++;
+		System.out.println("Iterations since last improvement: " + iterationsWithoutImprovement);
 	}
 
 	@Override

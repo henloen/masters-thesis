@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class EducationStandard implements EducationProtocol {
 
@@ -139,12 +140,35 @@ public class EducationStandard implements EducationProtocol {
 	}
 
 	private void patternImprovement(Individual individual) {
-	/*
-		ArrayList<Installation> installations = problemData.getInstallations();
-		for (Installation installation : installations) {
-			Set<Set<Integer>> in
-			
+		installationPatternImprovement(individual);
+		vesselPatternImprovement(individual);
+		installationPatternImprovement(individual);
+	}
+
+	private void vesselPatternImprovement(Individual individual) {
+		return;
+		/*
+		int iterationsWithoutChange = 0;
+		int nInstallations = problemData.getInstallations().size();
+		HashMap<Integer, Set<Set<Integer>>> patterns = problemData.getInstallationDeparturePatterns();
+		Set<Integer> daysWithVesselDeparture = individual.getDaysWithVesselDeparture();
+		
+		while (iterationsWithoutChange < nInstallations){
+			for (Installation installation : problemData.getInstallations()){
+				int frequency = installation.getFrequency();
+				for (Set<Integer> instPattern : patterns.get(installation.getNumber())){
+					if (daysWithVesselDeparture.containsAll(instPattern)){
+						
+					}
+				}
+			}
 		}
-	 */
+		*/
+	}
+
+
+	private void installationPatternImprovement(Individual individual) {
+		// TODO Auto-generated method stub
+		
 	}
 }

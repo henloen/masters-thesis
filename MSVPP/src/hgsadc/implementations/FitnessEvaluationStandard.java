@@ -26,7 +26,6 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		
 		// This is what they use in Vidal 2012
 		this.capacityViolationPenalty = problemData.getAverageDistanceBetweenInstallations() / problemData.getAverageDemand();
-		
 		this.durationViolationPenalty = problemData.getHeuristicParameterDouble("Duration constraint violation penalty");
 		this.numberOfInstallationsPenalty = problemData.getHeuristicParameterDouble("Number of installations violation penalty");
 	}

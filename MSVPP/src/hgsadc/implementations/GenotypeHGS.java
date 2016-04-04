@@ -1,5 +1,6 @@
 package hgsadc.implementations;
 
+import hgsadc.Individual;
 import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
@@ -149,5 +150,16 @@ public class GenotypeHGS implements Genotype {
 			str += "\n";
 		}
 		return str;
+	}
+
+	@Override
+	public Set<Integer> getDaysWithVesselDeparture() {
+		Set<Integer> daysWithVesselDeparture = new HashSet<Integer>();
+		for (Integer vessel : vesselDeparturePatternChromosome.keySet()) {
+			Set<Integer> departuresForVessel = vesselDeparturePatternChromosome.get(vessel);
+			daysWithVesselDeparture.addAll(departuresForVessel);
+		}
+		
+		return daysWithVesselDeparture;
 	}
 }

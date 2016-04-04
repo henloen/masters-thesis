@@ -1,6 +1,8 @@
 package hgsadc;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import hgsadc.protocols.Genotype;
 import hgsadc.protocols.Phenotype;
@@ -20,6 +22,11 @@ public class Individual {
 		this.genotype = genotype;
 		numberOfIndividuals++;
 		this.number = numberOfIndividuals;
+	}
+	
+
+	public Set<Integer> getDaysWithVesselDeparture() {
+		return genotype.getDaysWithVesselDeparture();
 	}
 	
 	public Genotype getGenotype() {
