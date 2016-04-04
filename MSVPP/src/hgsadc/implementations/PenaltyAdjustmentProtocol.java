@@ -1,5 +1,7 @@
 package hgsadc.implementations;
 
+import java.util.ArrayList;
+
 import hgsadc.Individual;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 
@@ -34,7 +36,7 @@ public class PenaltyAdjustmentProtocol {
 		}
 	}
 	
-	public void adjustPenalties(FitnessEvaluationProtocol fitnessProtocol){
+	public void adjustPenalties(ArrayList<Individual> entirePopulation, FitnessEvaluationProtocol fitnessProtocol){
 		if (solutionsSincePenaltyAdjustment == 100){
 			adjustCapacityPenalty(fitnessProtocol);
 			adjustDurationPenalty(fitnessProtocol);
@@ -44,6 +46,8 @@ public class PenaltyAdjustmentProtocol {
 		capacityFeasibleSolutions = 0;
 		durationFeasibleSolutions = 0;
 		numberOfInstallationsFeasibleSolutions = 0;
+		
+		fitnessProtocol.setPenalizedCostPopulation(entirePopulation);
 	}
 	
 	private void adjustCapacityPenalty(FitnessEvaluationProtocol fitnessProtocol){

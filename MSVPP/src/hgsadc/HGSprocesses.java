@@ -80,8 +80,9 @@ public class HGSprocesses {
 		educationProtocol.educate(individual);
 	}
 	
-	public void adjustPenaltyParameters() {
-		penaltyAdjustmentProtocol.adjustPenalties(fitnessEvaluationProtocol);
+	public void adjustPenaltyParameters(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
+		penaltyAdjustmentProtocol.adjustPenalties(entirePopulation, fitnessEvaluationProtocol);
 	}
 	
 	public void repair(Individual individual, double probability) {

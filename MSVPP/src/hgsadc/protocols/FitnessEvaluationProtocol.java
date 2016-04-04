@@ -42,6 +42,8 @@ public interface FitnessEvaluationProtocol {
 	public void setCapacityViolationPenalty(double capacityViolationPenalty);
 	
 	public void setNumberOfInstallationsViolationPenalty(double numberOfInstallationsViolationPenalty);
+
+	void setPenalizedCostPopulation(ArrayList<Individual> population);
 	
 	
 }

@@ -56,6 +56,14 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	}
 	
 	@Override
+	public void setPenalizedCostPopulation(ArrayList<Individual> population){
+		for (Individual individual : population){
+			setPenalizedCostIndividual(individual);
+		}
+		updateBiasedFitness(population);
+	}
+	
+	@Override
 	public void setPenalizedCostIndividual(Individual individual) {
 		setPenalizedCostIndividual(individual, durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty);
 	};

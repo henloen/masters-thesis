@@ -132,7 +132,7 @@ public class HGSmain {
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
 		addToSubpopulation(offspring);
-		processes.adjustPenaltyParameters();
+		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
 		updateDiversificationCounter();
 		if (processes.isDiversifyIteration()) {
 			diversify(feasiblePopulation, infeasiblePopulation);
