@@ -40,7 +40,7 @@ public class HGSmain {
 			return null;
 		}
 		
-		Comparator<Individual> penCostComparator = (Comparator<Individual>) Utilities.getPenalizedCostComparator();
+		Comparator<Individual> penCostComparator = Utilities.getPenalizedCostComparator();
 		subpopulation.sort(penCostComparator);
 		return subpopulation.get(0);
 	}
@@ -116,17 +116,16 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
-		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
 			iteration++;
 		}
+		System.out.println();
 	}
 	
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
-		System.out.println(parents);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
 		addToSubpopulation(offspring);
@@ -135,7 +134,7 @@ public class HGSmain {
 		if (processes.isDiversifyIteration()) {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
-		printPopulation();
+		//printPopulation();
 		iteration++;
 	}
 
@@ -148,7 +147,7 @@ public class HGSmain {
 
 	private void diversify(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		/*  1. Eliminate all but the best third of each subpopulation in terms of penalized cost
-		 *  2. Create 4µ new individual 
+		 *  2. Create 4ï¿½ new individual 
 		 */
 		System.out.println("Diversifying...");
 		// 1st argument is subpopulation to kill, 2nd is the other subpopulation (needed for cleaning up in the fitnessprotocol)

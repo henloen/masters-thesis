@@ -1,13 +1,5 @@
 package hgsadc.implementations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import hgsadc.Individual;
 import hgsadc.Installation;
 import hgsadc.ProblemData;
@@ -16,6 +8,13 @@ import hgsadc.Vessel;
 import hgsadc.Voyage;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.ReproductionProtocol;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class ReproductionStandard implements ReproductionProtocol {
 	
@@ -190,7 +189,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		}
 		else {
 			NUMBER_OF_CROSSOVER_RESTARTS++;
-			System.out.println("Crossover failed " + NUMBER_OF_CROSSOVER_RESTARTS + " time(s), trying again");
+			//System.out.println("Crossover failed " + NUMBER_OF_CROSSOVER_RESTARTS + " time(s), trying again");
 			return crossover(parents);
 		}
 		
@@ -365,6 +364,10 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		// Check if new pattern is subset of any valid pattern
 		return Utilities.setIsSubsetOfAnySetInCollection(newInstallationPattern, feasiblePatterns);
+	}
+	
+	public int getNumberOfCrossoverRestarts() {
+		return NUMBER_OF_CROSSOVER_RESTARTS;
 	}
 
 }

@@ -1,8 +1,5 @@
 package hgsadc.implementations;
 
-import java.util.ArrayList;
-
-import hgsadc.Individual;
 import hgsadc.protocols.DiversificationProtocol;
 
 public class DiversificationStandard implements DiversificationProtocol {

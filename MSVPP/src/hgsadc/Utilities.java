@@ -77,7 +77,7 @@ public class Utilities {
 		};
 	}
 	
-	public static Comparator<? super Individual> getPenalizedCostComparator() {
+	public static Comparator<Individual> getPenalizedCostComparator() {
 		return new Comparator<Individual>() {
 			public int compare(Individual ind1, Individual ind2) {
 				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {

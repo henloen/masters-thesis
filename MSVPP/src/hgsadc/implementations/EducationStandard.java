@@ -46,7 +46,7 @@ public class EducationStandard implements EducationProtocol {
 		isRepair = true;
 		this.penaltyMultiplier = penaltyMultiplier;
 		
-		System.out.println("Repairing individual " + individual);
+		//System.out.println("Repairing individual " + individual);
 		educate(individual);
 		
 		isRepair = false;
@@ -139,7 +139,12 @@ public class EducationStandard implements EducationProtocol {
 	}
 
 	private void patternImprovement(Individual individual) {
-		//TODO
+	/*
+		ArrayList<Installation> installations = problemData.getInstallations();
+		for (Installation installation : installations) {
+			Set<Set<Integer>> in
+			
+		}
+	 */
 	}
-
 }

@@ -8,4 +8,6 @@ public interface ReproductionProtocol {
 
 	Individual crossover(ArrayList<Individual> parents);
 
+	public int getNumberOfCrossoverRestarts();
+
 }
