@@ -5,8 +5,8 @@ import glob
 
 #run this file by typing "python pythonfolder.py <foldername>" in the command line. All .txt-files in the folder named "foldername" will be plotted and exported
 
-inputFoldername = sys.argv[1]
-inputFolderpath = '../data/ea/output/' + inputFoldername +"/"
+#inputFoldername = sys.argv[1]
+inputFolderpath = '../data/hgs/output/' #+ inputFoldername +"/"
 outputFolderpath = 'plots/'
 outputFileFormat = '.png'
 
@@ -36,13 +36,31 @@ def plotSingleFile(filename):
 
 	#plotting
 	pl.figure()
-	pl.plot(data[:,0], data[:,1], 'r-', label=headerArray[1])
-	pl.plot(data[:,0], data[:,2], 'b-', label=headerArray[2])
-	pl.plot(data[:,0], data[:,3], 'g-', label=headerArray[3])
-	pl.xlabel('Generation')
-	pl.ylabel('Value')
 	pl.title(parameterString)
+	#the first subplot plots the number of individuals
+	pl.subplot(311);
+	pl.plot(data[:,0], data[:,1], label=headerArray[1])
+	pl.plot(data[:,0], data[:,2], label=headerArray[2])
+	pl.xlabel('Iteration')
+	pl.ylabel('Value')
 	pl.legend(loc=0)
+	#the second subplot plots the penalities
+	pl.subplot(312);
+	pl.plot(data[:,0], data[:,3], label=headerArray[3])
+	pl.plot(data[:,0], data[:,4], label=headerArray[4])
+	pl.plot(data[:,0], data[:,5], label=headerArray[5])
+	pl.xlabel('Iteration')
+	pl.ylabel('Value')
+	pl.legend(loc=0)
+	#the third subplot plots the best penalized cost and the best feasible cost
+	pl.subplot(313)
+	pl.plot(data[:,0], data[:,6], label=headerArray[6])
+	pl.plot(data[:,0], data[:,7], label=headerArray[7])
+	pl.xlabel('Iteration')
+	pl.ylabel('Value')
+	pl.legend(loc=0)
+
+	pl.tight_layout()
 	pl.savefig(outputFolderpath + trimmedFilename + outputFileFormat, bbox_inches='tight')
 	pl.close()
 	

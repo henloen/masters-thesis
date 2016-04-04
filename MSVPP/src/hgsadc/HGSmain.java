@@ -7,7 +7,8 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 
 public class HGSmain {
 	
-	private String inputFileName = "data/hgs/input/input data hgs.xls";
+	private String inputFileName = "data/hgs/input/input data hgs.xls",
+			outputFileName = "data/hgs/output/";
 	private IO io;
 	private ProblemData problemData;
 	private HGSprocesses processes;
@@ -22,72 +23,8 @@ public class HGSmain {
 		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
 		main.runEvolutionaryLoop();
-		System.out.println("Final population:");
-		main.printPopulation();
+		main.terminate();
 		
-		main.printRunStatistics();
-		main.printBestSolutions();
-	}
-
-	private void printRunStatistics() {
-		System.out.println("====================== Run complete ===========================");
-		System.out.println("Number of iterations: " + iteration);
-		System.out.println(processes.getRunStatistics());
-	}
-
-	private Individual getBestSolution(ArrayList<Individual> subpopulation) {
-		if (subpopulation.size() == 0){
-			return null;
-		}
-		
-		Comparator<Individual> penCostComparator = Utilities.getPenalizedCostComparator();
-		subpopulation.sort(penCostComparator);
-		return subpopulation.get(0);
-	}
-
-	private void printBestSolutions() {
-		Individual bestFeasibleSolution = getBestSolution(feasiblePopulation);
-		System.out.println("==================== Best feasible solution found ==========================");
-		if (bestFeasibleSolution == null){
-			System.out.println("Tough luck, no feasible solutions in final population");
-		}
-		else {
-			System.out.println(bestFeasibleSolution);
-		}
-		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
-		System.out.println("==================== Best infeasible solution found ==========================");
-		if (bestInfeasibleSolution == null){
-			System.out.println("Hmmm, no infeasible solutions in final population");
-		}
-		else {
-			System.out.println(bestInfeasibleSolution);
-		}
-	}
-
-	
-	private Individual getBestSolution(){
-		Individual bestFeasible = getBestSolution(feasiblePopulation);
-		Individual bestInfeasible = getBestSolution(infeasiblePopulation);
-
-		if (bestFeasible == null) {
-			return bestInfeasible;
-		}
-		if (bestInfeasible == null){
-			return bestFeasible;
-		}
-		
-		if (bestInfeasible.getPenalizedCost() < bestFeasible.getPenalizedCost()){
-			return bestInfeasible;
-		}
-		else {
-			return bestFeasible;
-		}
-	}
-
-	private boolean stoppingCriterion() {
-		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
-		return (iteration > maxIterations) 
-				|| (feasiblePopulation.size() > 0);
 	}
 	
 	private void initialize() {
@@ -101,6 +38,14 @@ public class HGSmain {
 		
 		problemData.printProblemData();
 	}
+	
+	private void terminate() {
+		System.out.println("Final population:");
+		printPopulation();
+		printRunStatistics();
+		printBestSolutions();
+		processes.exportRunStatistics(outputFileName);
+	}
 
 	private void createInitialPopulation(){
 		int populationSize = problemData.getHeuristicParameterInt("Population size");
@@ -113,17 +58,15 @@ public class HGSmain {
 			}
 			addToSubpopulation(individual);
 		}
-		processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
 	}
 	
 	private void runEvolutionaryLoop() {
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
-			iteration++;
 			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
+			iteration++;
 		}
-		processes.exportRunStatistics();
 		System.out.println();
 	}
 	
@@ -138,6 +81,12 @@ public class HGSmain {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
 		//printPopulation();
+	}
+	
+	private boolean stoppingCriterion() {
+		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
+		return (iteration > maxIterations) 
+				|| (feasiblePopulation.size() > 0);
 	}
 
 	private void updateDiversificationCounter() {
@@ -230,5 +179,60 @@ public class HGSmain {
 			System.out.println("Individual " + individual.getFullText());
 		}
 		System.out.println("");
+	}
+	
+	private void printRunStatistics() {
+		System.out.println("====================== Run complete ===========================");
+		System.out.println("Number of iterations: " + iteration);
+		System.out.println(processes.getRunStatistics());
+	}
+
+	private Individual getBestSolution(ArrayList<Individual> subpopulation) {
+		if (subpopulation.size() == 0){
+			return null;
+		}
+		
+		Comparator<Individual> penCostComparator = Utilities.getPenalizedCostComparator();
+		subpopulation.sort(penCostComparator);
+		return subpopulation.get(0);
+	}
+
+	private void printBestSolutions() {
+		Individual bestFeasibleSolution = getBestSolution(feasiblePopulation);
+		System.out.println("==================== Best feasible solution found ==========================");
+		if (bestFeasibleSolution == null){
+			System.out.println("Tough luck, no feasible solutions in final population");
+		}
+		else {
+			System.out.println(bestFeasibleSolution);
+		}
+		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
+		System.out.println("==================== Best infeasible solution found ==========================");
+		if (bestInfeasibleSolution == null){
+			System.out.println("Hmmm, no infeasible solutions in final population");
+		}
+		else {
+			System.out.println(bestInfeasibleSolution);
+		}
+	}
+
+	
+	private Individual getBestSolution(){
+		Individual bestFeasible = getBestSolution(feasiblePopulation);
+		Individual bestInfeasible = getBestSolution(infeasiblePopulation);
+
+		if (bestFeasible == null) {
+			return bestInfeasible;
+		}
+		if (bestInfeasible == null){
+			return bestFeasible;
+		}
+		
+		if (bestInfeasible.getPenalizedCost() < bestFeasible.getPenalizedCost()){
+			return bestInfeasible;
+		}
+		else {
+			return bestFeasible;
+		}
 	}
 }
