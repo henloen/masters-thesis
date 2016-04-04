@@ -1,6 +1,7 @@
 package hgsadc.implementations;
 
 import hgsadc.Individual;
+import hgsadc.Utilities;
 import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
@@ -155,11 +156,36 @@ public class GenotypeHGS implements Genotype {
 	@Override
 	public Set<Integer> getDaysWithVesselDeparture() {
 		Set<Integer> daysWithVesselDeparture = new HashSet<Integer>();
-		for (Integer vessel : vesselDeparturePatternChromosome.keySet()) {
-			Set<Integer> departuresForVessel = vesselDeparturePatternChromosome.get(vessel);
-			daysWithVesselDeparture.addAll(departuresForVessel);
-		}
+		HashMap<Integer, Set<Integer>> vesselDeparturesPerDay = getVesselDeparturesPerDay();
 		
+		for (Integer day : vesselDeparturesPerDay.keySet()) {
+			if (!vesselDeparturesPerDay.get(day).isEmpty()){
+				daysWithVesselDeparture.add(day);
+			}
+		}
 		return daysWithVesselDeparture;
+	}
+
+	@Override
+	public HashMap<Integer, Set<Integer>> getVesselDeparturesPerDay() {
+		return Utilities.getReversedHashMap(vesselDeparturePatternChromosome);
+	}
+	
+	@Override
+	public HashMap<Integer, Set<Integer>> getInstallationDeparturesPerDay() {
+		return Utilities.getReversedHashMap(installationDeparturePatternChromosome);
+	}
+	
+	@Override
+	public Set<Integer> getDaysWithInstallationDeparture() {
+		Set<Integer> daysWithInstallationDeparture = new HashSet<Integer>();
+		HashMap<Integer, Set<Integer>> vesselDeparturesPerDay = getVesselDeparturesPerDay();
+		
+		for (Integer day : vesselDeparturesPerDay.keySet()) {
+			if (!vesselDeparturesPerDay.get(day).isEmpty()){
+				daysWithInstallationDeparture.add(day);
+			}
+		}
+		return daysWithInstallationDeparture;
 	}
 }

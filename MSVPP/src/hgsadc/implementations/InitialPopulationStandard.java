@@ -69,8 +69,8 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 	}
 	
 	private HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> createGiantTourChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome, HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
-		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = getReversedInstallationChromosome(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
-		HashMap<Integer, Set<Integer>> reversedVesselChromosome = getReversedVesselChromosome(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
+		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = Utilities.getReversedHashMap(installationDepartureChromosome); //the key is a period/day and the Set<Integer> is a set of installation numbers
+		HashMap<Integer, Set<Integer>> reversedVesselChromosome = Utilities.getReversedHashMap(vesselDepartureChromosome); //the key is a period/day, and the Set<Integer> is a set of vessel numbers
 		
 		int nDays = problemData.getLengthOfPlanningPeriod();
 		int nVessels = problemData.getVessels().size();
@@ -190,37 +190,7 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		}
 		return false;
 	}
-	
-	private HashMap<Integer, Set<Integer>> getReversedInstallationChromosome(HashMap<Integer, Set<Integer>> installationDepartureChromosome) {
-		HashMap<Integer, Set<Integer>> reversedInstallationChromosome = new HashMap<Integer, Set<Integer>>();
-		for (Integer installation : installationDepartureChromosome.keySet()) {
-			for (Integer day : installationDepartureChromosome.get(installation)) {
-				Set<Integer> existingInstallations = reversedInstallationChromosome.get(day);
-				if (existingInstallations == null) {
-					existingInstallations = new HashSet<Integer>();
-				}
-				existingInstallations.add(installation);
-				reversedInstallationChromosome.put(day, existingInstallations);
-			}
-		}
-		return reversedInstallationChromosome;
-	}
-	
-	
-	private HashMap<Integer, Set<Integer>> getReversedVesselChromosome(HashMap<Integer, Set<Integer>> vesselDepartureChromosome) {
-		HashMap<Integer, Set<Integer>> reversedVesselChromosome = new HashMap<Integer, Set<Integer>>();
-		for (Integer vessel : vesselDepartureChromosome.keySet()) {
-			for (Integer day : vesselDepartureChromosome.get(vessel)) {
-				Set<Integer> existingVessels = reversedVesselChromosome.get(day);
-				if (existingVessels == null) {
-					existingVessels = new HashSet<Integer>();
-				}
-				existingVessels.add(vessel);
-				reversedVesselChromosome.put(day, existingVessels);
-			}
-		}
-		return reversedVesselChromosome;
-	}
+
 	
 
 }
