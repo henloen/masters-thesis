@@ -1,6 +1,7 @@
 package hgsadc;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -98,6 +99,16 @@ public class Individual {
 	
 	public boolean isFeasible() {
 		return phenotype.isFeasible();
+	}
+
+
+	public HashMap<Integer, Set<Integer>> getVesselDeparturesPerDay() {
+		return genotype.getVesselDeparturesPerDay();
+	}
+
+
+	public void setGenotype(Genotype genotype) {
+		this.genotype = genotype;
 	}
 	
 	/*

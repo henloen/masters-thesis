@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -127,6 +129,38 @@ public class Utilities {
 		T element = pickRandomElementFromList(list);
 		list.remove(element);
 		return element;
+	}
+	
+	public static HashMap<Integer, Set<Integer>> getReversedHashMap(HashMap<Integer, Set<Integer>> hashMap) {
+		HashMap<Integer, Set<Integer>> reversedHashMap = new HashMap<Integer, Set<Integer>>();
+		for (Integer key : hashMap.keySet()) {
+			for (Integer value : hashMap.get(key)) {
+				Set<Integer> existingSet = reversedHashMap.get(value);
+				if (existingSet == null) {
+					existingSet = new HashSet<Integer>();
+				}
+				existingSet.add(key);
+				reversedHashMap.put(value, existingSet);
+			}
+		}
+		return reversedHashMap;
+	}
+
+	public static HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> deepCopyGiantTour(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour) {
+		// TODO Auto-generated method stub
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourCopy = new HashMap<>();
+		
+		for (Integer day : giantTour.keySet()) {
+			HashMap<Integer, ArrayList<Integer>> dayDepartures = giantTour.get(day);
+			HashMap<Integer, ArrayList<Integer>> dayDeparturesCopy = new HashMap<>();
+			
+			for (Integer vessel : dayDepartures.keySet()){
+				ArrayList<Integer> voyageCopy = new ArrayList<>(dayDepartures.get(vessel));
+				dayDeparturesCopy.put(vessel, voyageCopy);
+			}
+			giantTourCopy.put(day, dayDeparturesCopy);
+		}
+		return giantTourCopy;
 	}
 
 	

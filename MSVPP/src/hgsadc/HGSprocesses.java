@@ -181,7 +181,7 @@ public class HGSprocesses {
 
 	private void selectEducationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Education protocol")) {
-			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol);
+			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol, genoToPhenoConverterProtocol);
 				break;
 			default: educationProtocol = null;
 				break;
