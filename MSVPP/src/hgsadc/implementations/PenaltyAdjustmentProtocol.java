@@ -34,20 +34,29 @@ public class PenaltyAdjustmentProtocol {
 		if (individual.getPhenotype().isNumberOfInstallationsFeasible()){
 			numberOfInstallationsFeasibleSolutions++;
 		}
+		
+		System.out.println("Number of solutions since penalty adjustment: " + solutionsSincePenaltyAdjustment);
 	}
 	
 	public void adjustPenalties(ArrayList<Individual> entirePopulation, FitnessEvaluationProtocol fitnessProtocol){
-		if (solutionsSincePenaltyAdjustment == 100){
+		if (solutionsSincePenaltyAdjustment >= 100){
+			System.out.println("Adjusting penalty parameters...");
+			
 			adjustCapacityPenalty(fitnessProtocol);
 			adjustDurationPenalty(fitnessProtocol);
 			adjustNumberOfInstallationsPenalty(fitnessProtocol);
+			
+			System.out.println("New duration penalty: " + fitnessProtocol.getDurationViolationPenalty());
+			System.out.println("New capacity penalty: " + fitnessProtocol.getCapacityViolationPenalty());
+			System.out.println("New nInstallations penalty: " + fitnessProtocol.getNumberOfInstallationsPenalty());
+			
+			solutionsSincePenaltyAdjustment = 0;
+			capacityFeasibleSolutions = 0;
+			durationFeasibleSolutions = 0;
+			numberOfInstallationsFeasibleSolutions = 0;
+			
+			fitnessProtocol.setPenalizedCostPopulation(entirePopulation);
 		}
-		solutionsSincePenaltyAdjustment = 0;
-		capacityFeasibleSolutions = 0;
-		durationFeasibleSolutions = 0;
-		numberOfInstallationsFeasibleSolutions = 0;
-		
-		fitnessProtocol.setPenalizedCostPopulation(entirePopulation);
 	}
 	
 	private void adjustCapacityPenalty(FitnessEvaluationProtocol fitnessProtocol){

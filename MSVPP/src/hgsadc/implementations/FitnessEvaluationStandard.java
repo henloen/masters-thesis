@@ -228,8 +228,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	}
 
 	@Override
-	public void setNumberOfInstallationsViolationPenalty(
-			double numberOfInstallationsViolationPenalty) {
-		this.ncloseProp = numberOfInstallationsViolationPenalty;
+	public void setNumberOfInstallationsViolationPenalty(double numberOfInstallationsViolationPenalty) {
+		this.numberOfInstallationsPenalty = numberOfInstallationsViolationPenalty;
 	}
 }
