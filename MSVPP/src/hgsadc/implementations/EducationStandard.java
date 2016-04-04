@@ -63,7 +63,7 @@ public class EducationStandard implements EducationProtocol {
 				if (voyage != null) {
 					Voyage improvedVoyage = getImprovedRoute(voyage);
 					giantTour.get(day).put(vessel, improvedVoyage);
-					giantTourChromosome.get(day).put(vessel.getNumber(), improvedVoyage.getInstallations());
+					giantTourChromosome.get(day).put(vessel.getNumber(), new ArrayList<Integer>(improvedVoyage.getInstallations()));
 				}
 			}
 		}

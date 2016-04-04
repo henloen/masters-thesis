@@ -32,7 +32,7 @@ public class IO {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
-		heuristicParameters = readParameters(1, 13);
+		heuristicParameters = readParameters(1, 14);
 		installations = readInstallations(1,3);
 		vessels = readVessels(1,23);
 		distances = readDistances(1,32);

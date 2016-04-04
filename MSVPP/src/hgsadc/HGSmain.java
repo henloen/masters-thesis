@@ -85,8 +85,16 @@ public class HGSmain {
 	
 	private boolean stoppingCriterion() {
 		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
-		return (iteration > maxIterations) 
-				|| (feasiblePopulation.size() > 0);
+		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
+		double gap = problemData.getHeuristicParameterDouble("Gap from best known solution");
+		if (feasiblePopulation.size() > 0) {
+			double bestFeasibleSailingCost = getBestSolution(feasiblePopulation).getPenalizedCost();
+			return (iteration > maxIterations)
+					|| ((bestFeasibleSailingCost - bestKnownSailingCost) < (gap*bestKnownSailingCost));
+		}
+		else {
+			return (iteration > maxIterations);
+		}
 	}
 
 	private void updateDiversificationCounter() {
@@ -204,7 +212,8 @@ public class HGSmain {
 			System.out.println("Tough luck, no feasible solutions in final population");
 		}
 		else {
-			System.out.println(bestFeasibleSolution);
+			System.out.println(bestFeasibleSolution.getFullText());
+			System.out.println(bestFeasibleSolution.getPhenotype().getScheduleString());
 		}
 		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
 		System.out.println("==================== Best infeasible solution found ==========================");
@@ -212,7 +221,8 @@ public class HGSmain {
 			System.out.println("Hmmm, no infeasible solutions in final population");
 		}
 		else {
-			System.out.println(bestInfeasibleSolution);
+			System.out.println(bestInfeasibleSolution.getFullText());
+			System.out.println(bestInfeasibleSolution.getPhenotype().getScheduleString());
 		}
 	}
 

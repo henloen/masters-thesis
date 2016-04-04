@@ -65,7 +65,7 @@ public class Voyage {
 	}
 	
 	public void setDurationViolation(int minVoyageDuration, int maxVoyageDuration){
-		durationViolation = Math.max(0, Math.max(duration - maxVoyageDuration, minVoyageDuration - duration));
+		durationViolation = Math.max(0, duration - maxVoyageDuration);
 	}
 	
 	public void setCapacityViolation() {

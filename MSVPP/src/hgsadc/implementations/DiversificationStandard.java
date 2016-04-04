@@ -33,15 +33,15 @@ public class DiversificationStandard implements DiversificationProtocol {
 	
 	@Override
 	public void updateCounterSinceLastImprovement(double newBestSolution){
-		System.out.println("Current best solution : " + bestSolution);
-		System.out.println("New best solution: " + newBestSolution);
+		//System.out.println("Current best solution : " + bestSolution);
+		//System.out.println("New best solution: " + newBestSolution);
 		if (newBestSolution < bestSolution){
-			System.out.println("New solution is better");
+			//System.out.println("New solution is better");
 			bestSolution = newBestSolution;
 			resetCounter();
 		}
 		iterationsWithoutImprovement++;
-		System.out.println("Iterations since last improvement: " + iterationsWithoutImprovement);
+		//System.out.println("Iterations since last improvement: " + iterationsWithoutImprovement);
 	}
 
 	@Override

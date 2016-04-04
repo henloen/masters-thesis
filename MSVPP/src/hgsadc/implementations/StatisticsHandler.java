@@ -24,9 +24,9 @@ public class StatisticsHandler {
 	String[] properties = {"# feasible solutions", "# infeasible solutions",
 			"cap. penality", "dur. penality", "num. penality",
 			"best penalized cost", "best feasible cost",
-			"cap. violation",
-			"dur. violation",
-			"num. violation"};
+			"best cap. violation", "best dur. violation", "best num. violation",
+			"avg cap. violation", "avg dur. violation", "avg num. violation",
+			"Gap from BKS",};
 
 	public StatisticsHandler(ProblemData problemData, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
 		this.problemData = problemData;
@@ -37,6 +37,7 @@ public class StatisticsHandler {
 	
 	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		HashMap<String, Double> iterationStatistics = new HashMap<String, Double>();
+		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
 		Individual bestPenalizedCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation, infeasiblePopulation);
 		Individual bestFeasibleCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation);
 		iterationStatistics.put("# feasible solutions", (double) feasiblePopulation.size());
@@ -44,16 +45,22 @@ public class StatisticsHandler {
 		iterationStatistics.put("best penalized cost", bestPenalizedCostIndividual.getPenalizedCost());
 		if (bestFeasibleCostIndividual == null) {//no feasible individual
 			iterationStatistics.put("best feasible cost", 0.0);
+			iterationStatistics.put("Gap from BKS", 0.0);
 		}
 		else {
 			iterationStatistics.put("best feasible cost", bestFeasibleCostIndividual.getPenalizedCost());
+			double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
+			iterationStatistics.put("Gap from BKS", (bestFeasibleCostIndividual.getPenalizedCost() / bestKnownSailingCost)-1);
 		}
 		iterationStatistics.put("cap. penality", fitnessEvaluationProtocol.getCapacityViolationPenalty());
 		iterationStatistics.put("dur. penality", fitnessEvaluationProtocol.getDurationViolationPenalty());
 		iterationStatistics.put("num. penality", fitnessEvaluationProtocol.getNumberOfInstallationsPenalty());;
-		iterationStatistics.put("cap. violation", bestPenalizedCostIndividual.getPhenotype().getCapacityViolation());
-		iterationStatistics.put("dur. violation", bestPenalizedCostIndividual.getPhenotype().getDurationViolation());
-		iterationStatistics.put("num. violation", bestPenalizedCostIndividual.getPhenotype().getNumberOfInstallationsViolation());
+		iterationStatistics.put("best cap. violation", bestPenalizedCostIndividual.getPhenotype().getCapacityViolation());
+		iterationStatistics.put("best dur. violation", bestPenalizedCostIndividual.getPhenotype().getDurationViolation());
+		iterationStatistics.put("best num. violation", bestPenalizedCostIndividual.getPhenotype().getNumberOfInstallationsViolation());
+		iterationStatistics.put("avg cap. violation", getAverageCapacityViolation(entirePopulation));
+		iterationStatistics.put("avg dur. violation", getAverageDurationViolation(entirePopulation));
+		iterationStatistics.put("avg num. violation", getAverageNumberOfInstallationsViolation(entirePopulation));
 		statistics.put(iteration, iterationStatistics);
 	}
 
@@ -121,5 +128,28 @@ public class StatisticsHandler {
 		return population.get(0);
 	}
 	
+	public double getAverageDurationViolation(ArrayList<Individual> population) {
+		double sumDurationViolation = 0.0;
+		for (Individual individual : population) {
+			sumDurationViolation += individual.getPhenotype().getDurationViolation();
+		}
+		return sumDurationViolation / population.size();
+	}
+	
+	public double getAverageCapacityViolation(ArrayList<Individual> population) {
+		double sumCapacityViolation = 0.0;
+		for (Individual individual : population) {
+			sumCapacityViolation += individual.getPhenotype().getCapacityViolation();
+		}
+		return sumCapacityViolation / population.size();
+		}	
+	
+	public double getAverageNumberOfInstallationsViolation(ArrayList<Individual> population) {
+		double sumNumberOfInstallationsViolation = 0.0;
+		for (Individual individual : population) {
+			sumNumberOfInstallationsViolation += individual.getPhenotype().getNumberOfInstallationsViolation();
+		}
+		return sumNumberOfInstallationsViolation / population.size();
+	}	
 
 }

@@ -51,8 +51,14 @@ public class Installation {
 	}
 	
 	public String toString() {
+		return "" + number;
+	}
+	
+	/*
+	public String toString() {
 		return "Name: " + name + ", number: " + number + ", service time: " + serviceTime + ", opening hour: " + openingHour +
 				", closing hour: " + closingHour + ", demand: " + demand + ", frequency: " + frequency;
 	}
+	*/
 
 }
