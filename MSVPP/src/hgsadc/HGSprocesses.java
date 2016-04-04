@@ -8,6 +8,7 @@ import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
 import hgsadc.implementations.PenaltyAdjustmentProtocol;
 import hgsadc.implementations.ReproductionStandard;
+import hgsadc.implementations.StatisticsHandler;
 import hgsadc.implementations.SurvivorSelectionStandard;
 import hgsadc.protocols.DiversificationProtocol;
 import hgsadc.protocols.EducationProtocol;
@@ -35,7 +36,9 @@ public class HGSprocesses {
 	private DiversificationProtocol diversificationProtocol;
 	private SurvivorSelectionProtocol survivorSelectionProtocol;
 	private PenaltyAdjustmentProtocol penaltyAdjustmentProtocol;
-
+	
+	private StatisticsHandler statisticsHandler;
+	
 	public HGSprocesses(ProblemData problemData) {
 		this.problemData = problemData;
 		selectProtocols();
@@ -123,6 +126,7 @@ public class HGSprocesses {
 		selectEducationProtocol();
 		selectDiversificationProtocol();
 		selectSurvivorSelectionProtocol();
+		statisticsHandler = new StatisticsHandler(problemData, fitnessEvaluationProtocol);
 	}
 
 	private void initializePenaltyAdjustmentProtocol() {
@@ -220,11 +224,11 @@ public class HGSprocesses {
 	}
 	
 	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
-		
+			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
 	}
 	
-	public void exportRunStatistics() {
-		
+	public void exportRunStatistics(String outputFileName) {
+		statisticsHandler.exportStatistics(outputFileName);
 	}
 
 

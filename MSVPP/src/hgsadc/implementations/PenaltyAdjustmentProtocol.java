@@ -35,7 +35,7 @@ public class PenaltyAdjustmentProtocol {
 			numberOfInstallationsFeasibleSolutions++;
 		}
 		
-		System.out.println("Number of solutions since penalty adjustment: " + solutionsSincePenaltyAdjustment);
+		//System.out.println("Number of solutions since penalty adjustment: " + solutionsSincePenaltyAdjustment);
 	}
 	
 	public void adjustPenalties(ArrayList<Individual> entirePopulation, FitnessEvaluationProtocol fitnessProtocol){
