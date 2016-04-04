@@ -35,17 +35,17 @@ def plotSingleFile(filename):
 	trimmedFilename = trimFilename(filename) #used to create a plot with the filename without the entire filepath
 
 	#plotting
-	pl.figure()
+	pl.figure(figsize=(10,15))
 	pl.title(parameterString)
 	#the first subplot plots the number of individuals
-	pl.subplot(311);
+	pl.subplot(411);
 	pl.plot(data[:,0], data[:,1], label=headerArray[1])
 	pl.plot(data[:,0], data[:,2], label=headerArray[2])
 	pl.xlabel('Iteration')
 	pl.ylabel('Value')
 	pl.legend(loc=0)
 	#the second subplot plots the penalities
-	pl.subplot(312);
+	pl.subplot(412);
 	pl.plot(data[:,0], data[:,3], label=headerArray[3])
 	pl.plot(data[:,0], data[:,4], label=headerArray[4])
 	pl.plot(data[:,0], data[:,5], label=headerArray[5])
@@ -53,9 +53,17 @@ def plotSingleFile(filename):
 	pl.ylabel('Value')
 	pl.legend(loc=0)
 	#the third subplot plots the best penalized cost and the best feasible cost
-	pl.subplot(313)
+	pl.subplot(413)
 	pl.plot(data[:,0], data[:,6], label=headerArray[6])
 	pl.plot(data[:,0], data[:,7], label=headerArray[7])
+	pl.xlabel('Iteration')
+	pl.ylabel('Value')
+	pl.legend(loc=0)
+	#the fourth subplot plots the violations of the individual with the best penalized cost
+	pl.subplot(414);
+	pl.plot(data[:,0], data[:,8], label=headerArray[8])
+	pl.plot(data[:,0], data[:,9], label=headerArray[9])
+	pl.plot(data[:,0], data[:,10], label=headerArray[10])
 	pl.xlabel('Iteration')
 	pl.ylabel('Value')
 	pl.legend(loc=0)

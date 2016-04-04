@@ -20,7 +20,13 @@ public class StatisticsHandler {
 	private ProblemData problemData;
 	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	private HashMap<Integer, HashMap<String, Double>> statistics;
-	String[] properties = {"# feasible solutions", "# infeasible solutions", "cap. penality", "dur. penality", "num. penality", "best penalized cost", "best feasible cost"};
+	//the order of the properties array is important, as it corresponds with the sequence of plotting in the plotting file
+	String[] properties = {"# feasible solutions", "# infeasible solutions",
+			"cap. penality", "dur. penality", "num. penality",
+			"best penalized cost", "best feasible cost",
+			"cap. violation",
+			"dur. violation",
+			"num. violation"};
 
 	public StatisticsHandler(ProblemData problemData, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
 		this.problemData = problemData;
@@ -31,15 +37,23 @@ public class StatisticsHandler {
 	
 	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		HashMap<String, Double> iterationStatistics = new HashMap<String, Double>();
-		double bestPenalizedCost = getBestPenalizedCost(feasiblePopulation, infeasiblePopulation);
-		double bestFeasibleCost = getBestPenalizedCost(feasiblePopulation);
+		Individual bestPenalizedCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation, infeasiblePopulation);
+		Individual bestFeasibleCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation);
 		iterationStatistics.put("# feasible solutions", (double) feasiblePopulation.size());
 		iterationStatistics.put("# infeasible solutions", (double) infeasiblePopulation.size());
-		iterationStatistics.put("best penalized cost", bestPenalizedCost);
-		iterationStatistics.put("best feasible cost", bestFeasibleCost);
+		iterationStatistics.put("best penalized cost", bestPenalizedCostIndividual.getPenalizedCost());
+		if (bestFeasibleCostIndividual == null) {//no feasible individual
+			iterationStatistics.put("best feasible cost", 0.0);
+		}
+		else {
+			iterationStatistics.put("best feasible cost", bestFeasibleCostIndividual.getPenalizedCost());
+		}
 		iterationStatistics.put("cap. penality", fitnessEvaluationProtocol.getCapacityViolationPenalty());
 		iterationStatistics.put("dur. penality", fitnessEvaluationProtocol.getDurationViolationPenalty());
 		iterationStatistics.put("num. penality", fitnessEvaluationProtocol.getNumberOfInstallationsPenalty());;
+		iterationStatistics.put("cap. violation", bestPenalizedCostIndividual.getPhenotype().getCapacityViolation());
+		iterationStatistics.put("dur. violation", bestPenalizedCostIndividual.getPhenotype().getDurationViolation());
+		iterationStatistics.put("num. violation", bestPenalizedCostIndividual.getPhenotype().getNumberOfInstallationsViolation());
 		statistics.put(iteration, iterationStatistics);
 	}
 
@@ -94,17 +108,17 @@ public class StatisticsHandler {
 		return dateFormat.format(date);
 	}
 	
-	private double getBestPenalizedCost(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+	private Individual getBestPenalizedCostIndividual(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
-		return getBestPenalizedCost(entirePopulation);
+		return getBestPenalizedCostIndividual(entirePopulation);
 	}
 	
-	private double getBestPenalizedCost(ArrayList<Individual> population) {
+	private Individual getBestPenalizedCostIndividual(ArrayList<Individual> population) {
 		if (population.size() == 0) {
-			return 0;
+			return null;
 		}
 		Collections.sort(population, Utilities.getPenalizedCostComparator());
-		return population.get(0).getPenalizedCost();
+		return population.get(0);
 	}
 	
 
