@@ -209,7 +209,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 			HashMap<Integer, Set<Integer>> installationChromosome, HashMap<Integer, Set<Integer>> vesselChromosome) {
 		
 		HashMap<Integer, Integer> remainingVisits = getRemainingVisits(installationChromosome);
-		System.out.println("Remaining visits to fill in " + remainingVisits);
+//		System.out.println("Remaining visits to fill in " + remainingVisits);
 		
 		while (!remainingVisits.isEmpty()){
 			Integer installation = Utilities.pickRandomElementFromSet(remainingVisits.keySet());
@@ -260,9 +260,9 @@ public class ReproductionStandard implements ReproductionProtocol {
 		int bestPos = -1;
 		double bestInsertionCost = Double.MAX_VALUE;
 		
-		System.out.println("Finding best insertion for installation " + installation);
+//		System.out.println("Finding best insertion for installation " + installation);
 		for (DayVesselCell cell : admissibleCells) {
-			System.out.println("Checking cell " + cell);
+//			System.out.println("Checking cell " + cell);
 			int day = cell.day;
 			int vessel = cell.vessel;
 			Vessel vesselObject = problemData.getVesselByNumber(vessel);
@@ -287,7 +287,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 				}
 			}
 		}
-		System.out.println("Inserting installation " + installation + " into " + bestCell + " at " + bestPos);
+//		System.out.println("Inserting installation " + installation + " into " + bestCell + " at " + bestPos);
 		insertInstallation(installation, bestCell, bestPos, giantTourChromosome, installationChromosome, vesselChromosome);
 	}
 
