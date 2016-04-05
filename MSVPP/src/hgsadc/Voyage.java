@@ -29,8 +29,9 @@ public class Voyage {
 			double sailingTime = Math.ceil((problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed()));
 			duration += sailingTime + toInstallation.getServiceTime();
 			capacityUsed += toInstallation.getDemandPerVisit();
-			cost += (sailingTime*vessel.getFuelCostSailing()) + (toInstallation.getServiceTime()*vessel.getFuelCostInstallation());
+			cost += (sailingTime*vessel.getFuelCostSailing());
 			if (installationNumber != 0) {
+				cost += (toInstallation.getServiceTime()*vessel.getFuelCostInstallation());
 				visitedInstallations.add(toInstallation);
 			}
 			fromInstallation = toInstallation;

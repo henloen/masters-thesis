@@ -96,7 +96,7 @@ public class PhenotypeHGS implements Phenotype {
 					str += "-";
 				}
 				else {
-					str += voyage.getInstallations() + " dur: " + voyage.getDuration();
+					str += voyage.getInstallations() + " dur: " + voyage.getDuration() + " cost: " + voyage.getCost() + " cap: " + voyage.getCapacityUsed();
 				}
 				if (i < vessels.size()-1) { //don't add a comma after the last vessel
 					str += ", ";
