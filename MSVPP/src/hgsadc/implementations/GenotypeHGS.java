@@ -188,4 +188,19 @@ public class GenotypeHGS implements Genotype {
 		}
 		return daysWithInstallationDeparture;
 	}
+	
+	public static String getGiantTourString(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour){
+		String str = "";
+		for (Integer day : giantTour.keySet()) {
+			for (Integer vessel : giantTour.get(day).keySet()) {
+				str += "(" + day + "," + vessel + ")={";
+				for (Integer installation : giantTour.get(day).get(vessel)){
+					str += installation + " ";
+				}
+				str += "}, ";
+			}
+		}
+		return str;
+		
+	}
 }
