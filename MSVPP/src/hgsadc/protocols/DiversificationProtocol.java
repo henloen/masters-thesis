@@ -1,7 +1,5 @@
 package hgsadc.protocols;
 
-import hgsadc.Individual;
-
 import java.util.ArrayList;
 
 public interface DiversificationProtocol {
@@ -14,8 +12,8 @@ public interface DiversificationProtocol {
 
 	void updateCounterSinceLastImprovement(double newBestSolution);
 
-	int getNumberOfDiversifications();
+	void addDiversification(int iteration);
 
-	void addDiversification();
+	ArrayList<Integer> getDiversificationNumbers();
 
 }

@@ -206,8 +206,8 @@ public class HGSprocesses {
 		}	
 	}
 	
-	public void recordDiversification() {
-		diversificationProtocol.addDiversification();
+	public void recordDiversification(int iteration) {
+		diversificationProtocol.addDiversification(iteration);
 		diversificationProtocol.resetCounter();
 	}
 
@@ -218,7 +218,7 @@ public class HGSprocesses {
 
 	public String getRunStatistics() {
 		String stats = "";
-		stats += "Number of diversifications: " + diversificationProtocol.getNumberOfDiversifications();
+		stats += "Diversifications happened at iteration: " + diversificationProtocol.getDiversificationNumbers();
 		stats += "\nNumber of crossover restarts: " + reproductionProtocol.getNumberOfCrossoverRestarts();
 		return stats;
 	}
@@ -227,8 +227,10 @@ public class HGSprocesses {
 			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
 	}
 	
-	public void exportRunStatistics(String outputFileName) {
-		statisticsHandler.exportStatistics(outputFileName);
+	public void exportRunStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual) {
+		statisticsHandler.exportStatistics(outputFileName, runningTime, bestFeasibleIndividual,
+				diversificationProtocol.getDiversificationNumbers(), reproductionProtocol.getNumberOfCrossoverRestarts(),
+				initialPopulationProtocol.getNumberOfConstructionHeuristicRestarts());
 	}
 
 

@@ -13,6 +13,7 @@ public class IO {
 	private HashMap<String, String> problemInstanceParameters;
 	private HashMap<Integer, Integer> depotCapacity;
 	private HashMap<String, String> heuristicParameters;
+	private int datasetSheet;
 	ArrayList<Installation> installations;
 	ArrayList<Vessel> vessels;
 	HashMap<Installation, HashMap<Installation, Double>> distances;
@@ -32,10 +33,18 @@ public class IO {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
-		heuristicParameters = readParameters(1, 14);
-		installations = readInstallations(1,3);
-		vessels = readVessels(1,23);
-		distances = readDistances(1,32);
+		heuristicParameters = readParameters(1, 15);
+		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
+		if (datasetSheet == 1) {
+			installations = readInstallations(1,3);
+			vessels = readVessels(1,23);
+			distances = readDistances(1,32);
+		}
+		else if (datasetSheet == 2) {
+			installations = readInstallations(1,3);
+			vessels = readVessels(1,35);
+			distances = readDistances(1,45);
+		}
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}
 	
@@ -113,7 +122,7 @@ public class IO {
 		ArrayList<ArrayList<String>> table = new ArrayList<ArrayList<String>>();
 		try {
 			Workbook workbook = Workbook.getWorkbook(new File(inputFileName));
-			Sheet sheet = workbook.getSheet(1); //the parameters are expected in the first sheet
+			Sheet sheet = workbook.getSheet(datasetSheet); //the installation, vessel and distance data are expected in the first sheet
 			int i = 0;
 			while (sheet.getCell(startColumn,startRow+i).getContents() != "") { //while the next row is not empty
 				ArrayList<String> row = new ArrayList<String>();

@@ -4,6 +4,7 @@ import hgsadc.Vessel;
 import hgsadc.Voyage;
 import hgsadc.protocols.Phenotype;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,6 +84,7 @@ public class PhenotypeHGS implements Phenotype {
 	
 	public String getScheduleString() {
 		String str = "";
+		DecimalFormat numberFormat = new DecimalFormat("0.00");
 		ArrayList<Integer> days = new ArrayList<Integer>(giantTour.keySet());
 		Collections.sort(days);
 		for (Integer day : days) {
@@ -96,7 +98,10 @@ public class PhenotypeHGS implements Phenotype {
 					str += "-";
 				}
 				else {
-					str += voyage.getInstallations() + " dur: " + voyage.getDuration() + " cost: " + voyage.getCost() + " cap: " + voyage.getCapacityUsed();
+					str += voyage.getInstallations()
+							+ " cost: " + numberFormat.format(voyage.getCost())
+							+ " dur: " + numberFormat.format(voyage.getDuration())
+							+ " cap: " + numberFormat.format(voyage.getCapacityUsed());
 				}
 				if (i < vessels.size()-1) { //don't add a comma after the last vessel
 					str += ", ";

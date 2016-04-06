@@ -20,6 +20,7 @@ public class StatisticsHandler {
 	private ProblemData problemData;
 	private FitnessEvaluationProtocol fitnessEvaluationProtocol;
 	private HashMap<Integer, HashMap<String, Double>> statistics;
+	private int skipNumberOfRows, lastGeneration;
 	//the order of the properties array is important, as it corresponds with the sequence of plotting in the plotting file
 	String[] properties = {"# feasible solutions", "# infeasible solutions",
 			"cap. penality", "dur. penality", "num. penality",
@@ -32,6 +33,9 @@ public class StatisticsHandler {
 		this.problemData = problemData;
 		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
 		statistics = new HashMap<Integer, HashMap<String,Double>>();
+		skipNumberOfRows = 16 + problemData.getProblemInstanceParameters().size() + problemData.getHeuristicParameters().size()
+				+ problemData.getLengthOfPlanningPeriod(); 
+		//all rows before the data starts are skipped, see an output file for the layout
 	}
 
 	
@@ -65,24 +69,42 @@ public class StatisticsHandler {
 	}
 
 
-	public void exportStatistics(String outputFileName) {
+	public void exportStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual,
+			ArrayList<Integer> diversificationNumbers, int numberOfCrossoverRestarts, int numberOfConstructionHeuristicRestarts) {
 		PrintWriter writer = null;
-		String fileName = outputFileName + getCurrentTime() + ".txt";
+		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + ".txt";
 		try {
 			writer = new PrintWriter(fileName, "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Something went wrong when writing to output file");
 		}
-		int lastGeneration = Collections.max(statistics.keySet());
+		lastGeneration = Collections.max(statistics.keySet());
+		DecimalFormat numberFormat = new DecimalFormat("0.00");
+		writer.println("Skip number of rows: " + skipNumberOfRows);
+		writer.println("Time used: " + numberFormat.format((double) runningTime/1000000000) + " seconds");
 		writeParameters(writer);
+		writeRunStatistics(writer, diversificationNumbers, numberOfCrossoverRestarts, numberOfConstructionHeuristicRestarts);
+		writeSolution(writer, bestFeasibleIndividual);
 		writeStatisticsHeader(writer);
-		for (int i=1; i<lastGeneration+1; i++) {
+		for (int i=0; i<lastGeneration+1; i++) {
 			writeIterationStatistics(i, writer);
 		}
 		writer.close();
 	}
 	
+	private void writeRunStatistics(PrintWriter writer,
+			ArrayList<Integer> diversificationNumbers,
+			int numberOfCrossoverRestarts,
+			int numberOfConstructionHeuristicRestarts) {
+		writer.println("Number of iterations: " + lastGeneration);
+		writer.println("Diversifaction happened at iterations: " + diversificationNumbers);
+		writer.println("Number of crossover restarts: " + numberOfCrossoverRestarts);
+		writer.println("Number of construction heuristic restarts: " + numberOfConstructionHeuristicRestarts);
+		writer.println();
+	}
+
+
 	private void writeStatisticsHeader(PrintWriter writer) {
 		String header = "Gen.";
 		for (String property : properties) { //get statistics header
@@ -105,8 +127,25 @@ public class StatisticsHandler {
 	}
 	
 	private void writeParameters(PrintWriter writer) {
-		//TODO write a method that prints the relevant parameters
-		writer.println("some parameters");
+		writer.println(); //one row of space
+		writer.println("Problem instance parameters: ");
+		for (String key : problemData.getProblemInstanceParameters().keySet()) {
+			writer.println(key + " = " + problemData.getProblemInstanceParameters().get(key));
+		}
+		writer.println(); //one row of space
+		writer.println("Heuristic parameters: ");
+		for (String key : problemData.getHeuristicParameters().keySet()) {
+			writer.println(key + " = " + problemData.getHeuristicParameters().get(key));
+		}
+		writer.println(); //one row of space
+	}
+	
+	public void writeSolution(PrintWriter writer, Individual individual) {
+		DecimalFormat df = new DecimalFormat("0.00");
+		writer.println("Penalized cost: " + df.format(individual.getPenalizedCost()));
+		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
+		writer.println("Gap from BKS: " + df.format(((individual.getPenalizedCost() / bestKnownSailingCost)-1)));
+		writer.println(individual.getPhenotype().getScheduleString());
 	}
 	
 	public String getCurrentTime() {

@@ -19,30 +19,40 @@ def getParameterString(parameter):
 	parameterArray = parameter.strip().split('\t')
 	return ", ".join(parameterArray)
 
+def getNumberOfRowsToSkip(numberString):
+	return int(numberString.split(' ')[-1])
+
 def plotSingleFile(filename):
-	
-	data = np.loadtxt(filename, skiprows=2) #loads the data with built-in method, but skips the first two rows
 	
 	#reads the two first rows to get the parameter settings and the headers of the data
 	with open(filename, 'r') as f:
-		parameterSettings = f.readline()
-		headers = f.readline()
+		numberOfRowsToSkip = getNumberOfRowsToSkip(f.readline())
+		for num in range(numberOfRowsToSkip-1):
+			headers = f.readline()
 	f.close()
 
-	parameterString = getParameterString(parameterSettings)
+	data = np.loadtxt(filename, skiprows=numberOfRowsToSkip) #loads the data with built-in method, but skips the first rows
+
 	headerArray = headers.strip().split('\t')
 
 	trimmedFilename = trimFilename(filename) #used to create a plot with the filename without the entire filepath
 
+	#if the dimensions of the loaded data is 1, the algorithm terminated after the construction heuristic
+	if (len(data.shape) == 1):
+		print "Solution was found in construction heuristic, " + trimmedFilename + " was not plotted"
+		return
+
 	#plotting
 	pl.figure(figsize=(10,15))
-	pl.title(parameterString)
+	#pl.title(parameterString)
 	#the first subplot plots the number of individuals
 	pl.subplot(611);
 	pl.plot(data[:,0], data[:,1], 'r',label=headerArray[1])
 	pl.plot(data[:,0], data[:,2], 'b', label=headerArray[2])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Number of individuals')
+	axes = pl.gca()
+	axes.set_ylim(ymin=0)
 	pl.legend(loc=0)
 	#the second subplot plots the penalities
 	pl.subplot(612);
@@ -50,14 +60,17 @@ def plotSingleFile(filename):
 	pl.plot(data[:,0], data[:,4], 'b', label=headerArray[4])
 	pl.plot(data[:,0], data[:,5], 'g', label=headerArray[5])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Penalty')
 	pl.legend(loc=0)
 	#the third subplot plots the best penalized cost and the best feasible cost
 	pl.subplot(613)
 	pl.plot(data[:,0], data[:,6], label=headerArray[6])
 	pl.plot(data[:,0], data[:,7], label=headerArray[7])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Cost')
+	axes = pl.gca()
+	ylim = axes.get_ylim()
+	axes.set_ylim(ymax=ylim[1]*1.1)#adjust the y-axis
 	pl.legend(loc=0)
 	#the fourth subplot plots the violations of the individual with the best penalized cost
 	pl.subplot(614);
@@ -65,7 +78,7 @@ def plotSingleFile(filename):
 	pl.plot(data[:,0], data[:,9], 'b', label=headerArray[9])
 	pl.plot(data[:,0], data[:,10], 'g', label=headerArray[10])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Violation')
 	pl.legend(loc=0)
 	#the fifth subplot plots the average violations of the population
 	pl.subplot(615);
@@ -73,13 +86,15 @@ def plotSingleFile(filename):
 	pl.plot(data[:,0], data[:,12], 'b', label=headerArray[12])
 	pl.plot(data[:,0], data[:,13], 'g', label=headerArray[13])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Violation')
 	pl.legend(loc=0)
 	#the sixth subplot plots the gap from the best feasible solution to the best known solution
 	pl.subplot(616);
 	pl.plot(data[:,0], data[:,14], 'r', label=headerArray[14])
+	axes = pl.gca()
+	axes.set_ylim([0,0.25])
 	pl.xlabel('Iteration')
-	pl.ylabel('Value')
+	pl.ylabel('Gap from BKS')
 	pl.legend(loc=0)
 
 

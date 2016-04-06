@@ -13,6 +13,8 @@ public class HGSmain {
 	private ProblemData problemData;
 	private HGSprocesses processes;
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
+	private Individual bestFeasibleIndividual;
+	private long startTime, stopTime;
 	
 	private int iteration;
 	
@@ -20,6 +22,7 @@ public class HGSmain {
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
+		
 		System.out.println("Creating initial population...");
 		main.createInitialPopulation();
 		main.runEvolutionaryLoop();
@@ -37,6 +40,7 @@ public class HGSmain {
 		iteration = 1;
 		
 		problemData.printProblemData();
+		startTime = System.nanoTime();
 	}
 	
 	private void terminate() {
@@ -44,7 +48,8 @@ public class HGSmain {
 		printPopulation();
 		printRunStatistics();
 		printBestSolutions();
-		processes.exportRunStatistics(outputFileName);
+		stopTime = System.nanoTime();
+		processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
 	}
 
 	private void createInitialPopulation(){
@@ -61,6 +66,7 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
+		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation);//record initial population
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
@@ -87,10 +93,13 @@ public class HGSmain {
 		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
 		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
 		double gap = problemData.getHeuristicParameterDouble("Gap from best known solution");
+		if (gap == 0) {
+			gap = 0.0001; //to avoid that the algorithm can't find BKS due to rounding errors 
+		}
 		if (feasiblePopulation.size() > 0) {
 			double bestFeasibleSailingCost = getBestSolution(feasiblePopulation).getPenalizedCost();
 			return (iteration > maxIterations)
-					|| ((bestFeasibleSailingCost - bestKnownSailingCost) < (gap*bestKnownSailingCost));
+					|| ((bestFeasibleSailingCost - bestKnownSailingCost) <= (gap*bestKnownSailingCost));
 		}
 		else {
 			return (iteration > maxIterations);
@@ -117,7 +126,7 @@ public class HGSmain {
 		System.out.println("Breeding new population...");
 		createInitialPopulation();
 		
-		processes.recordDiversification();
+		processes.recordDiversification(iteration);
 	}
 	
 	/**
@@ -151,6 +160,10 @@ public class HGSmain {
 	
 	private void addToSubpopulation(Individual individual) {
 		if (individual.isFeasible()) {
+			if ((bestFeasibleIndividual == null)
+				|| (individual.getPenalizedCost() < bestFeasibleIndividual.getPenalizedCost())) {
+				bestFeasibleIndividual = individual;
+			}
 			feasiblePopulation.add(individual);
 		}
 		else {
@@ -191,7 +204,7 @@ public class HGSmain {
 	
 	private void printRunStatistics() {
 		System.out.println("====================== Run complete ===========================");
-		System.out.println("Number of iterations: " + iteration);
+		System.out.println("Number of iterations: " + (iteration-1));
 		System.out.println(processes.getRunStatistics());
 	}
 
@@ -206,14 +219,13 @@ public class HGSmain {
 	}
 
 	private void printBestSolutions() {
-		Individual bestFeasibleSolution = getBestSolution(feasiblePopulation);
 		System.out.println("==================== Best feasible solution found ==========================");
-		if (bestFeasibleSolution == null){
+		if (bestFeasibleIndividual == null){
 			System.out.println("Tough luck, no feasible solutions in final population");
 		}
 		else {
-			System.out.println(bestFeasibleSolution.getFullText());
-			System.out.println(bestFeasibleSolution.getPhenotype().getScheduleString());
+			System.out.println(bestFeasibleIndividual.getFullText());
+			System.out.println(bestFeasibleIndividual.getPhenotype().getScheduleString());
 		}
 		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
 		System.out.println("==================== Best infeasible solution found ==========================");

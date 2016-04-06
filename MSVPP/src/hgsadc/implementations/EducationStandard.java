@@ -9,12 +9,10 @@ import hgsadc.Voyage;
 import hgsadc.protocols.EducationProtocol;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
-import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
