@@ -1,14 +1,13 @@
 package hgsadc;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import hgsadc.protocols.FitnessEvaluationProtocol;
-import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.Genotype;
 import hgsadc.protocols.Phenotype;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Set;
+import hgsadc.protocols.FitnessEvaluationProtocol;
+import hgsadc.protocols.GenoToPhenoConverterProtocol;
 
 
 public class Individual {

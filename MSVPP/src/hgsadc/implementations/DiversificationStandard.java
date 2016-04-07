@@ -1,5 +1,7 @@
 package hgsadc.implementations;
 
+import java.util.ArrayList;
+
 import hgsadc.protocols.DiversificationProtocol;
 
 public class DiversificationStandard implements DiversificationProtocol {
@@ -7,12 +9,12 @@ public class DiversificationStandard implements DiversificationProtocol {
 	private final int iterationsBeforeDiversify; // Number of iterations without improvement before diversifying
 	private int iterationsWithoutImprovement;
 	private double bestSolution;
-	private int numberOfDiversifications;
+	private ArrayList<Integer> diversificationNumbers;
 	
 	public DiversificationStandard(int iterationsBeforeDiversify) {
 		this.iterationsBeforeDiversify = iterationsBeforeDiversify;
 		this.iterationsWithoutImprovement = 0;
-		this.numberOfDiversifications = 0;
+		this.diversificationNumbers = new ArrayList<Integer>();
 		bestSolution = Double.MAX_VALUE;
 	}
 	
@@ -45,12 +47,13 @@ public class DiversificationStandard implements DiversificationProtocol {
 	}
 
 	@Override
-	public int getNumberOfDiversifications() {
-		return numberOfDiversifications;
+	public void addDiversification(int iteration) {
+		diversificationNumbers.add(iteration);
 	}
+
 	@Override
-	public void addDiversification() {
-		this.numberOfDiversifications++;
+	public ArrayList<Integer> getDiversificationNumbers() {
+		return diversificationNumbers;
 	}
 	
 }

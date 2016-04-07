@@ -1,6 +1,5 @@
 package hgsadc.implementations;
 
-import hgsadc.Individual;
 import hgsadc.Utilities;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;

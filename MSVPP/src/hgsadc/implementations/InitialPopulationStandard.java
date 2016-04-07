@@ -40,6 +40,10 @@ public class InitialPopulationStandard implements InitialPopulationProtocol {
 		System.out.println("Number of depot restarts: " + numberOfDepotRestarts + "\n");
 	}
 	
+	public int getNumberOfConstructionHeuristicRestarts() {
+		return numberOfDepotRestarts + numberOfPatternRestarts;
+	}
+	
 	private HashMap<Integer, Set<Integer>> createInstallationDepartureChromosome() {
 		HashMap<Integer, Set<Integer>> individualInstallationDeparturePatterns = new HashMap<Integer, Set<Integer>>();
 		for (Installation installation : problemData.getCustomerInstallations()) {//for each installation, choose a random installation pattern based on the frequency
