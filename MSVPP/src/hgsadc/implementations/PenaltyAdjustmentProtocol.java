@@ -7,10 +7,10 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 
 public class PenaltyAdjustmentProtocol {
 	
-	private int solutionsSincePenaltyAdjustment;
-	private int capacityFeasibleSolutions;
-	private int durationFeasibleSolutions;
-	private int numberOfInstallationsFeasibleSolutions;
+	private double solutionsSincePenaltyAdjustment;
+	private double capacityFeasibleSolutions;
+	private double durationFeasibleSolutions;
+	private double numberOfInstallationsFeasibleSolutions;
 	
 	private double targetFeasibleProportion;
 	
