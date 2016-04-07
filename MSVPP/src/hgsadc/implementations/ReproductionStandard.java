@@ -27,7 +27,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
 	}
 
-	@Override
+	@Override 
 	public Individual crossover(ArrayList<Individual> parents) {
 		
 		//System.out.println("Starting crossover of parents " + parents.get(0) + " and " + parents.get(1));

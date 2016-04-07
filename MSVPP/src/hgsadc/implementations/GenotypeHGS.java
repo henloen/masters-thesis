@@ -2,6 +2,8 @@ package hgsadc.implementations;
 
 import hgsadc.Individual;
 import hgsadc.Utilities;
+import hgsadc.protocols.FitnessEvaluationProtocol;
+import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
@@ -203,4 +205,5 @@ public class GenotypeHGS implements Genotype {
 		return str;
 		
 	}
+	
 }

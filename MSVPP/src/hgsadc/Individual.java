@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import hgsadc.protocols.FitnessEvaluationProtocol;
+import hgsadc.protocols.GenoToPhenoConverterProtocol;
 import hgsadc.protocols.Genotype;
 import hgsadc.protocols.Phenotype;
 
@@ -111,6 +113,12 @@ public class Individual {
 		this.genotype = genotype;
 	}
 	
+	public void setGenotypeAndUpdatePenalizedCost(Genotype newGenotype, GenoToPhenoConverterProtocol genoToPhenoConverter, FitnessEvaluationProtocol fitnessEvaluationProtocol){
+		setGenotype(newGenotype);
+//		System.out.println("Old penCost: " + individual.getPenalizedCost() + " New penCost: " + newIndividual.getPenalizedCost());
+		genoToPhenoConverter.convertGenotypeToPhenotype(this);
+		fitnessEvaluationProtocol.setPenalizedCostIndividual(this);
+	}
 	/*
 	public String toString() {
 		String str = "";

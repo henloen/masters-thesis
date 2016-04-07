@@ -147,7 +147,7 @@ public class Utilities {
 	}
 
 	public static HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> deepCopyGiantTour(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour) {
-		// TODO Auto-generated method stub
+
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourCopy = new HashMap<>();
 		
 		for (Integer day : giantTour.keySet()) {
@@ -161,6 +161,25 @@ public class Utilities {
 			giantTourCopy.put(day, dayDeparturesCopy);
 		}
 		return giantTourCopy;
+	}
+	/**
+	 * 
+	 * @param set
+	 * @return Returns cartesian product of itself, i.e. set x set, excluding those pairs where both elements in a pair are equal
+	 */
+	public static <T> Set<Set<T>> cartesianProduct(Set<T> set) {
+		HashSet<Set<T>> cartProduct = new HashSet<>();
+		for (T element : set) {
+			for (T element2 : set){
+				if (element != element2){
+					HashSet<T> pair = new HashSet<T>();
+					pair.add(element);
+					pair.add(element2);
+					cartProduct.add(pair);
+				}
+			}
+		}
+		return cartProduct;
 	}
 
 	

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 public class EducationStandard implements EducationProtocol {
@@ -151,7 +152,81 @@ public class EducationStandard implements EducationProtocol {
 	}
 
 	private void vesselPatternImprovement(Individual individual) {
-		// TODO Auto-generated method stub
+		/*
+		for each day t with more than one vessel departure
+			for all combinations of two voyages departing that day
+			        Calculate penalized cost of merging the two voyages (inserting each installation at best position in each voyage)
+			end-for
+			if best merge has reduced cost
+				Choose and perform best merge
+			end-if
+		end-for
+		*/
+//		System.out.println("\nRunning vessel pattern improvement");
+		HashMap<Integer, Set<Integer>> reversedVesselDepartures = individual.getVesselDeparturesPerDay();
+		
+		for (Integer day : reversedVesselDepartures.keySet()) {
+			// If more than one departure on that day
+			if (reversedVesselDepartures.get(day).size() > 1){ 
+				Set<Integer> vesselsDepartingOnDay = reversedVesselDepartures.get(day);
+				Set<Set<Integer>> allVesselCombinationsForDay = Utilities.cartesianProduct(vesselsDepartingOnDay);
+				
+				int bestVesselToKeep = -1;
+				int bestVesselToRemove = -1;
+				Voyage bestNewVoyage = null;
+				double bestCostReduction = 0;
+				
+				
+				for (Set<Integer> vesselPair : allVesselCombinationsForDay){
+					
+					// Randomly select which vessel to remove, and which to keep 
+					Integer vesselNumberToKeep = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
+					Vessel vesselToKeep = problemData.getVesselByNumber(vesselNumberToKeep);
+					Integer vesselNumberToRemove = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
+					Vessel vesselToRemove = problemData.getVesselByNumber(vesselNumberToRemove);
+					
+					Voyage voyageToMergeInto = individual.getPhenotype().getGiantTour().get(day).get(vesselToKeep);
+					Voyage voyageToMove = individual.getPhenotype().getGiantTour().get(day).get(vesselToRemove);
+					
+					double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(voyageToMergeInto) + fitnessEvaluationProtocol.getPenalizedCost(voyageToMove);
+					
+					ArrayList<Integer> voyageSeq = new ArrayList<>(voyageToMergeInto.getInstallations());
+					// Insert each installation in voyageToMove into voyageToMergeInto
+					for (Integer installation : voyageToMove.getInstallations()) {
+						VoyageInsertion bestInsertion = getBestInsertionIntoVoyage(installation, voyageToMergeInto);
+						int bestPos = bestInsertion.positionInVoyageToInsertInto;
+						voyageSeq.add(bestPos, installation);
+					}
+					
+					Voyage newVoyage = new Voyage(voyageSeq, vesselToKeep, voyageToMergeInto.getVesselDeparturePattern(), day, problemData);
+					double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
+					double costReduction = currentPenalizedCost - newPenalizedCost;
+					
+					if (costReduction > bestCostReduction){
+						bestVesselToKeep = vesselNumberToKeep;
+						bestVesselToRemove = vesselNumberToRemove;
+						bestNewVoyage =  newVoyage;
+						bestCostReduction = costReduction;
+					}
+				}
+				// If there exists a merger resulting in reduced cost, change giant tour
+				if (bestCostReduction > 0){
+					// Copy current giantTour
+					HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
+					
+					giantTour.get(day).put(bestVesselToKeep, bestNewVoyage.getInstallations()); // Add merged voyage to giantTour 
+					giantTour.get(day).put(bestVesselToRemove, new ArrayList<>()); // Remove voyage from giantTour
+					Genotype newGenotype = new GenotypeHGS(giantTour, problemData.getCustomerInstallations().size(), problemData.getVessels().size());
+					// Update individual
+//					System.out.println("Genotype before merger: ");
+//					System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
+//					System.out.println("\nMerging vessel " + bestVesselToRemove + " into vessel " + bestVesselToKeep + " on day " + day);
+					individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
+//					System.out.println("Genotype after merger: ");
+//					System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
+				}
+			}
+		}
 	}
 
 
@@ -191,10 +266,7 @@ public class EducationStandard implements EducationProtocol {
 				Individual newIndividual = applyInsertions(individual, bestInsertions, installation);
 				// If the pattern change leads to a better solution, change genotype of individual
 				if (newIndividual.getPenalizedCost() < individual.getPenalizedCost()){
-					individual.setGenotype(newIndividual.getGenotype());
-//					System.out.println("Old penCost: " + individual.getPenalizedCost() + " New penCost: " + newIndividual.getPenalizedCost());
-					genoToPhenoConverter.convertGenotypeToPhenotype(individual);
-					fitnessEvaluationProtocol.setPenalizedCostIndividual(individual);
+					individual.setGenotypeAndUpdatePenalizedCost(newIndividual.getGenotype(), genoToPhenoConverter, fitnessEvaluationProtocol);
 					iterationsWithoutChange = 0;
 				}
 				else {
@@ -261,30 +333,15 @@ public class EducationStandard implements EducationProtocol {
 				ArrayList<Integer> currentVoyageSeq = giantTourWithoutInstallation.get(day).get(vesselNumber);
 				
 				Voyage currentVoyage = new Voyage(currentVoyageSeq, vessel, vesselPattern, day, problemData);
-				double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(currentVoyage);
-				
-				int bestPosInDayVesselCell = -1;
-				double bestInsertionCostForDayVesselCell = Double.MAX_VALUE;
 				
 				// Find best position in voyage to insert installation
-				for (int pos = 0; pos <= currentVoyageSeq.size(); pos++){
-					ArrayList<Integer> newVoyageSeq = new ArrayList<>(currentVoyageSeq);
-					newVoyageSeq.add(pos, installation);
-					Voyage newVoyage = new Voyage(newVoyageSeq, vessel, vesselPattern, day, problemData);
-					double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
-					double insertionCost = newPenalizedCost - currentPenalizedCost;
-					
-					// If this position is better than previous position in Voyage
-					if (insertionCost < bestInsertionCostForDayVesselCell) {
-						bestInsertionCostForDayVesselCell = insertionCost;
-						bestPosInDayVesselCell = pos;
-					}
-				}
+				VoyageInsertion bestInsertionForDayVesselCell = getBestInsertionIntoVoyage(installation, currentVoyage);
+				
 				// If this vessel is better than other vessels for that day
-				if (bestInsertionCostForDayVesselCell < bestInsertionCostOnDay){
-					bestInsertionCostOnDay = bestInsertionCostForDayVesselCell;
-					bestVesselOnDay = vesselNumber;
-					bestPos = bestPosInDayVesselCell;
+				if (bestInsertionForDayVesselCell.insertionCost < bestInsertionCostOnDay){
+					bestInsertionCostOnDay = bestInsertionForDayVesselCell.insertionCost;
+					bestVesselOnDay = bestInsertionForDayVesselCell.dayVesselCell.vessel;
+					bestPos = bestInsertionForDayVesselCell.positionInVoyageToInsertInto;
 				}
 			}
 			// Save best insertion for that day
@@ -292,5 +349,33 @@ public class EducationStandard implements EducationProtocol {
 			bestInsertions.add(new VoyageInsertion(bestCell, installation, bestPos, bestInsertionCostOnDay));
 		}
 		return bestInsertions;
+	}
+	
+	public VoyageInsertion getBestInsertionIntoVoyage(int installation, Voyage voyage){
+		
+		ArrayList<Integer> currentVoyageSeq = voyage.getInstallations();
+		Vessel vessel = voyage.getVessel();
+		Set<Integer> vesselPattern = voyage.getVesselDeparturePattern();
+		int day = voyage.getDepartureDay();
+		double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(voyage);
+		
+		double bestInsertionCostForVoyage = Double.MAX_VALUE;
+		int bestPosInVoyage = -1;
+		
+		for (int pos = 0; pos <= currentVoyageSeq.size(); pos++){
+			ArrayList<Integer> newVoyageSeq = new ArrayList<>(currentVoyageSeq);
+			newVoyageSeq.add(pos, installation);
+			Voyage newVoyage = new Voyage(newVoyageSeq, vessel, vesselPattern, day, problemData);
+			double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
+			double insertionCost = newPenalizedCost - currentPenalizedCost;
+			
+			// If this position is better than previous position in Voyage
+			if (insertionCost < bestInsertionCostForVoyage) {
+				bestInsertionCostForVoyage = insertionCost;
+				bestPosInVoyage = pos;
+			}
+		}
+		DayVesselCell cell = new DayVesselCell(day, vessel.getNumber());
+		return new VoyageInsertion(cell, installation, bestPosInVoyage, bestInsertionCostForVoyage); 
 	}
 }
