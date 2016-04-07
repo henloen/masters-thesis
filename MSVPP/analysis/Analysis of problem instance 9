@@ -1,0 +1,38 @@
+Analysis of problem instance 9
+
+Best feasible found:
+Penalized cost: 695199,41
+Gap from BKS: 0,13
+
+Day: 0 - vessel 1: -, vessel 2: [5, 4, 1, 3, 7] cost: 92506,62 dur: 56,33 cap: 670,16, vessel 3: -, vessel 4: [9, 2, 8] cost: 49180,12 dur: 34,58 cap: 351,12, vessel 5: -
+Day: 1 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: [8, 7, 6, 1, 4, 9] cost: 100384,16 dur: 61,83 cap: 899,60
+Day: 2 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: [8, 2, 3, 1, 4, 9] cost: 101390,06 dur: 62,66 cap: 785,00, vessel 5: -
+Day: 3 - vessel 1: [7, 8, 2] cost: 44029,42 dur: 30,33 cap: 302,00, vessel 2: [4, 5, 1, 3, 9] cost: 97657,32 dur: 60,58 cap: 719,28, vessel 3: -, vessel 4: -, vessel 5: -
+Day: 4 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: [2, 9, 1, 3, 7, 8] cost: 68970,94 dur: 47,91 cap: 739,16
+Day: 5 - vessel 1: [6, 4, 1, 3, 2] cost: 92603,57 dur: 56,41 cap: 874,40, vessel 2: -, vessel 3: -, vessel 4: [8, 7, 9] cost: 48477,20 dur: 34,00 cap: 320,88, vessel 5: -
+Day: 6 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: -
+
+Optimal solution
+Sailing cost: 615212
+Day: 0 - vessel 1: [2-3-4-5-1-9-7-8], vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: -
+Day: 1 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: [2-6-1-9-7-8], vessel 5: -
+Day: 2 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: [4-1-3-9-7-8]
+Day: 3 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: [2-3-4-5-1-9-7-8], vessel 5: -
+Day: 4 - vessel 1: [4-1-3-6-9-2-8], vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: -
+Day: 5 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: [2-3-4-1-9-7-8]
+Day: 6 - vessel 1: -, vessel 2: -, vessel 3: -, vessel 4: -, vessel 5: -
+
+
+!Vessel 1, Voyage 475, Fri. Cost: 108662. Duration: 3
+!Vessel 1, Voyage 491, Mon. Cost: 115024. Duration: 3
+!Vessel 4, Voyage 397, Tue. Cost: 68668. Duration: 2
+!Vessel 4, Voyage 491, Thu. Cost: 115024. Duration: 3
+!Vessel 5, Voyage 413, Wed. Cost: 100687. Duration: 3
+!Vessel 5, Voyage 464, Sat. Cost: 107147. Duration: 3
+
+From voyage generation:
+number: 397	 cost: 68667,95	 capacityUsed: 884,00	 departureTime: 56.0	 visited: 0-2-6-1-9-7-8-10
+number: 413	 cost: 100687,14	 capacityUsed: 754,76	 departureTime: 80.0	 visited: 0-4-1-3-9-7-8-10
+number: 464	 cost: 107146,73	 capacityUsed: 895,88	 departureTime: 80.0	 visited: 0-2-3-4-1-9-7-8-10
+number: 475	 cost: 108661,64	 capacityUsed: 1084,40	 departureTime: 80.0	 visited: 0-4-1-3-6-9-2-8-10
+number: 491	 cost: 115024,28	 capacityUsed: 1021,28	 departureTime: 80.0	 visited: 0-2-3-4-5-1-9-7-8-10

@@ -4,6 +4,7 @@ import hgsadc.implementations.DiversificationStandard;
 import hgsadc.implementations.EducationStandard;
 import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
+import hgsadc.implementations.InitialPopulationAimed;
 import hgsadc.implementations.InitialPopulationStandard;
 import hgsadc.implementations.ParentSelectionBinaryTournament;
 import hgsadc.implementations.PenaltyAdjustmentProtocol;
@@ -137,6 +138,8 @@ public class HGSprocesses {
 	private void selectInitialPopulationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Initial population heuristic")) {
 			case "standard": initialPopulationProtocol = new InitialPopulationStandard(problemData);
+				break;
+			case "aimed": initialPopulationProtocol = new InitialPopulationAimed(problemData);
 				break;
 			default: initialPopulationProtocol = null;
 				break;
