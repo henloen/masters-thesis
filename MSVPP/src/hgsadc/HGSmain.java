@@ -109,8 +109,15 @@ public class HGSmain {
 
 	private void updateDiversificationCounter() {
 
-		Individual bestIndividual = getBestSolution();
-		double bestPenalizedCost = bestIndividual.getPenalizedCost();
+		Individual bestFeasibleIndividual = getBestSolution(feasiblePopulation);
+		double bestPenalizedCost;
+		
+		if (bestFeasibleIndividual == null){
+			bestPenalizedCost = Double.POSITIVE_INFINITY;
+		}
+		else {
+			bestPenalizedCost = bestFeasibleIndividual.getPenalizedCost();
+		}
 		processes.updateDiversificationCounter(bestPenalizedCost);
 	}
 

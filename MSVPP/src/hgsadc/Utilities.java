@@ -162,6 +162,21 @@ public class Utilities {
 		}
 		return giantTourCopy;
 	}
+	
+	public static HashMap<Integer, Set<Integer>> deepCopyDepartureChromosome(HashMap<Integer, Set<Integer>> departureChromosome){
+		HashMap<Integer, Set<Integer>> chromosomeCopy = new HashMap<Integer, Set<Integer>>();
+		
+		for (int key : departureChromosome.keySet()) {
+			Set<Integer> setCopy = new HashSet<>();
+			for (int i : departureChromosome.get(key)){
+				setCopy.add(i);
+			}
+			chromosomeCopy.put(key, setCopy);
+		}
+		return chromosomeCopy;
+		
+	}
+	
 	/**
 	 * 
 	 * @param set

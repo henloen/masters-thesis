@@ -14,9 +14,12 @@ import hgsadc.protocols.Genotype;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import ea.svpp.DeparturePatternGenerator;
 
 public class EducationStandard implements EducationProtocol {
 
@@ -45,6 +48,13 @@ public class EducationStandard implements EducationProtocol {
 		if (!isRepair){
 			penaltyAdjustmentProtocol.countAddedIndividual(individual);
 		}
+	}
+
+	private void patternImprovement(Individual individual) {
+		installationPatternImprovement(individual);
+		vesselPatternImprovement(individual);
+		voyageReduction(individual);
+//		installationPatternImprovement(individual);
 	}
 	
 	@Override
@@ -144,11 +154,6 @@ public class EducationStandard implements EducationProtocol {
 		return neighbours;
 	}
 
-	private void patternImprovement(Individual individual) {
-		installationPatternImprovement(individual);
-		vesselPatternImprovement(individual);
-		installationPatternImprovement(individual);
-	}
 
 	private void vesselPatternImprovement(Individual individual) {
 		/*
@@ -280,11 +285,7 @@ public class EducationStandard implements EducationProtocol {
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = getCopyOfGiantTourWithoutInstallation(installation, individual);
 		
 		for (VoyageInsertion voyageInsertion : bestInsertions) {
-			int day = voyageInsertion.dayVesselCell.day;
-			int vessel = voyageInsertion.dayVesselCell.vessel;
-			int pos = voyageInsertion.positionInVoyageToInsertInto;
-			int installationNumber = voyageInsertion.installationNumber;
-			giantTour.get(day).get(vessel).add(pos, installationNumber);
+			applyInsertion(voyageInsertion, giantTour);
 		}
 		
 		int nInstallations = problemData.getCustomerInstallations().size();
@@ -295,6 +296,14 @@ public class EducationStandard implements EducationProtocol {
 		fitnessEvaluationProtocol.setPenalizedCostIndividual(newIndividual);
 		
 		return newIndividual;
+	}
+
+	private void applyInsertion(VoyageInsertion voyageInsertion, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour){
+		int day = voyageInsertion.dayVesselCell.day;
+		int vessel = voyageInsertion.dayVesselCell.vessel;
+		int pos = voyageInsertion.positionInVoyageToInsertInto;
+		int installationNumber = voyageInsertion.installationNumber;
+		giantTour.get(day).get(vessel).add(pos, installationNumber);
 	}
 
 	private HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> getCopyOfGiantTourWithoutInstallation(
@@ -316,38 +325,134 @@ public class EducationStandard implements EducationProtocol {
 	private ArrayList<VoyageInsertion> findBestInsertionsForPattern(Set<Integer> installationPattern, int installation, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation, HashMap<Integer, Set<Integer>> vesselPatterns, HashMap<Integer, Set<Integer>> reversedVesselPatterns){
 		
 		ArrayList<VoyageInsertion> bestInsertions = new ArrayList<>();
-		double totalCost = 0;
 
 		// For each day in installationPattern, find the optimal cell to insert the installation
 		for (Integer day : installationPattern) {
-			
-			double bestInsertionCostOnDay = Double.MAX_VALUE;
-			int bestVesselOnDay = 0;
-			int bestPos  = -1;
-			
-			// Loop through all vessels departing on that day
-			for (Integer vesselNumber : reversedVesselPatterns.get(day)){
-				Vessel vessel = problemData.getVesselByNumber(vesselNumber);
-				Set<Integer> vesselPattern = vesselPatterns.get(vesselNumber);
-				ArrayList<Integer> currentVoyageSeq = giantTourWithoutInstallation.get(day).get(vesselNumber);
-				
-				Voyage currentVoyage = new Voyage(currentVoyageSeq, vessel, vesselPattern, day, problemData);
-				
-				// Find best position in voyage to insert installation
-				VoyageInsertion bestInsertionForDayVesselCell = getBestInsertionIntoVoyage(installation, currentVoyage);
-				
-				// If this vessel is better than other vessels for that day
-				if (bestInsertionForDayVesselCell.insertionCost < bestInsertionCostOnDay){
-					bestInsertionCostOnDay = bestInsertionForDayVesselCell.insertionCost;
-					bestVesselOnDay = bestInsertionForDayVesselCell.dayVesselCell.vessel;
-					bestPos = bestInsertionForDayVesselCell.positionInVoyageToInsertInto;
-				}
-			}
-			// Save best insertion for that day
-			DayVesselCell bestCell = new DayVesselCell(day, bestVesselOnDay);
-			bestInsertions.add(new VoyageInsertion(bestCell, installation, bestPos, bestInsertionCostOnDay));
+			VoyageInsertion bestInsertionOnDay = findBestInsertionOnDay(installation, day, giantTourWithoutInstallation, vesselPatterns, reversedVesselPatterns);
+			bestInsertions.add(bestInsertionOnDay);
 		}
 		return bestInsertions;
+	}
+	
+	private VoyageInsertion findBestInsertionOnDay(int installation, int day, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation, HashMap<Integer, Set<Integer>> vesselPatterns, HashMap<Integer, Set<Integer>> reversedVesselPatterns){
+		double bestInsertionCostOnDay = Double.MAX_VALUE;
+		int bestVesselOnDay = 0;
+		int bestPos  = -1;
+		
+		// Loop through all vessels departing on that day
+		for (Integer vesselNumber : reversedVesselPatterns.get(day)){
+			Vessel vessel = problemData.getVesselByNumber(vesselNumber);
+			Set<Integer> vesselPattern = vesselPatterns.get(vesselNumber);
+			ArrayList<Integer> currentVoyageSeq = giantTourWithoutInstallation.get(day).get(vesselNumber);
+			
+			Voyage currentVoyage = new Voyage(currentVoyageSeq, vessel, vesselPattern, day, problemData);
+			
+			// Find best position in voyage to insert installation
+			VoyageInsertion bestInsertionForDayVesselCell = getBestInsertionIntoVoyage(installation, currentVoyage);
+			
+			// If this vessel is better than other vessels for that day
+			if (bestInsertionForDayVesselCell.insertionCost < bestInsertionCostOnDay){
+				bestInsertionCostOnDay = bestInsertionForDayVesselCell.insertionCost;
+				bestVesselOnDay = bestInsertionForDayVesselCell.dayVesselCell.vessel;
+				bestPos = bestInsertionForDayVesselCell.positionInVoyageToInsertInto;
+			}
+		}
+		// Save best insertion for that day
+		DayVesselCell bestCell = new DayVesselCell(day, bestVesselOnDay);
+		return new VoyageInsertion(bestCell, installation, bestPos, bestInsertionCostOnDay);
+		
+	}
+	
+	private void voyageReduction(Individual individual){
+		/* find the voyage with fewest installations
+			remove the voyage (i.e. remove 	installation visits and remove 	vessel departure)
+			insert the removed installation visits at best feasible positions
+			if the resulting schedule is cheaper
+				keep it
+			else
+				keep the old one
+			end-if
+		*/
+		
+		DayVesselCell shortestVoyageCell = findVoyageWithFewestInstallations(individual.getGenotype().getGiantTourChromosome());
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourCopy = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
+		HashMap<Integer, Set<Integer>> installationPatternsCopy = Utilities.deepCopyDepartureChromosome( ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome());
+		HashMap<Integer, Set<Integer>> vesselPatternsCopy = Utilities.deepCopyDepartureChromosome( ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome());
+		
+		Set<Integer> removedInstallations = removeVoyage(shortestVoyageCell, giantTourCopy, vesselPatternsCopy, installationPatternsCopy);
+		HashMap<Integer, Set<Integer>> vesselDeparturesPerDay = individual.getGenotype().getVesselDeparturesPerDay();
+		
+		while (!removedInstallations.isEmpty()){
+			Integer installation = Utilities.pickAndRemoveRandomElementFromSet(removedInstallations);
+			VoyageInsertion bestInsertion = null;
+			
+			// Find best feasible cell to insert installation
+			for (Integer day : giantTourCopy.keySet()) {
+				if ( !installationPatternsCopy.get(installation).contains(day) ){ // If no departure to installation on day already
+					if (GenotypeHGS.feasibleInstallationPattern(installation, day, installationPatternsCopy, problemData)){ // If inserting departure to installation on day is feasible in terms of spread of departures
+						VoyageInsertion bestInsertionOnDay = findBestInsertionOnDay(installation, day, giantTourCopy, vesselPatternsCopy, vesselDeparturesPerDay);
+						
+						if (bestInsertion == null || bestInsertionOnDay.insertionCost < bestInsertion.insertionCost){
+							bestInsertion = bestInsertionOnDay;
+						}
+					}
+				}
+			}
+			applyInsertion(bestInsertion, giantTourCopy);
+		}
+		
+		int nInstallations = problemData.getCustomerInstallations().size();
+		int nVessels = problemData.getVessels().size();
+		GenotypeHGS newGenotype = new GenotypeHGS(giantTourCopy, nInstallations, nVessels);
+		
+		Individual newIndividual = new Individual(newGenotype);
+		genoToPhenoConverter.convertGenotypeToPhenotype(newIndividual);
+		fitnessEvaluationProtocol.setPenalizedCostIndividual(newIndividual);
+		
+		// Check if the new schedule is better than the one before removing the voyage
+		if (newIndividual.getPenalizedCost() < individual.getPenalizedCost()){
+			individual.setGenotype(newGenotype);
+			genoToPhenoConverter.convertGenotypeToPhenotype(individual);
+			fitnessEvaluationProtocol.setPenalizedCostIndividual(individual);
+		}
+		
+	}
+	
+	
+	private Set<Integer> removeVoyage(DayVesselCell cellToRemoveVoyageFrom, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour, HashMap<Integer, Set<Integer>> vesselPatterns, HashMap<Integer, Set<Integer>> installationPatterns) {
+		int day = cellToRemoveVoyageFrom.day;
+		int vessel = cellToRemoveVoyageFrom.vessel;
+		
+		Set<Integer> removedInstallations = new HashSet<>();
+		ArrayList<Integer> voyageToRemove = giantTour.get(day).get(vessel);
+		
+		for (Integer installation : voyageToRemove){
+			removedInstallations.add(installation);
+			installationPatterns.get(installation).remove(installation);
+		}
+		giantTour.get(day).put(vessel, new ArrayList<>());
+		vesselPatterns.get(vessel).remove(day);
+		
+		return removedInstallations;
+	}
+
+	public DayVesselCell findVoyageWithFewestInstallations(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour){
+		int lengthOfShortestVoyage = Integer.MAX_VALUE;
+		DayVesselCell shortestVoyageCell = null;
+		
+		for (int day : giantTour.keySet()) {
+			HashMap<Integer, ArrayList<Integer>> daySchedule = giantTour.get(day);
+			
+			for (int vessel : daySchedule.keySet()){
+				int nInstallationsInVoyage = daySchedule.get(vessel).size();
+				
+				if (nInstallationsInVoyage < lengthOfShortestVoyage){
+					lengthOfShortestVoyage = nInstallationsInVoyage;
+					shortestVoyageCell = new DayVesselCell(day, vessel);
+				}
+			}
+		}
+		return shortestVoyageCell;
 	}
 	
 	public VoyageInsertion getBestInsertionIntoVoyage(int installation, Voyage voyage){
@@ -377,4 +482,5 @@ public class EducationStandard implements EducationProtocol {
 		DayVesselCell cell = new DayVesselCell(day, vessel.getNumber());
 		return new VoyageInsertion(cell, installation, bestPosInVoyage, bestInsertionCostForVoyage); 
 	}
+	
 }

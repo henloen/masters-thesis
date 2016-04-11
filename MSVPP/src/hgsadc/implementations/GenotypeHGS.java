@@ -1,5 +1,7 @@
 package hgsadc.implementations;
 
+import hgsadc.Installation;
+import hgsadc.ProblemData;
 import hgsadc.Utilities;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
@@ -205,4 +207,48 @@ public class GenotypeHGS implements Genotype {
 		
 	}
 	
+	public static boolean feasibleInstallationPattern(int installation, int day, HashMap<Integer, Set<Integer>> installationChromosome, ProblemData problemData) {
+		
+		Set<Integer> currentInstallationPattern = installationChromosome.get(installation); 
+		if (currentInstallationPattern.contains(day)){
+			return false;
+		}
+		
+		Set<Integer> newInstallationPattern = new HashSet<Integer>(currentInstallationPattern);
+		newInstallationPattern.add(day);
+		
+		Installation installationObject = problemData.getInstallationByNumber(installation);
+		int frequency = installationObject.getFrequency();
+		Set<Set<Integer>> feasiblePatterns = problemData.getInstallationDeparturePatterns().get(frequency);
+		
+		// Check if new pattern is subset of any valid pattern
+		return Utilities.setIsSubsetOfAnySetInCollection(newInstallationPattern, feasiblePatterns);
+	}
+	
+	public static boolean availableDepotCapacity(int day, int depotCapacity,
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
+		int nDeparturesOnDay = 0;
+		
+		for (ArrayList<Integer> vesselDepartures : giantTourChromosome.get(day).values()) { // Loop through all vessels for that day
+			if (!vesselDepartures.isEmpty()) nDeparturesOnDay++;
+		}
+			
+		return nDeparturesOnDay < depotCapacity;
+	}
+
+	public static boolean feasibleVesselPattern(int day, int vessel, HashMap<Integer, Set<Integer>> vesselChromosome, ProblemData problemData) {
+
+		Set<Integer> newVesselPattern = new HashSet<Integer>(vesselChromosome.get(vessel));
+		newVesselPattern.add(day);
+		
+		Set<Set<Integer>> feasiblePatterns = new HashSet<>();
+		// Iterate through all possible numberOfDepartures, add all feasible patterns for each
+		for (Set<Set<Integer>> set : problemData.getVesselDeparturePatterns().values()) {
+			feasiblePatterns.addAll(set);
+		}
+		
+		// Check if new pattern is subset of any valid pattern
+		return Utilities.setIsSubsetOfAnySetInCollection(newVesselPattern, feasiblePatterns);
+	}
+
 }

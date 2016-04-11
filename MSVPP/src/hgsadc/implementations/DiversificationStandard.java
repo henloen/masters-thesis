@@ -42,7 +42,7 @@ public class DiversificationStandard implements DiversificationProtocol {
 			bestSolution = newBestSolution;
 			resetCounter();
 		}
-		iterationsWithoutImprovement++;
+		incrementCounter();
 		//System.out.println("Iterations since last improvement: " + iterationsWithoutImprovement);
 	}
 

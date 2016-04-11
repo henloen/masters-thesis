@@ -147,19 +147,29 @@ public class ReproductionStandard implements ReproductionProtocol {
 			 */
 			int day = cell.day;
 			int vessel = cell.vessel;
+			int depotCapacity = problemData.getDepotCapacity().get(day);
 			
 			ArrayList<Integer> departuresInParent2Cell = p2.get(day).get(vessel);
 			
 //			System.out.println("Departures in parent 2: " + departuresInParent2Cell);
 			for (Integer installation : departuresInParent2Cell) {
-				if (!feasibleInstallationPattern(installation, day, installationChromosome)){
+				if (! GenotypeHGS.feasibleInstallationPattern(installation, day, installationChromosome, problemData)){
 //					System.out.println("Infeasible installation pattern: " + installation);
 				}
-				else if (!availableDepotCapacity(day, giantTourChromosome)){
+				else if (!vesselDepartsOnDay(day, vessel, giantTourChromosome)){					
+					if (!GenotypeHGS.availableDepotCapacity(day, depotCapacity, giantTourChromosome)){
 //					System.out.println("Insufficient depot capacity: " + installation);
-				}
-				else if (!feasibleVesselPattern(day, vessel, vesselChromosome)){
+					}
+					else if (!GenotypeHGS.feasibleVesselPattern(day, vessel, vesselChromosome, problemData)){
 //					System.out.println("Infeasible installation pattern: " + installation);
+					}
+					else {
+						// Add installation to voyage
+//						System.out.println("Feasible copy: " + installation);
+						giantTourChromosome.get(day).get(vessel).add(installation);
+						installationChromosome.get(installation).add(day);
+						vesselChromosome.get(vessel).add(day);
+					}
 				}
 				else {
 					// Add installation to voyage
@@ -202,6 +212,12 @@ public class ReproductionStandard implements ReproductionProtocol {
 			return crossover(parents);
 		}
 		
+	}
+
+	private boolean vesselDepartsOnDay(int day, int vessel,
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
+
+		return !giantTourChromosome.get(day).get(vessel).isEmpty();
 	}
 
 	private boolean fillInRemainingServices(ArrayList<Individual> parents,
@@ -308,7 +324,7 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		for (Integer day : admissibleDays) {
 			for (int vessel = 1; vessel <= problemData.getVessels().size(); vessel++){
-				if (feasibleVesselPattern(day, vessel, vesselChromosome)){
+				if (GenotypeHGS.feasibleVesselPattern(day, vessel, vesselChromosome, problemData)){
 					admissibleCells.add(new DayVesselCell(day, vessel));
 				}
 			}
@@ -326,58 +342,16 @@ public class ReproductionStandard implements ReproductionProtocol {
 	private Set<Integer> getAdmissibleDays(Integer installation, HashMap<Integer, Set<Integer>> installationChromosome,
 			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
 
+		
 		Set<Integer> admissibleDays = new HashSet<Integer>();
 		for (int day = 0; day < problemData.getLengthOfPlanningPeriod(); day++){
-			if (availableDepotCapacity(day, giantTourChromosome) && feasibleInstallationPattern(installation, day, installationChromosome)){
+			int depotCapacity = problemData.getDepotCapacity().get(day);
+			
+			if (GenotypeHGS.availableDepotCapacity(day, depotCapacity, giantTourChromosome) && GenotypeHGS.feasibleInstallationPattern(installation, day, installationChromosome, problemData)){
 				admissibleDays.add(day);
 			}
 		}
 		return admissibleDays;
-	}
-
-	private boolean availableDepotCapacity(int day,
-			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
-		int depotCapacity = problemData.getDepotCapacity().get(day);
-		int nDeparturesOnDay = 0;
-		
-		for (ArrayList<Integer> vesselDepartures : giantTourChromosome.get(day).values()) { // Loop through all vessels for that day
-			if (!vesselDepartures.isEmpty()) nDeparturesOnDay++;
-		}
-			
-		return nDeparturesOnDay < depotCapacity;
-	}
-
-	private boolean feasibleVesselPattern(int day, int vessel, HashMap<Integer, Set<Integer>> vesselChromosome) {
-
-		Set<Integer> newVesselPattern = new HashSet<Integer>(vesselChromosome.get(vessel));
-		newVesselPattern.add(day);
-		
-		Set<Set<Integer>> feasiblePatterns = new HashSet<>();
-		// Iterate through all possible numberOfDepartures, add all feasible patterns for each
-		for (Set<Set<Integer>> set : problemData.getVesselDeparturePatterns().values()) {
-			feasiblePatterns.addAll(set);
-		}
-		
-		// Check if new pattern is subset of any valid pattern
-		return Utilities.setIsSubsetOfAnySetInCollection(newVesselPattern, feasiblePatterns);
-	}
-
-	private boolean feasibleInstallationPattern(Integer installation, int day, HashMap<Integer, Set<Integer>> installationChromosome) {
-		
-		Set<Integer> currentInstallationPattern = installationChromosome.get(installation); 
-		if (currentInstallationPattern.contains(day)){
-			return false;
-		}
-		
-		Set<Integer> newInstallationPattern = new HashSet<Integer>(currentInstallationPattern);
-		newInstallationPattern.add(day);
-		
-		Installation installationObject = problemData.getInstallationByNumber(installation);
-		int frequency = installationObject.getFrequency();
-		Set<Set<Integer>> feasiblePatterns = problemData.getInstallationDeparturePatterns().get(frequency);
-		
-		// Check if new pattern is subset of any valid pattern
-		return Utilities.setIsSubsetOfAnySetInCollection(newInstallationPattern, feasiblePatterns);
 	}
 	
 	public int getNumberOfCrossoverRestarts() {
