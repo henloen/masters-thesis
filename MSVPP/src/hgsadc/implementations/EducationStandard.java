@@ -9,6 +9,7 @@ import hgsadc.Voyage;
 import hgsadc.protocols.EducationProtocol;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
+import hgsadc.protocols.Genotype;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -286,7 +287,7 @@ public class EducationStandard implements EducationProtocol {
 			giantTour.get(day).get(vessel).add(pos, installationNumber);
 		}
 		
-		int nInstallations = problemData.getInstallations().size();
+		int nInstallations = problemData.getCustomerInstallations().size();
 		int nVessels = problemData.getVessels().size();
 		
 		Individual newIndividual = new Individual(new GenotypeHGS(giantTour, nInstallations, nVessels));

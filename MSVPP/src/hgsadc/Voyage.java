@@ -27,11 +27,12 @@ public class Voyage {
 		for (Integer installationNumber : installationsIncludingDepot) { //the depot is not contained in the list of installations, so a for each loop can be used
 			Installation toInstallation = problemData.getInstallationByNumber(installationNumber);
 			double sailingTime = Math.ceil((problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed()));
-			duration += sailingTime + toInstallation.getServiceTime();
+			duration += sailingTime;
 			capacityUsed += toInstallation.getDemandPerVisit();
 			cost += (sailingTime*vessel.getFuelCostSailing());
 			if (installationNumber != 0) {
 				cost += (toInstallation.getServiceTime()*vessel.getFuelCostInstallation());
+				duration += toInstallation.getServiceTime();
 				visitedInstallations.add(toInstallation);
 			}
 			fromInstallation = toInstallation;

@@ -1,6 +1,7 @@
 package hgsadc.implementations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -145,13 +146,11 @@ public class InitialPopulationAimed implements InitialPopulationProtocol {
 	private Set<Set<Integer>> getPossibleVesselPatterns(Set<Set<Integer>> allPatternsForNumberOfDepartures, HashMap<Integer, Set<Integer>> individualVesselDeparturePatterns, Set<Integer> unvisitedDays, int unvisitedDatsThatNeedsVisit) {
 		//want to sort the unvisited days to determine the first unvisited day in the period
 		if (unvisitedDays.size() > 0) {
-			Integer firstUnvisitedDay = Collections.min(unvisitedDays);
 			Set<Set<Integer>> possibleVesselPatterns = new HashSet<Set<Integer>>();
 			for (Set<Integer> pattern : allPatternsForNumberOfDepartures) {
 				Set<Integer> unvisitedDaysInPattern = new HashSet<Integer>(pattern);
 				unvisitedDaysInPattern.retainAll(unvisitedDays); //a set containing the days in the pattern that does not already have departures by other vessels 
-				if ((unvisitedDaysInPattern.contains(firstUnvisitedDay))
-						&& (unvisitedDaysInPattern.size() >= unvisitedDatsThatNeedsVisit)) {//the pattern is added if it departs on enough of the unvisited days 
+				if ( (unvisitedDaysInPattern.size() > 0) && (unvisitedDaysInPattern.size() >= unvisitedDatsThatNeedsVisit)) {//the pattern is added if it departs on enough of the unvisited days 
 					possibleVesselPatterns.add(pattern);
 				}
 			}

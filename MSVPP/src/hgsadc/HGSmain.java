@@ -1,9 +1,10 @@
 package hgsadc;
 
+import hgsadc.implementations.GenotypeHGS;
+import hgsadc.protocols.FitnessEvaluationProtocol;
+
 import java.util.ArrayList;
 import java.util.Comparator;
-
-import hgsadc.protocols.FitnessEvaluationProtocol;
 
 public class HGSmain {
 	
@@ -88,7 +89,7 @@ public class HGSmain {
 		}
 		//printPopulation();
 	}
-	
+
 	private boolean stoppingCriterion() {
 		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
 		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
@@ -235,6 +236,9 @@ public class HGSmain {
 		else {
 			System.out.println(bestInfeasibleSolution.getFullText());
 			System.out.println(bestInfeasibleSolution.getPhenotype().getScheduleString());
+			GenotypeHGS geno = (GenotypeHGS) bestInfeasibleSolution.getGenotype();
+			System.out.println(geno.getInstallationDeparturePatternChromosome());
+			System.out.println(geno.getVesselDeparturePatternChromosome());
 		}
 	}
 
