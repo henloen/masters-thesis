@@ -10,9 +10,8 @@ import jxl.Workbook;
 public class IO {
 	
 	private String inputFileName;
-	private HashMap<String, String> problemInstanceParameters;
+	private HashMap<String, String> problemInstanceParameters, heuristicParameters, charteredVessels;
 	private HashMap<Integer, Integer> depotCapacity;
-	private HashMap<String, String> heuristicParameters;
 	private int datasetSheet;
 	ArrayList<Installation> installations;
 	ArrayList<Vessel> vessels;
@@ -33,6 +32,7 @@ public class IO {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
+		charteredVessels = readParameters(8, 16);
 		heuristicParameters = readParameters(1, 15);
 		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
 		if (datasetSheet == 1) {
@@ -43,7 +43,7 @@ public class IO {
 		else if (datasetSheet == 2) {
 			installations = readInstallations(1,3);
 			vessels = readVessels(1,35);
-			distances = readDistances(1,45);
+			distances = readDistances(1,44);
 		}
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}
@@ -96,8 +96,10 @@ public class IO {
 		int vesselNumber = 1;
 		for (ArrayList<String> row : vesselData) {
 			Vessel vessel = convertStringsToVessel(row, vesselNumber);
-			vessels.add(vessel);
-			vesselNumber++;
+			if (Integer.parseInt(charteredVessels.get(vessel.getName())) == 1) {
+				vessels.add(vessel);
+				vesselNumber++;
+			}
 		}
 		return vessels;
 	}

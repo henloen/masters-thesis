@@ -70,7 +70,7 @@ public class Vessel implements Comparable<Vessel> {
 	public String fullText() {
 		return "Name: " + name + ", number: " + number + ", capacity: " + capacity + ", speed: " + speed + ", unit fuel cost: " + unitFuelCost + 
 				", fuel consumption sailing: " + fuelConsumptionSailing + ", fuel consumption depot: " + fuelConsumptionDepot +
-				", fuel consumption installation" + fuelConsumptionInstallation + ", time charter cost: " + timeCharterCost + 
+				", fuel consumption installation: " + fuelConsumptionInstallation + ", time charter cost: " + timeCharterCost + 
 				", number of days available: " + numberOfDaysAvailable;
 	}
 

@@ -36,8 +36,8 @@ public class StatisticsHandler {
 		this.problemData = problemData;
 		this.fitnessEvaluationProtocol = fitnessEvaluationProtocol;
 		statistics = new HashMap<Integer, HashMap<String,Double>>();
-		skipNumberOfRows = 16 + problemData.getProblemInstanceParameters().size() + problemData.getHeuristicParameters().size()
-				+ problemData.getLengthOfPlanningPeriod(); 
+		skipNumberOfRows = 18 + problemData.getProblemInstanceParameters().size() + problemData.getHeuristicParameters().size()
+				+ problemData.getLengthOfPlanningPeriod() + problemData.getVessels().size(); 
 		//all rows before the data starts are skipped, see an output file for the layout
 	}
 
@@ -86,7 +86,7 @@ public class StatisticsHandler {
 		lastGeneration = Collections.max(statistics.keySet());
 		DecimalFormat numberFormat = new DecimalFormat("0.00");
 		if (bestFeasibleIndividual == null) {
-			skipNumberOfRows -=9;
+			skipNumberOfRows -=(11+problemData.getVessels().size());
 		}
 		writer.println("Skip number of rows: " + skipNumberOfRows);
 		writer.println("Time used: " + numberFormat.format((double) runningTime/1000000000) + " seconds");
@@ -157,6 +157,11 @@ public class StatisticsHandler {
 			double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
 			writer.println("Gap from BKS: " + df.format(((individual.getPenalizedCost() / bestKnownSailingCost)-1)));
 			writer.println(individual.getPhenotype().getScheduleString());
+			writer.println("Chartered fleet:");
+			for (Vessel vessel : problemData.getVessels()) {
+				writer.println(vessel.fullText());
+			}
+			writer.println();
 		}
 	}
 	

@@ -1,18 +1,17 @@
 package hgsadc.implementations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import hgsadc.Individual;
 import hgsadc.Installation;
 import hgsadc.ProblemData;
 import hgsadc.Utilities;
 import hgsadc.Vessel;
 import hgsadc.protocols.InitialPopulationProtocol;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class InitialPopulationAimed implements InitialPopulationProtocol {
 
