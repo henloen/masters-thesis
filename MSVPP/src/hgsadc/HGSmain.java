@@ -83,7 +83,7 @@ public class HGSmain {
 		processes.educate(offspring);
 		addToSubpopulation(offspring);
 		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
-		updateDiversificationCounter();
+		updateCounters();
 		if (processes.isDiversifyIteration()) {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
@@ -91,7 +91,9 @@ public class HGSmain {
 	}
 
 	private boolean stoppingCriterion() {
-		int maxIterations = problemData.getHeuristicParameterInt("Max iterations");
+		return processes.isStoppingIteration();
+		
+		/*
 		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
 		double gap = problemData.getHeuristicParameterDouble("Gap from best known solution");
 		if (gap == 0) {
@@ -105,10 +107,10 @@ public class HGSmain {
 		else {
 			return (iteration > maxIterations);
 		}
+		*/
 	}
-
-	private void updateDiversificationCounter() {
-
+	
+	private void updateCounters() {
 		Individual bestFeasibleIndividual = getBestSolution(feasiblePopulation);
 		double bestPenalizedCost;
 		
@@ -268,4 +270,33 @@ public class HGSmain {
 			return bestFeasible;
 		}
 	}
+	/*
+	private boolean hasOptimalInstallationPattern(Individual individual) {
+		HashMap<Integer, Set<Integer>> reversedInstallationPattern = individual.getGenotype().getInstallationDeparturesPerDay();
+		int numberOfEquals = 0;
+		for (Integer day : reversedInstallationPattern.keySet()) {
+			if (! optimalReversedInstallationPattern.get(day).equals(reversedInstallationPattern.get(day))) {
+				if (numberOfEquals > maxNumberOfEquals) {
+					maxNumberOfEquals = numberOfEquals;
+					mostEqualIndividual = individual;
+					System.out.println(numberOfEquals);
+				}
+				return false;
+			}
+			numberOfEquals++;
+		}
+		return true;
+	}
+	
+	private void initializeOptimalInstallationPattern() {
+		optimalReversedInstallationPattern = new HashMap<Integer, Set<Integer>>();
+		optimalReversedInstallationPattern.put(0, new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12)));
+		optimalReversedInstallationPattern.put(1, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,11)));
+		optimalReversedInstallationPattern.put(2, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,12)));
+		optimalReversedInstallationPattern.put(3, new HashSet<Integer>(Arrays.asList(1,4,5,7,8,9,11,12)));
+		optimalReversedInstallationPattern.put(4, new HashSet<Integer>(Arrays.asList(1,2,3,6,8,9,11)));
+		optimalReversedInstallationPattern.put(5, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,12)));
+		
+	}
+	*/
 }

@@ -1,6 +1,7 @@
 package hgsadc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,11 +12,15 @@ public class PatternGenerator {
 	private ArrayList<Installation> customerInstallations;
 	private HashMap<Integer, Set<String>> generatedBitstrings;
 	private int lengthOfPlanningPeriod, minDuration;
+	private ArrayList<Integer> hf, pmin, pmax;
 	
 	
 	public PatternGenerator(ArrayList<Installation> customerInstallations) {
 		this.customerInstallations = customerInstallations;
 		generatedBitstrings = new HashMap<Integer, Set<String>>();
+		hf = new ArrayList<Integer>(Arrays.asList(6, 2, 2, 3, 1, 0, 0));
+		pmin = new ArrayList<Integer>(Arrays.asList(0, 0, 1, 2, 1, 0, 0));
+		pmax = new ArrayList<Integer>(Arrays.asList(1, 1, 3, 4, 2, 1, 1));
 	}
 
 	public HashMap<Integer, Set<Set<Integer>>> generateInstallationDeparturePatterns(int lengthOfPlanningPeriod) {
@@ -87,7 +92,37 @@ public class PatternGenerator {
 			return false;
 		}
 		int numberOfDepartures = pattern.size();
-		if (numberOfDepartures == 1) {
+		int horizon = hf.get(numberOfDepartures-1);
+		int minVisits = pmin.get(numberOfDepartures-1);
+		int maxVisits = pmax.get(numberOfDepartures-1);
+
+		for (int startDay = 0; startDay<7;startDay++) {
+			int numberOfVisitsInHorizon = 0;
+			int endDay = startDay + horizon;
+			if (endDay > 6) {
+				endDay = endDay - 7;
+			}
+			for (Integer dayInPattern : pattern) {
+				if (endDay < startDay) {
+					if ((dayInPattern >= startDay) || (dayInPattern <= endDay)) {
+						numberOfVisitsInHorizon++;
+					}
+				}
+				else {
+					if ((dayInPattern >= startDay) && (dayInPattern <= endDay)) {
+						numberOfVisitsInHorizon++;
+					}
+				}
+			}
+			if (! ((numberOfVisitsInHorizon >= minVisits) && (numberOfVisitsInHorizon <= maxVisits))) {
+				return false;
+			}
+		}
+		return true;
+		
+			
+			
+		/*if (numberOfDepartures == 1) {
 			return true;
 		}
 		int maxDistance = (lengthOfPlanningPeriod / numberOfDepartures) + 1; //int divided by int returns the floored int of the division, e.g. 7/5 = 1 
@@ -103,7 +138,7 @@ public class PatternGenerator {
 		if (! isValidDistance(distanceToNext, maxDistance)) {
 			return false;
 		}
-		return true;
+		return true;*/
 	}
 	
 	private boolean validVesselPattern(Set<Integer> pattern){

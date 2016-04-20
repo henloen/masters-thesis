@@ -5,8 +5,10 @@ import java.util.ArrayList;
 public interface DiversificationProtocol {
 
 	boolean isDiversifyIteration();
+	
+	boolean isStoppingIteration();
 
-	void resetCounter();
+	void resetDiversificationCounter();
 
 	void incrementCounter();
 

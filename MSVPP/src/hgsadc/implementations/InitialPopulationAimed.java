@@ -29,16 +29,10 @@ public class InitialPopulationAimed implements InitialPopulationProtocol {
 		HashMap<Integer, Set<Integer>> installationDepartureChromosome = createInstallationDepartureChromosome(); //the integer is the installation number and the Set<Integer> is the departure days of the installation
 		HashMap<Integer, Set<Integer>> vesselDepartureChromosome = createVesselDepartureChromosome(installationDepartureChromosome); //the integer is the vessel number and the Set<Integer> is the departure days of the vessel
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome = createGiantTourChromosome(installationDepartureChromosome, vesselDepartureChromosome);
+		validateVesselDepartureChromosome(vesselDepartureChromosome, giantTourChromosome);
 		Individual individual = new Individual(new GenotypeHGS(installationDepartureChromosome, vesselDepartureChromosome, giantTourChromosome));
 		//printIndividual(individual);
 		return individual;
-	}
-	
-	private void printIndividual(Individual individual) {
-		System.out.println("Individual " + individual);
-		System.out.println(individual.getGenotype());
-		System.out.println("Number of pattern restarts: " + numberOfPatternRestarts);
-		System.out.println("Number of depot restarts: " + numberOfDepotRestarts + "\n");
 	}
 	
 	@Override
@@ -106,6 +100,19 @@ public class InitialPopulationAimed implements InitialPopulationProtocol {
 		}
 		
 		return giantTourChromosome;
+	}
+	
+	private void validateVesselDepartureChromosome(HashMap<Integer, Set<Integer>> vesselDepartureChromosome, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome) {
+		HashMap<Integer, Set<Integer>> reversedVesselDepartureChromosome = Utilities.getReversedHashMap(vesselDepartureChromosome);
+		for (Integer day : reversedVesselDepartureChromosome.keySet()) {
+			for (Integer vessel : reversedVesselDepartureChromosome.get(day)) {
+				if (giantTourChromosome.get(day).get(vessel).size() == 0) {
+					Set<Integer> departures = new HashSet<Integer>(vesselDepartureChromosome.get(vessel));
+					departures.remove(day);
+					vesselDepartureChromosome.put(vessel, departures);
+				}
+			}
+		}
 	}
 
 	private Set<Integer> pickRandomVesselDeparturePattern(Set<Integer> daysWithDeparture, HashMap<Integer, Set<Integer>> individualVesselDeparturePatterns) {

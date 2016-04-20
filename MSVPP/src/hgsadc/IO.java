@@ -43,7 +43,12 @@ public class IO {
 		else if (datasetSheet == 2) {
 			installations = readInstallations(1,3);
 			vessels = readVessels(1,35);
-			distances = readDistances(1,44);
+			distances = readDistances(1,45);
+		}
+		else if (datasetSheet  == 3) {
+			installations = readInstallations(1,3);
+			vessels = readVessels(1,41);
+			distances = readDistances(1,51);
 		}
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}

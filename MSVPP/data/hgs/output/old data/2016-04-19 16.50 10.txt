@@ -1,0 +1,63 @@
+Skip number of rows: 61
+Time used: 3,31 seconds
+
+Problem instance parameters: 
+Problem size = 10
+Time windows = false
+Maximum duration = 3
+Best known sailing cost = 385819
+Minimum number of installations = 1
+Length of planning period = 7
+Load factor = 1,2
+Total charter cost of fleet = 2800000
+Maximum number of installations = 8
+Dataset sheet = 3
+Minimum duration = 2
+
+Heuristic parameters: 
+Number of installations violation penalty = 1
+Fitness evaluation protocol = standard
+Initial population heuristic = aimed
+Reference proportion of feasible individuals = 0,2
+Survivor selection protocol = standard
+Diversification protocol = standard
+Repair protocol = standard
+Gap from best known solution = 0
+Capacity constraint violation penalty = 1
+Proportion of elite individuals = 0,4
+Education rate = 1
+Iterations before diversify = 4000
+Genotype to phenotype converter protocol = standard
+Education protocol = standard
+Proportion of individuals considered for distance evaluation = 0,2
+Reproduction protocol = standard
+Population size = 25
+Parent selection protocol = binary tournament
+Number of offspring in a generation = 50
+Granularity threshold in RI = 0,4
+Max iterations = 10000
+Duration constraint violation penalty = 1
+Repair rate = 0,5
+
+Number of iterations: 1
+Diversifaction happened at iterations: []
+Number of crossover restarts: 0
+Number of construction heuristic restarts: 106
+
+Penalized cost: 385820,34
+Gap from BKS: 0,00
+Day: 0 - vessel 1: [1, 7, 9, 8, 2] cost: 74143,45 dur: 38,59 cap: 101,68, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 10, 8, 9, 3, 4, 5, 7] cost: 90274,24 dur: 49,99 cap: 182,28
+Day: 2 - vessel 1: [1, 7, 3, 4, 5] cost: 63757,21 dur: 34,55 cap: 107,88, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: -
+Day: 4 - vessel 1: [1, 7, 6, 9, 10, 8, 2] cost: 80210,38 dur: 43,59 cap: 200,88, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [1, 10, 8, 3, 4, 5, 7] cost: 77435,06 dur: 43,20 cap: 151,28
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+
+Gen.	# feasible solutions	# infeasible solutions	cap. penality	dur. penality	num. penality	best penalized cost	best feasible cost	best cap. violation	best dur. violation	best num. violation	avg cap. violation	avg dur. violation	avg num. violation	gap from BKS	best visits pr voyage	avg visits pr voyage
+0	9.00	41.00	1.00	1.00	1.00	385805.57	386128.17	0.00	0.20	2.00	0.00	8.14	0.68	0.00	6.40	6.27
+1	10.00	41.00	0.85	1.20	0.85	385805.31	385820.34	0.00	0.20	2.00	0.00	7.98	0.67	0.00	6.40	6.27

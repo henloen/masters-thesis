@@ -17,6 +17,7 @@ public class ProblemData {
 	private HashMap<Installation, HashMap<Installation, Double>> distances;
 	private PatternGenerator patternGenerator;
 	private HashMap<Integer, Installation> installationsByNumber;
+	private HashMap<Integer, ArrayList<Installation>> installationsByFrequency;
 	private HashMap<Integer, Vessel> vesselsByNumber;
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
 	private HashSet<DayVesselCell> allDayVesselCells;
@@ -35,6 +36,7 @@ public class ProblemData {
 		setCustomerInstallations();
 		this.patternGenerator = new PatternGenerator(customerInstallations);
 		setInstallationsByNumber(); //generate hashmap to easily look up installations by number
+		setInstallationsByFrequency(); //generate hashmap to easily look up installations by frequency
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
 		lengthOfPlanningPeriod = depotCapacity.size();
 		allDayVesselCells = generateAllDayVesselCells();
@@ -109,7 +111,7 @@ public class ProblemData {
 	
 	public int getMinVoyageDurationHours() {
 		int minDays = Integer.parseInt(problemInstanceParameters.get("Minimum duration"));
-		return getMaxVoyageDurationHoursFromDays(minDays);
+		return getMaxVoyageDurationHoursFromDays(minDays-1);
 	}
 	
 	public int getMaxVoyageDurationHours() {
@@ -165,6 +167,23 @@ public class ProblemData {
 		installationsByNumber = new HashMap<Integer, Installation>();
 		for (Installation installation : installations) {
 			installationsByNumber.put(installation.getNumber(), installation);
+		}
+	}
+	
+	public HashMap<Integer, ArrayList<Installation>> getInstallationsByFrequency() {
+		return installationsByFrequency;
+	}
+	
+	private void setInstallationsByFrequency() {
+		installationsByFrequency = new HashMap<Integer, ArrayList<Installation>>();
+		for (Installation installation : installations) {
+			Integer frequency = Integer.valueOf(installation.getFrequency());
+			ArrayList<Installation> installations = installationsByFrequency.get(frequency);
+			if (installations == null) {
+				installations = new ArrayList<Installation>();
+				installationsByFrequency.put(frequency, installations);
+			}
+			installations.add(installation);
 		}
 	}
 	

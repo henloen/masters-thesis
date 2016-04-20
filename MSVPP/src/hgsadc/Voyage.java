@@ -26,7 +26,7 @@ public class Voyage {
 		visitedInstallations = new ArrayList<Installation>();
 		for (Integer installationNumber : installationsIncludingDepot) { //the depot is not contained in the list of installations, so a for each loop can be used
 			Installation toInstallation = problemData.getInstallationByNumber(installationNumber);
-			double sailingTime = Math.ceil((problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed()));
+			double sailingTime = problemData.getDistance(fromInstallation, toInstallation)/vessel.getSpeed();
 			duration += sailingTime;
 			capacityUsed += toInstallation.getDemandPerVisit();
 			cost += (sailingTime*vessel.getFuelCostSailing());
@@ -68,6 +68,7 @@ public class Voyage {
 	
 	public void setDurationViolation(int minVoyageDuration, int maxVoyageDuration){
 		durationViolation = Math.max(0, duration - maxVoyageDuration);
+		//durationViolation = Math.max(0, Math.max(duration - maxVoyageDuration, minVoyageDuration - duration));
 	}
 	
 	public void setCapacityViolation() {

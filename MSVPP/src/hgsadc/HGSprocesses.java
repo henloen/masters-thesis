@@ -112,6 +112,10 @@ public class HGSprocesses {
 		return diversificationProtocol.isDiversifyIteration();
 	}
 	
+	public boolean isStoppingIteration() {
+		return diversificationProtocol.isStoppingIteration();
+	}
+	
 	public void survivorSelection(ArrayList<Individual> subpopulation, ArrayList<Individual> otherSubpopulation) {
 		survivorSelectionProtocol.selectSurvivors(subpopulation, otherSubpopulation, fitnessEvaluationProtocol);
 	}
@@ -193,7 +197,7 @@ public class HGSprocesses {
 	
 	private void selectDiversificationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Diversification protocol")) {
-			case "standard": diversificationProtocol = new DiversificationStandard(problemData.getHeuristicParameterInt("Iterations before diversify"));
+			case "standard": diversificationProtocol = new DiversificationStandard(problemData.getHeuristicParameterInt("Iterations before diversify"), problemData.getHeuristicParameterInt("Max iterations without improvement"));
 				break;
 			default: diversificationProtocol = null;
 				break;
@@ -211,7 +215,7 @@ public class HGSprocesses {
 	
 	public void recordDiversification(int iteration) {
 		diversificationProtocol.addDiversification(iteration);
-		diversificationProtocol.resetCounter();
+		diversificationProtocol.resetDiversificationCounter();
 	}
 
 	public void updateDiversificationCounter(double bestPenalizedCost) {

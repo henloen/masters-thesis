@@ -1,6 +1,16 @@
 package hgsadc;
 
+import hgsadc.implementations.EducationStandard;
+import hgsadc.implementations.FitnessEvaluationStandard;
+import hgsadc.implementations.GenoToPhenoConverterStandard;
+import hgsadc.implementations.GenotypeHGS;
+import hgsadc.implementations.PenaltyAdjustmentProtocol;
+import hgsadc.protocols.EducationProtocol;
+import hgsadc.protocols.FitnessEvaluationProtocol;
+import hgsadc.protocols.GenoToPhenoConverterProtocol;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,39 +24,106 @@ public class Test {
 	private void testVoyage() {
 		IO io = new IO("data/hgs/input/input data hgs.xls");
 		ProblemData problemData = io.readData();
+		problemData.generatePatterns();
+		FitnessEvaluationProtocol fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
+		GenoToPhenoConverterProtocol genoToPhenoProtocol = new GenoToPhenoConverterStandard(problemData);
+		PenaltyAdjustmentProtocol penalty = new PenaltyAdjustmentProtocol(0.2);
+		EducationStandard education = new EducationStandard(problemData, fitnessEvaluationProtocol, penalty, genoToPhenoProtocol);
+
 		
+		//initialize optimal genotype
 		ArrayList<Integer> installations1 = new ArrayList<Integer>();
-		installations1.add(0);
-		installations1.add(7);
-		installations1.add(9);
-		installations1.add(4);
 		installations1.add(5);
-		installations1.add(1);
+		installations1.add(4);
 		installations1.add(3);
-		installations1.add(2);
-		installations1.add(8);
-		installations1.add(0);
+		installations1.add(7);
+		installations1.add(1);
 		
 		ArrayList<Integer> installations2 = new ArrayList<Integer>();
-		installations2.add(0);
-		installations2.add(2);
-		installations2.add(3);
-		installations2.add(4);
-		installations2.add(5);
 		installations2.add(1);
+		installations2.add(11);
 		installations2.add(9);
-		installations2.add(7);
+		installations2.add(10);
 		installations2.add(8);
-		installations2.add(0);
+		installations2.add(2);
 		
-		Set<Integer> vesselDepartures = new HashSet<Integer>();
-		vesselDepartures.add(0);
-		vesselDepartures.add(4);
-		Vessel vessel = new Vessel("Far seeker", 1090, 12, 7129, 0.34, 0.0453,0.17,120000,7,1);
-		Voyage voyage1 = new Voyage(installations1, vessel, vesselDepartures, 0, problemData);
-		Voyage voyage2 = new Voyage(installations2, vessel, vesselDepartures, 0, problemData);
-		System.out.println(voyage1);
-		System.out.println(voyage2);
+		ArrayList<Integer> installations3 = new ArrayList<Integer>();
+		installations3.add(2);
+		installations3.add(10);
+		installations3.add(8);
+		installations3.add(11);
+		installations3.add(6);
+		installations3.add(7);
+		
+		ArrayList<Integer> installations4 = new ArrayList<Integer>();
+		installations4.add(1);
+		installations4.add(7);
+		installations4.add(3);
+		installations4.add(4);
+		installations4.add(5);
+		
+		ArrayList<Integer> installations5 = new ArrayList<Integer>();
+		installations5.add(1);
+		installations5.add(8);
+		installations5.add(9);
+		installations5.add(11);
+		installations5.add(7);
+		installations5.add(3);
+		installations5.add(4);
+		installations5.add(5);
+		
+		ArrayList<Integer> installations6 = new ArrayList<Integer>();
+		installations6.add(7);
+		installations6.add(11);
+		installations6.add(9);
+		installations6.add(10);
+		installations6.add(8);
+		installations6.add(2);
+		
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome =  new HashMap<Integer, HashMap<Integer,ArrayList<Integer>>>();
+		
+		for (int i = 0; i < 7; i++) {//days
+			HashMap<Integer, ArrayList<Integer>> day = new HashMap<Integer, ArrayList<Integer>>();
+			for (int j = 1; j < 3; j++) {//vessels
+				day.put(j, new ArrayList<Integer>());
+			}
+			giantTourChromosome.put(i, day);
+		}
+		
+		HashMap<Integer, ArrayList<Integer>> day0 = giantTourChromosome.get(0);
+		day0.put(2, installations1);
+		
+		HashMap<Integer, ArrayList<Integer>> day1 = giantTourChromosome.get(1);
+		day1.put(1, installations2);
+		
+		HashMap<Integer, ArrayList<Integer>> day2 = giantTourChromosome.get(2);
+		day2.put(2, installations3);
+	
+		HashMap<Integer, ArrayList<Integer>> day3 = giantTourChromosome.get(3);
+		day3.put(1, installations4);
+		
+		HashMap<Integer, ArrayList<Integer>> day4 = giantTourChromosome.get(4);
+		day4.put(2, installations5);
+		
+		HashMap<Integer, ArrayList<Integer>> day5 = giantTourChromosome.get(5);
+		day5.put(1, installations6);
+		
+		System.out.println("Best found solution");
+		
+		GenotypeHGS bfGenotype = new GenotypeHGS(giantTourChromosome, 11, 2);
+		Individual bfIndividual = new Individual(bfGenotype);
+		System.out.println(bfGenotype);
+		
+		genoToPhenoProtocol.convertGenotypeToPhenotype(bfIndividual);
+		fitnessEvaluationProtocol.setPenalizedCostIndividual(bfIndividual);
+		System.out.println(bfIndividual.getPenalizedCost());
+		
+		education.voyageReduction(bfIndividual);
+		//education.installationPatternSwap(bfIndividual);
+		System.out.println(bfIndividual.getPenalizedCost());
+		System.out.println(bfIndividual.getPhenotype().getScheduleString());
+		
+		
 	}
 
 }
