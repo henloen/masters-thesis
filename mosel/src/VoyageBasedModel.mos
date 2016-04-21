@@ -7,16 +7,17 @@ uses  "mmxprs", "mmsystem", "mmive"; ! Use Xpress-Optimizer
 parameters
 	 ! Input file is specified here
 	 
-	 DataFilePath = '..\data\input\'
-	 InputDate = '2016-02-05'
-	 ProblemInstance = '3-0-16'
+	 DataFilePath = '..\data\input\april 2016\fixed fleet\'
+	 InputDate = '2016-04-20'
+	 ProblemInstance = '4-0-13'
 	 DataFile = DataFilePath + InputDate + " " + ProblemInstance + '.txt'
 	 
 	
 	 OutputFilePath = '..\data\output\'
 	 
-	 
-	 UseEpsilonConstraintMethod = true
+	 ! Change this to decide if fleet is fixed or not
+	 FixFleet = true
+	 UseEpsilonConstraintMethod = false
 	 ! Input file containing baseline solution to compare new solution with
 	 BaselineFilePath = '..\data\input\Baseline\'
 	 BaselineFile = BaselineFilePath + '3-0-16.txt'
@@ -78,9 +79,9 @@ T := 0 .. nT-1; ! Zero-indexed due to use of modulus operator in spread of depar
 L := minL .. maxL;
 R := 1 .. nR;
 
-minS := 0;
-maxS := 23;
-S := minS..maxS; ! Possible hours of slack
+!minS := 0;
+!maxS := 23;
+!S := minS..maxS; ! Possible hours of slack
 
 
 NBaseline := 1 .. nNBaseline;
@@ -97,8 +98,10 @@ declarations
 	Rv: array(V) of set of integer; ! Voyages a vessel can sail
 	Rvi: array(V, N) of set of integer; ! Voyages a vessel can sail that visit installation i
 	Rvl: array(V, L) of set of integer; ! Voyages a vessel can sail that has duration l
-	Rvls: array(V, L, S) of set of integer; ! Voyages a vessel can sail that has duration l and slack s
+	!Rvls: array(V, L, S) of set of integer; ! Voyages a vessel can sail that has duration l and slack s
 	Nf: array(F) of set of integer; ! Sets of installations requiring f visits
+	
+	OptimalFleet: array(V) of integer; ! 0 - not chartered, 1 - chartered
 	
 	! Parameters
 	TimeCharterCost: array(V) of real; ! C^(TC)
@@ -148,7 +151,7 @@ initializations from DataFile
 	Rv;
 	Rvi;
 	Rvl;
-	Rvls;
+	!Rvls;
 	Nf;
 	
 	!Parameters
@@ -160,6 +163,14 @@ initializations from DataFile
  	DepotCapacity;
 end-initializations
 
+
+if (FixFleet) then
+	initializations from DataFile
+		OptimalFleet;
+	end-initializations
+end-if
+
+
 nVisitsTotal := sum(ii in N) RequiredVisits(ii);
 
 
@@ -169,10 +180,24 @@ nVisitsTotal := sum(ii in N) RequiredVisits(ii);
 
 !======================================= VARIABLES =========================================================
 
+
+	
+!Declaring constraints to fix fleet
+declarations
+	FixFleetCon: dynamic array(V) of linctr;
+end-declarations
+
 !Creating variables
 forall(vv in V) do
+	
 	create(delta(vv));
-	delta(vv) is_binary;
+	
+	if (FixFleet) then
+		FixFleetCon(vv) := delta(vv) = OptimalFleet(vv);
+	else 	
+		delta(vv) is_binary;
+	end-if
+	
 	
 	! Sets directive on variable
 	! setmipdir(delta(vv), XPRS_PR, 1);
@@ -294,8 +319,12 @@ if (not UseEpsilonConstraintMethod) then
 
 	! =========================================================Objective function=====================================================================
 	
-	TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr);
-
+	if (FixFleet) then ! Only look at sailing cost
+		TotalCost := sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr);
+	else		! Include charter cost
+		TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr);
+	end-if
+	
 	minimize(TotalCost);
 	
 	CreateOutputFile;
@@ -360,7 +389,7 @@ else
 	SlackThreshold :: [4, 6];
 	
 	! NUMBER OF VOYAGES USED THAT HAVE AT LEAST THE REQUIRED SLACK
-	nRobustVoyages := sum(vv in V, ll in L, ss in SlackThreshold(ll)..maxS, rr in Rvls(vv,ll,ss), tt in T) x(vv,rr,tt);
+	!nRobustVoyages := sum(vv in V, ll in L, ss in SlackThreshold(ll)..maxS, rr in Rvls(vv,ll,ss), tt in T) x(vv,rr,tt);
 	
 	
 	!--------------------- OBJECTIVE FUNCTION ------------------------------------------------------------------------------------------------
@@ -389,6 +418,7 @@ else
 	iteration := 0;
 	AllParetoSolutionsFound := false;
 	
+	
 	RobustnessEpsilon := 0.0;
 	
 	forall(RobustnessIteration in 0..MaxNVoyages) do
@@ -397,7 +427,6 @@ else
 		
 		RobustnessEpsilon := RobustnessIteration * RobustnessStep;
 		
-		if (RobustnessEpsilon <= HighestRobustnessFound
 		
 		
 		EpsilonRobustnessCon := nRobustVoyages >= RobustnessEpsilon * nVoyagesUsed;
@@ -429,7 +458,7 @@ else
 			UncastedSolutionChange := sum(ii in N, tt in T | ii <= nNBaseline) getsol(gamma(ii, tt));
 			SolutionChange := integer(round(UncastedSolutionChange));
 			
-			SolutionRobustness := getsol(nRobustVoyages)/getsol(nVoyagesUsed);
+			SolutionRobustness := integer(round(getsol(nRobustVoyages)/getsol(nVoyagesUsed)));
 			
 			if (SolutionRobustness < RobustnessLowerBound) then
 				RobustnessLowerBound := SolutionRobustness;
@@ -532,6 +561,7 @@ procedure WriteProblemInfo
 	writeln("!Problem instance: " + ProblemInstance);
 	writeln("!Total visits: " + nVisitsTotal);
 	writeln("!Solved on: " + DateTime);
+	writeln("\n!Fixed fleet: " + FixFleet);
 end-procedure
 
 procedure WriteSolution

@@ -12,9 +12,9 @@ public class VBMRunner
 	static String inputFileName = "VBM Solver Suite.xls";
 	static int numberOfProblems;
 	// Change parameters as needed here
-	static String dataFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\project-thesis\\mosel\\data\\input\\";
-	static String baselineFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\project-thesis\\mosel\\data\\input\\baseline\\";
-	static String outputFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\project-thesis\\mosel\\data\\output\\";
+	static String dataFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\masters-thesis\\mosel\\data\\input\\";
+	static String baselineFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\masters-thesis\\mosel\\data\\input\\baseline\\";
+	static String outputFilePath = "\\\\file.stud.iot.ntnu.no\\Home\\thombor\\Desktop\\GitHub\\masters-thesis\\mosel\\data\\output\\";
 	
 	
 	static String[] inputDate;
@@ -23,6 +23,7 @@ public class VBMRunner
 	static String[] baselineFile;
 	static int[] nNBaseline;
 	static int[] instancesToSolve;
+	static boolean[] fixFleet;
 	static boolean[] useEpsilonConstraintMethod;
 	static boolean[] validInequalities;
 	static boolean[] symmetryBreaking;
@@ -58,14 +59,14 @@ public class VBMRunner
   
   try {
   System.out.println("Compiling mosel file");
-  xprm.compile("\\\\file.stud.iot.ntnu.no\\home\\thombor\\desktop\\github\\project-thesis\\mosel\\src\\voyagebasedmodel.mos");
+  xprm.compile("\\\\file.stud.iot.ntnu.no\\home\\thombor\\desktop\\github\\masters-thesis\\mosel\\src\\voyagebasedmodel.mos");
   } catch (XPRMCompileException e) {
 	  System.out.println("Failed to compile mosel file: " + e.getMessage());
   }
   
   // Load compiled model (.BIM file)
   System.out.println("Loading compiled mosel file");
-  model=xprm.loadModel("\\\\file.stud.iot.ntnu.no\\home\\thombor\\desktop\\github\\project-thesis\\mosel\\src\\voyagebasedmodel.bim");
+  model=xprm.loadModel("\\\\file.stud.iot.ntnu.no\\home\\thombor\\desktop\\github\\masters-thesis\\mosel\\src\\voyagebasedmodel.bim");
   
   String constantParameters;
   constantParameters = "DataFilePath = '" + dataFilePath + "', ";
@@ -80,6 +81,7 @@ public class VBMRunner
 	parameters += "DataFile = '" + dataFilePath + inputDate[i] + " " + problemInstance[i] + ".txt', ";
 	parameters += "TestCase = '" + testCase[i] + "',";
 	parameters += "OptimalityGapLimit = " + optimalityGapLimit[i] + ", ";
+	parameters += "FixFleet = " + fixFleet[i] + ", ";
 	parameters += "UseEpsilonConstraintMethod = " + useEpsilonConstraintMethod[i] + ", ";
 	parameters += "BaselineFile = '" + baselineFilePath + baselineFile[i] + "', ";
 	parameters += "nNBaseline = " + nNBaseline[i] + ", "	;
@@ -127,6 +129,7 @@ public class VBMRunner
 	problemInstance = new String[numberOfProblems];
 	testCase = new String[numberOfProblems];
 	optimalityGapLimit = new double[numberOfProblems];
+	fixFleet = new boolean[numberOfProblems];
 	useEpsilonConstraintMethod = new boolean[numberOfProblems];
 	baselineFile = new String[numberOfProblems];
 	nNBaseline = new int[numberOfProblems];
@@ -140,13 +143,14 @@ public class VBMRunner
 		problemInstance[i] = sheet.getCell(2, 7+i).getContents();
 		testCase[i] = sheet.getCell(3, 7+i).getContents();
 		optimalityGapLimit[i] = Double.parseDouble(sheet.getCell(4, 7+i).getContents());
-		useEpsilonConstraintMethod[i] = Boolean.parseBoolean(sheet.getCell(5, 7+i).getContents());
-		baselineFile[i] = sheet.getCell(6, 7+i).getContents() + ".txt";
-		nNBaseline[i] = Integer.parseInt(sheet.getCell(7, 7+i).getContents());
-		validInequalities[i] = Boolean.parseBoolean(sheet.getCell(8, 7+i).getContents());
-		symmetryBreaking[i] = Boolean.parseBoolean(sheet.getCell(9, 7+i).getContents());
-		vesselDom[i] = Boolean.parseBoolean(sheet.getCell(10, 7+i).getContents());
-		timeout[i] = Integer.parseInt(sheet.getCell(11, 7+i).getContents());
+		fixFleet[i] = Boolean.parseBoolean(sheet.getCell(5, 7+i).getContents());
+		useEpsilonConstraintMethod[i] = Boolean.parseBoolean(sheet.getCell(6, 7+i).getContents());
+		baselineFile[i] = sheet.getCell(7, 7+i).getContents() + ".txt";
+		nNBaseline[i] = Integer.parseInt(sheet.getCell(8, 7+i).getContents());
+		validInequalities[i] = Boolean.parseBoolean(sheet.getCell(9, 7+i).getContents());
+		symmetryBreaking[i] = Boolean.parseBoolean(sheet.getCell(10, 7+i).getContents());
+		vesselDom[i] = Boolean.parseBoolean(sheet.getCell(11, 7+i).getContents());
+		timeout[i] = Integer.parseInt(sheet.getCell(12, 7+i).getContents());
 		
 		
 	}

@@ -1,0 +1,62 @@
+!Problem instance: 11-0-36
+!Total visits: 36
+!Solved on: 2016-04-19 15.36
+
+!----------------------------------------------------------------------------
+!Total cost: 3.20515e+006
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 405146
+!Number of vessels used:	2
+!Number of voyages sailed: 5
+
+!----------------------------------------------------------------------------
+!Vessels used: 
+
+!Vessel 1: 1. Cost: 1.4e+006
+!Vessel 2: 0. Cost: 1.4e+006
+!Vessel 3: 1. Cost: 1.4e+006
+!Vessel 4: 0. Cost: 1.4e+006
+!Vessel 5: 0. Cost: 1.4e+006
+!Vessel 6: 0. Cost: 1.4e+006
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 1205, Sat. Cost: 69247. Duration: 2
+!Vessel 1, Voyage 1615, Thu. Cost: 69907. Duration: 2
+!Vessel 1, Voyage 1712, Mon. Cost: 82348. Duration: 3
+!Vessel 3, Voyage 1869, Tue. Cost: 93370. Duration: 3
+!Vessel 3, Voyage 1926, Fri. Cost: 90274. Duration: 3
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  1	  1	  0	  0	  1	  0	  0
+!Installation 3:	  0	  1	  0	  0	  1	  1	  0
+!Installation 4:	  0	  1	  0	  0	  1	  1	  0
+!Installation 5:	  0	  1	  0	  0	  1	  1	  0
+!Installation 6:	  0	  0	  0	  1	  0	  0	  0
+!Installation 7:	  1	  1	  0	  1	  1	  1	  0
+!Installation 8:	  1	  1	  0	  1	  1	  0	  0
+!Installation 9:	  1	  0	  0	  1	  1	  0	  0
+!Installation 10:	  1	  0	  0	  1	  1	  0	  0
+!Installation 11:	  1	  1	  0	  1	  0	  1	  0
+
+BaselineSigma: [
+1 1 0 1 0 1 0 
+1 1 0 0 1 0 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+0 0 0 1 0 0 0 
+1 1 0 1 1 1 0 
+1 1 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 1 0 1 0 1 0 
+]
+
+Total time elapsed: 177.432

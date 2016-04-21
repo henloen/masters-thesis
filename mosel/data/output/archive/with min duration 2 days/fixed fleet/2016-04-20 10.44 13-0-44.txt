@@ -1,0 +1,69 @@
+!Problem instance: 13-0-44
+!Total visits: 44
+!Solved on: 2016-04-20 10.44
+
+!Fixed fleet: true
+
+!----------------------------------------------------------------------------
+!Total cost: 469340
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 469340
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Vessels used: 
+
+!Vessel 1: 1. Cost: 1.4e+006
+!Vessel 2: 1. Cost: 1.4e+006
+!Vessel 3: 1. Cost: 1.4e+006
+!Vessel 4: 0. Cost: 1.4e+006
+!Vessel 5: 0. Cost: 1.4e+006
+!Vessel 6: 0. Cost: 1.4e+006
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 4059, Thu. Cost: 69097. Duration: 2
+!Vessel 1, Voyage 4455, Mon. Cost: 74587. Duration: 3
+!Vessel 2, Voyage 4471, Tue. Cost: 73050. Duration: 3
+!Vessel 2, Voyage 6223, Fri. Cost: 84278. Duration: 3
+!Vessel 3, Voyage 6750, Wed. Cost: 83095. Duration: 3
+!Vessel 3, Voyage 6764, Sat. Cost: 85233. Duration: 3
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  1	  0	  0
+!Installation 2:	  0	  1	  1	  0	  0	  1	  0
+!Installation 3:	  1	  0	  0	  1	  1	  0	  0
+!Installation 4:	  1	  0	  0	  1	  1	  0	  0
+!Installation 5:	  1	  0	  0	  1	  1	  0	  0
+!Installation 6:	  0	  0	  1	  0	  0	  0	  0
+!Installation 7:	  1	  0	  1	  1	  1	  1	  0
+!Installation 8:	  0	  1	  1	  0	  1	  1	  0
+!Installation 9:	  0	  1	  1	  0	  0	  1	  0
+!Installation 10:	  0	  1	  1	  0	  0	  1	  0
+!Installation 11:	  1	  1	  0	  0	  1	  1	  0
+!Installation 12:	  0	  1	  1	  0	  1	  1	  0
+!Installation 13:	  1	  0	  1	  1	  0	  1	  0
+
+BaselineSigma: [
+1 1 0 1 1 0 0 
+0 1 1 0 0 1 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+0 0 1 0 0 0 0 
+1 0 1 1 1 1 0 
+0 1 1 0 1 1 0 
+0 1 1 0 0 1 0 
+0 1 1 0 0 1 0 
+1 1 0 0 1 1 0 
+0 1 1 0 1 1 0 
+1 0 1 1 0 1 0 
+]
+
+Total time elapsed: 66.641

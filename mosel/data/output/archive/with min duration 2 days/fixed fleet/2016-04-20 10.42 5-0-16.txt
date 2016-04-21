@@ -1,0 +1,51 @@
+!Problem instance: 5-0-16
+!Total visits: 16
+!Solved on: 2016-04-20 10.42
+
+!Fixed fleet: true
+
+!----------------------------------------------------------------------------
+!Total cost: 277277
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 277277
+!Number of vessels used:	2
+!Number of voyages sailed: 4
+
+!----------------------------------------------------------------------------
+!Vessels used: 
+
+!Vessel 1: 1. Cost: 1.4e+006
+!Vessel 2: 1. Cost: 1.4e+006
+!Vessel 3: 0. Cost: 1.4e+006
+!Vessel 4: 0. Cost: 1.4e+006
+!Vessel 5: 0. Cost: 1.4e+006
+!Vessel 6: 0. Cost: 1.4e+006
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 5, Mon. Cost: 52290. Duration: 2
+!Vessel 1, Voyage 29, Sat. Cost: 61333. Duration: 2
+!Vessel 2, Voyage 30, Tue. Cost: 81827. Duration: 3
+!Vessel 2, Voyage 30, Fri. Cost: 81827. Duration: 3
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  0	  1	  1	  0
+!Installation 2:	  1	  1	  0	  0	  1	  0	  0
+!Installation 3:	  0	  1	  0	  0	  1	  1	  0
+!Installation 4:	  0	  1	  0	  0	  1	  1	  0
+!Installation 5:	  0	  1	  0	  0	  1	  1	  0
+
+BaselineSigma: [
+1 1 0 0 1 1 0 
+1 1 0 0 1 0 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+]
+
+Total time elapsed: 0.033
