@@ -3,7 +3,7 @@ package ea.svpp;
 import java.util.Set;
 
 import ea.Phenotype;
-import voyageGenerationDP.Vessel;
+import voyageGenerationDPold.Vessel;
 
 public class PhenotypeSVPP implements Phenotype {
 	

@@ -53,7 +53,7 @@ public class EducationStandard implements EducationProtocol {
 		installationPatternImprovement(individual);
 		vesselPatternImprovement(individual);
 		voyageReduction(individual);
-		installationPatternImprovement(individual);
+		//installationPatternImprovement(individual);
 		//installationPatternSwap(individual);
 	}
 	
@@ -171,66 +171,70 @@ public class EducationStandard implements EducationProtocol {
 		
 		for (Integer day : reversedVesselDepartures.keySet()) {
 			// If more than one departure on that day
-			Set<Integer> vesselsDepartingOnDay = new HashSet<Integer>(individual.getVesselDeparturesPerDay().get(day));
-			if (vesselsDepartingOnDay.size() > 1){ 
-				Set<Set<Integer>> allVesselCombinationsForDay = Utilities.cartesianProduct(vesselsDepartingOnDay);
+			mergeVoyagesOnDay(day, individual);
+		}
+	}
+	
+	private void mergeVoyagesOnDay(Integer day, Individual individual) {
+		Set<Integer> vesselsDepartingOnDay = new HashSet<Integer>(individual.getVesselDeparturesPerDay().get(day));
+		if (vesselsDepartingOnDay.size() > 1){ 
+			Set<Set<Integer>> allVesselCombinationsForDay = Utilities.cartesianProduct(vesselsDepartingOnDay);
+			
+			int bestVesselToKeep = -1;
+			int bestVesselToRemove = -1;
+			Voyage bestNewVoyage = null;
+			double bestCostReduction = 0;
+			
+			
+			
+			for (Set<Integer> vesselPair : allVesselCombinationsForDay){
 				
-				int bestVesselToKeep = -1;
-				int bestVesselToRemove = -1;
-				Voyage bestNewVoyage = null;
-				double bestCostReduction = 0;
+				// Randomly select which vessel to remove, and which to keep 
+				Integer vesselNumberToKeep = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
+				Vessel vesselToKeep = problemData.getVesselByNumber(vesselNumberToKeep);
+				Integer vesselNumberToRemove = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
+				Vessel vesselToRemove = problemData.getVesselByNumber(vesselNumberToRemove);
 				
 				
+				Voyage voyageToMergeInto = individual.getPhenotype().getGiantTour().get(day).get(vesselToKeep);
+				Voyage voyageToMove = individual.getPhenotype().getGiantTour().get(day).get(vesselToRemove);
 				
-				for (Set<Integer> vesselPair : allVesselCombinationsForDay){
-					
-					// Randomly select which vessel to remove, and which to keep 
-					Integer vesselNumberToKeep = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
-					Vessel vesselToKeep = problemData.getVesselByNumber(vesselNumberToKeep);
-					Integer vesselNumberToRemove = Utilities.pickAndRemoveRandomElementFromSet(vesselPair);
-					Vessel vesselToRemove = problemData.getVesselByNumber(vesselNumberToRemove);
-					
-					
-					Voyage voyageToMergeInto = individual.getPhenotype().getGiantTour().get(day).get(vesselToKeep);
-					Voyage voyageToMove = individual.getPhenotype().getGiantTour().get(day).get(vesselToRemove);
-					
-					double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(voyageToMergeInto) + fitnessEvaluationProtocol.getPenalizedCost(voyageToMove);
-					
-					ArrayList<Integer> voyageSeq = new ArrayList<>(voyageToMergeInto.getInstallations());
-					// Insert each installation in voyageToMove into voyageToMergeInto
-					for (Integer installation : voyageToMove.getInstallations()) {
-						VoyageInsertion bestInsertion = getBestInsertionIntoVoyage(installation, voyageToMergeInto);
-						int bestPos = bestInsertion.positionInVoyageToInsertInto;
-						voyageSeq.add(bestPos, installation);
-					}
-					
-					Voyage newVoyage = new Voyage(voyageSeq, vesselToKeep, voyageToMergeInto.getVesselDeparturePattern(), day, problemData);
-					double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
-					double costReduction = currentPenalizedCost - newPenalizedCost;
-					
-					if (costReduction > bestCostReduction){
-						bestVesselToKeep = vesselNumberToKeep;
-						bestVesselToRemove = vesselNumberToRemove;
-						bestNewVoyage =  newVoyage;
-						bestCostReduction = costReduction;
-					}
+				double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(voyageToMergeInto) + fitnessEvaluationProtocol.getPenalizedCost(voyageToMove);
+				
+				ArrayList<Integer> voyageSeq = new ArrayList<>(voyageToMergeInto.getInstallations());
+				// Insert each installation in voyageToMove into voyageToMergeInto
+				for (Integer installation : voyageToMove.getInstallations()) {
+					VoyageInsertion bestInsertion = getBestInsertionIntoVoyage(installation, voyageToMergeInto);
+					int bestPos = bestInsertion.positionInVoyageToInsertInto;
+					voyageSeq.add(bestPos, installation);
 				}
-				// If there exists a merger resulting in reduced cost, change giant tour
-				if (bestCostReduction > 0){
-					// Copy current giantTour
-					HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
-					
-					giantTour.get(day).put(bestVesselToKeep, bestNewVoyage.getInstallations()); // Add merged voyage to giantTour 
-					giantTour.get(day).put(bestVesselToRemove, new ArrayList<>()); // Remove voyage from giantTour
-					Genotype newGenotype = new GenotypeHGS(giantTour, problemData.getCustomerInstallations().size(), problemData.getVessels().size());
-					// Update individual
-//					System.out.println("Genotype before merger: ");
-//					System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
-//					System.out.println("\nMerging vessel " + bestVesselToRemove + " into vessel " + bestVesselToKeep + " on day " + day);
-					individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
-//					System.out.println("Genotype after merger: ");
-//					System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
+				
+				Voyage newVoyage = new Voyage(voyageSeq, vesselToKeep, voyageToMergeInto.getVesselDeparturePattern(), day, problemData);
+				double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
+				double costReduction = currentPenalizedCost - newPenalizedCost;
+				
+				if (costReduction > bestCostReduction){
+					bestVesselToKeep = vesselNumberToKeep;
+					bestVesselToRemove = vesselNumberToRemove;
+					bestNewVoyage =  newVoyage;
+					bestCostReduction = costReduction;
 				}
+			}
+			// If there exists a merger resulting in reduced cost, change giant tour
+			if (bestCostReduction > 0){
+				// Copy current giantTour
+				HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
+				
+				giantTour.get(day).put(bestVesselToKeep, bestNewVoyage.getInstallations()); // Add merged voyage to giantTour 
+				giantTour.get(day).put(bestVesselToRemove, new ArrayList<>()); // Remove voyage from giantTour
+				Genotype newGenotype = new GenotypeHGS(giantTour, problemData.getCustomerInstallations().size(), problemData.getVessels().size());
+				// Update individual
+//				System.out.println("Genotype before merger: ");
+//				System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
+//				System.out.println("\nMerging vessel " + bestVesselToRemove + " into vessel " + bestVesselToKeep + " on day " + day);
+				individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
+//				System.out.println("Genotype after merger: ");
+//				System.out.println(GenotypeHGS.getGiantTourString(individual.getGenotype().getGiantTourChromosome()));
 			}
 		}
 	}
@@ -354,7 +358,6 @@ public class EducationStandard implements EducationProtocol {
 	}
 	
 	private ArrayList<VoyageInsertion> findBestInsertionsForPattern(Set<Integer> installationPattern, int installation, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation, HashMap<Integer, Set<Integer>> vesselPatterns, HashMap<Integer, Set<Integer>> reversedVesselPatterns){
-		
 		ArrayList<VoyageInsertion> bestInsertions = new ArrayList<>();
 
 		// For each day in installationPattern, find the optimal cell to insert the installation
@@ -462,7 +465,8 @@ public class EducationStandard implements EducationProtocol {
 		 * 		- For all installations in S:
 		 * 			- try to change the installation pattern of the installation to the best pattern that does not contain T
 		 * 			- if the penalized cost of the new best pattern is lower than the best found, let it be the new best
-		 * 		- Change the installation pattern of the installation with the lowest penalized cost (removes it from M) 
+		 * 		- Change the installation pattern of the installation with the lowest penalized cost (removes it from M)
+		 * - Try to merge the remaining voyages 
 		 * - If the new schedule is better than the old: keep the new
 		 */
 		
@@ -525,13 +529,16 @@ public class EducationStandard implements EducationProtocol {
 					break;
 				}
 				newIndividual = applyInsertions(newIndividual, bestInsertions, bestInsertionInstallation);
+				Set<Integer> vesselDeparturesOnDay = newIndividual.getGenotype().getVesselDeparturesPerDay().get(day);
+				if (vesselDeparturesOnDay != null && vesselDeparturesOnDay.size() > 1) {
+					//mergeVoyagesOnDay(day, newIndividual); commented out, as it seems to distort	 the search
+				}
 				moveableInstallations.remove(Integer.valueOf(bestInsertionInstallation.getNumber()));
 				installationsToMove--;
 			}
 			//System.out.println(newIndividual.getPenalizedCost());
 			//System.out.println(newIndividual.getPhenotype().getScheduleString());
 			if (newIndividual.getPenalizedCost() < individual.getPenalizedCost()){
-				System.out.println("voyage reduction improved the solution!");
 					individual.setGenotypeAndUpdatePenalizedCost(newIndividual.getGenotype(), genoToPhenoConverter, fitnessEvaluationProtocol);
 					return; //quit if reducing this day improved the solution
 			}
@@ -632,7 +639,10 @@ public class EducationStandard implements EducationProtocol {
 		double currentPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(voyage);
 		
 		double bestInsertionCostForVoyage = Double.MAX_VALUE;
+		double bestDistance = Double.MAX_VALUE; 
 		int bestPosInVoyage = -1;
+		
+		Installation inst = problemData.getInstallationByNumber(Integer.valueOf(installation));
 		
 		for (int pos = 0; pos <= currentVoyageSeq.size(); pos++){
 			ArrayList<Integer> newVoyageSeq = new ArrayList<>(currentVoyageSeq);
@@ -641,11 +651,13 @@ public class EducationStandard implements EducationProtocol {
 			double newPenalizedCost = fitnessEvaluationProtocol.getPenalizedCost(newVoyage);
 			double insertionCost = newPenalizedCost - currentPenalizedCost;
 			
+			
 			// If this position is better than previous position in Voyage
 			if (insertionCost < bestInsertionCostForVoyage) {
 				bestInsertionCostForVoyage = insertionCost;
 				bestPosInVoyage = pos;
 			}
+			
 		}
 		DayVesselCell cell = new DayVesselCell(day, vessel.getNumber());
 		return new VoyageInsertion(cell, installation, bestPosInVoyage, bestInsertionCostForVoyage); 
@@ -663,14 +675,15 @@ public class EducationStandard implements EducationProtocol {
 			
 			while (uncheckedInstallations.size() > 0) {
 				Installation installation = Utilities.pickAndRemoveRandomElementFromSet(uncheckedInstallations);
-				HashMap<Integer, Set<Integer>> installationPatternsCopy = Utilities.deepCopyDepartureChromosome( ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome());
-				Set<Integer> installationPattern = installationPatternsCopy.get(installation.getNumber());
 				Set<Installation> otherInstallations = new HashSet<Installation>(installations);
 				otherInstallations.remove(installation);
 				
 				
 				
 				while (otherInstallations.size() > 0) {
+					HashMap<Integer, Set<Integer>> installationPatternsCopy = Utilities.deepCopyDepartureChromosome( ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome());
+					Set<Integer> installationPattern = installationPatternsCopy.get(installation.getNumber());
+					
 					Installation otherInstallation = Utilities.pickAndRemoveRandomElementFromSet(otherInstallations);
 					Set<Integer> otherInstallationPattern = installationPatternsCopy.get(otherInstallation.getNumber());
 					ArrayList<Installation> swapInstallations = new ArrayList<Installation>();

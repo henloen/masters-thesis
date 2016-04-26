@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 import ea.Genotype;
-import voyageGenerationDP.Installation;
-import voyageGenerationDP.Vessel;
-import voyageGenerationDP.Voyage;
+import voyageGenerationDPold.Installation;
+import voyageGenerationDPold.Vessel;
+import voyageGenerationDPold.Voyage;
 
 public class GenotypeSVPP implements Genotype {
 	

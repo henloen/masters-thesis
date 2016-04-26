@@ -176,7 +176,7 @@ public class ProblemData {
 	
 	private void setInstallationsByFrequency() {
 		installationsByFrequency = new HashMap<Integer, ArrayList<Installation>>();
-		for (Installation installation : installations) {
+		for (Installation installation : customerInstallations) {
 			Integer frequency = Integer.valueOf(installation.getFrequency());
 			ArrayList<Installation> installations = installationsByFrequency.get(frequency);
 			if (installations == null) {

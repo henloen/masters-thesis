@@ -70,6 +70,7 @@ def plotSingleFile(filename):
 	pl.ylabel('Cost')
 	axes = pl.gca()
 	ylim = axes.get_ylim()
+	axes.set_ylim(ymin=530000)#adjust the y-axis
 	axes.set_ylim(ymax=ylim[1]*1.1)#adjust the y-axis
 	pl.legend(loc=0)
 	#the fourth subplot plots the violations of the individual with the best penalized cost

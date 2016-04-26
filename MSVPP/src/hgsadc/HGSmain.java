@@ -20,6 +20,7 @@ public class HGSmain {
 	private int iteration;
 	
 	
+	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
