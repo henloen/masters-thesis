@@ -76,7 +76,6 @@ public class HGSprocesses {
 		if (!individual.isFeasible()){
 			repair(individual, problemData.getHeuristicParameterDouble("Repair rate"));
 		}
-		
 		return individual;
 	}
 
