@@ -60,6 +60,13 @@ public class ProblemData {
 		installationDeparturePatterns = patternGenerator.generateInstallationDeparturePatterns(lengthOfPlanningPeriod);
 		vesselDeparturePatterns = patternGenerator.generateVesselDeparturePatterns(minDuration, maxDuration, lengthOfPlanningPeriod);
 	}
+	
+	public void removeVessels(int removeVessels) {
+		for (int i = 0; i < removeVessels; i++) {
+			Vessel removedVessel = vessels.remove(vessels.size()-1);
+			vesselsByNumber.remove(Integer.valueOf(removedVessel.getNumber()));
+		}
+	}
 
 	public int getLengthOfPlanningPeriod() {
 		return lengthOfPlanningPeriod;

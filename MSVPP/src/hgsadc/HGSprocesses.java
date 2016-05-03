@@ -2,6 +2,7 @@ package hgsadc;
 
 import hgsadc.implementations.DiversificationStandard;
 import hgsadc.implementations.EducationStandard;
+import hgsadc.implementations.FeasibleFleetChecker;
 import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationAimed;
@@ -37,12 +38,17 @@ public class HGSprocesses {
 	private DiversificationProtocol diversificationProtocol;
 	private SurvivorSelectionProtocol survivorSelectionProtocol;
 	private PenaltyAdjustmentProtocol penaltyAdjustmentProtocol;
+	private FeasibleFleetChecker feasibleFleetChecker;
 	
 	private StatisticsHandler statisticsHandler;
 	
 	public HGSprocesses(ProblemData problemData) {
 		this.problemData = problemData;
 		selectProtocols();
+	}
+	
+	public boolean isFeasibleFleet() {
+		return feasibleFleetChecker.isFeasibleFleet(problemData);
 	}
 	
 	public Individual createIndividual() {
@@ -131,11 +137,16 @@ public class HGSprocesses {
 		selectDiversificationProtocol();
 		selectSurvivorSelectionProtocol();
 		statisticsHandler = new StatisticsHandler(problemData, fitnessEvaluationProtocol);
+		initializeFeasibleFleetChecker();
 	}
 
 	private void initializePenaltyAdjustmentProtocol() {
 		double targetFeasibleProportion = problemData.getHeuristicParameterDouble("Reference proportion of feasible individuals");
 		penaltyAdjustmentProtocol = new PenaltyAdjustmentProtocol(targetFeasibleProportion);
+	}
+	
+	private void initializeFeasibleFleetChecker() {
+		feasibleFleetChecker = new FeasibleFleetChecker();
 	}
 
 	private void selectInitialPopulationProtocol() {

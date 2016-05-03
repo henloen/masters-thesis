@@ -28,7 +28,7 @@ public class IO {
 		this.inputFileName = inputFileName;
 	}
 	
-	public ProblemData readData() {
+	public ProblemData readData(int removeVessels) {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
@@ -49,6 +49,9 @@ public class IO {
 			installations = readInstallations(1,3);
 			vessels = readVessels(1,41);
 			distances = readDistances(1,51);
+		}
+		for (int i = 0; i < removeVessels; i++) {
+			vessels.remove(vessels.size()-1);
 		}
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}

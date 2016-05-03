@@ -19,30 +19,64 @@ public class HGSmain {
 	
 	private int iteration;
 	
-	
-	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
-		
-		System.out.println("Creating initial population...");
-		main.createInitialPopulation();
-		main.runEvolutionaryLoop();
-		main.terminate();
-		
+		boolean feasibleFleet = true;
+		int vesselsRemoved = 0;
+		while (feasibleFleet) {
+			if (main.isFeasibleFleet(vesselsRemoved)) {
+				vesselsRemoved ++;
+			}
+			else {
+				feasibleFleet = false;
+			}
+		}
+		main.fullHGSADCrun(vesselsRemoved-1);
 	}
 	
-	private void initialize() {
-		io = new IO(inputFileName);
-		problemData = io.readData();
-		problemData.generatePatterns();
+	private boolean isFeasibleFleet(int vesselsRemoved) {
+		problemData = io.readData(vesselsRemoved);
+		problemData.generatePatterns(); 
+		System.out.println("Testing fleet with " + problemData.getVessels().size() + " vessels");
+		
 		processes = new HGSprocesses(problemData);
 		feasiblePopulation = new ArrayList<Individual>();
 		infeasiblePopulation = new ArrayList<Individual>();
 		iteration = 1;
 		
+		if (processes.isFeasibleFleet()) {
+			createInitialPopulation();
+			return runFleetAdjustmentEvolutionaryLoop();
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	private void fullHGSADCrun(int vesselsRemoved) {
+		problemData = io.readData(vesselsRemoved);
+		problemData.generatePatterns(); 
+		processes = new HGSprocesses(problemData);
+		
+		feasiblePopulation = new ArrayList<Individual>();
+		infeasiblePopulation = new ArrayList<Individual>();
+		iteration = 1;
+		bestFeasibleIndividual = null;
+		
 		problemData.printProblemData();
+		
+		System.out.println("Creating initial population...");
+		createInitialPopulation();
+		runEvolutionaryLoop();
+		terminate();
+	}
+	
+	
+	private void initialize() {
 		startTime = System.nanoTime();
+		io = new IO(inputFileName);
 	}
 	
 	private void terminate() {
@@ -65,6 +99,16 @@ public class HGSmain {
 			}
 			addToSubpopulation(individual);
 		}
+	}
+	
+	private boolean runFleetAdjustmentEvolutionaryLoop() {
+		int maxIterations = problemData.getHeuristicParameterInt("Max iterations without improvement");
+		while (! stoppingCriterionFleetAdjustment(maxIterations)) {
+			System.out.println("Iteration " + iteration);
+			doIteration();
+			iteration++;
+		}
+		return (feasiblePopulation.size() > 0);
 	}
 	
 	private void runEvolutionaryLoop() {
@@ -90,9 +134,14 @@ public class HGSmain {
 		}
 		//printPopulation();
 	}
+	
+	private boolean stoppingCriterionFleetAdjustment(int maxIterations){
+		return (feasiblePopulation.size() > 0) || iteration > maxIterations;
+	}
 
 	private boolean stoppingCriterion() {
 		return processes.isStoppingIteration();
+		
 		
 		/*
 		double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
@@ -252,52 +301,4 @@ public class HGSmain {
 		}
 	}
 
-	
-	private Individual getBestSolution(){
-		Individual bestFeasible = getBestSolution(feasiblePopulation);
-		Individual bestInfeasible = getBestSolution(infeasiblePopulation);
-
-		if (bestFeasible == null) {
-			return bestInfeasible;
-		}
-		if (bestInfeasible == null){
-			return bestFeasible;
-		}
-		
-		if (bestInfeasible.getPenalizedCost() < bestFeasible.getPenalizedCost()){
-			return bestInfeasible;
-		}
-		else {
-			return bestFeasible;
-		}
-	}
-	/*
-	private boolean hasOptimalInstallationPattern(Individual individual) {
-		HashMap<Integer, Set<Integer>> reversedInstallationPattern = individual.getGenotype().getInstallationDeparturesPerDay();
-		int numberOfEquals = 0;
-		for (Integer day : reversedInstallationPattern.keySet()) {
-			if (! optimalReversedInstallationPattern.get(day).equals(reversedInstallationPattern.get(day))) {
-				if (numberOfEquals > maxNumberOfEquals) {
-					maxNumberOfEquals = numberOfEquals;
-					mostEqualIndividual = individual;
-					System.out.println(numberOfEquals);
-				}
-				return false;
-			}
-			numberOfEquals++;
-		}
-		return true;
-	}
-	
-	private void initializeOptimalInstallationPattern() {
-		optimalReversedInstallationPattern = new HashMap<Integer, Set<Integer>>();
-		optimalReversedInstallationPattern.put(0, new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12)));
-		optimalReversedInstallationPattern.put(1, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,11)));
-		optimalReversedInstallationPattern.put(2, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,12)));
-		optimalReversedInstallationPattern.put(3, new HashSet<Integer>(Arrays.asList(1,4,5,7,8,9,11,12)));
-		optimalReversedInstallationPattern.put(4, new HashSet<Integer>(Arrays.asList(1,2,3,6,8,9,11)));
-		optimalReversedInstallationPattern.put(5, new HashSet<Integer>(Arrays.asList(1,2,3,4,7,8,9,12)));
-		
-	}
-	*/
 }

@@ -23,7 +23,7 @@ public class Test {
 	
 	private void testVoyage() {
 		IO io = new IO("data/hgs/input/input data hgs.xls");
-		ProblemData problemData = io.readData();
+		ProblemData problemData = io.readData(0);
 		problemData.generatePatterns();
 		FitnessEvaluationProtocol fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
 		GenoToPhenoConverterProtocol genoToPhenoProtocol = new GenoToPhenoConverterStandard(problemData);
