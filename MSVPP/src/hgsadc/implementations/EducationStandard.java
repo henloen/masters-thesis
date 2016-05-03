@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -249,7 +250,7 @@ public class EducationStandard implements EducationProtocol {
 		HashMap<Integer, Set<Integer>> vesselDeparturePattern = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome();
 		
 //		System.out.println("Installation pattern improvement...");
-		while (iterationsWithoutChange < nInstallations){
+//		while (iterationsWithoutChange < nInstallations){
 //			System.out.println("Iterations without change: " + iterationsWithoutChange + " no of installations: " + nInstallations);
 			for (Installation installation : problemData.getCustomerInstallations()){
 //				System.out.println("Changing pattern of installation " + installation.getNumber());
@@ -285,7 +286,7 @@ public class EducationStandard implements EducationProtocol {
 				}
 			}
 		}
-	}
+//	}
 	
 	private Individual applyInsertions(Individual individual, ArrayList<VoyageInsertion> bestInsertions, Installation installation) {
 		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = getCopyOfGiantTourWithoutInstallation(installation, individual);
@@ -477,8 +478,12 @@ public class EducationStandard implements EducationProtocol {
 		
 		int maxNumberOfInstallations = Integer.parseInt(problemData.getProblemInstanceParameters().get("Maximum number of installations"));
 		ArrayList<Integer> daysToReduce = findDaysToReduce(individual.getGenotype().getGiantTourChromosome());
+		ArrayList<Integer> daysToReduceOneDay = new ArrayList<Integer>();
+		if (daysToReduce.size() > 0) {
+			daysToReduceOneDay.add(daysToReduce.get(0));
+		}
 		
-		for (Integer day : daysToReduce) {
+		for (Integer day : daysToReduceOneDay) {
 			
 			Set<Integer> allDeparturesOnDay = new HashSet<Integer>();
 			for (ArrayList<Integer> voyages : giantTourCopy.get(day).values()) {
