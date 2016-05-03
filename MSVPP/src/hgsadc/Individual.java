@@ -14,15 +14,15 @@ public class Individual {
 
 	private Genotype genotype;
 	private Phenotype phenotype;
-	private double penalizedCost, diversityContribution, biasedFitness, persistence;
+	private double penalizedCost, diversityContribution, biasedFitness, numberOfChangesFromBaseline;
 	
 
-	public double getPersistence() {
-		return persistence;
+	public double getNumberOfChangesFromBaseline() {
+		return numberOfChangesFromBaseline;
 	}
 
-	public void setPersistence(double persistence) {
-		this.persistence = persistence;
+	public void setNumberOfChangesFromBaseline(double numberOfChangesFromBaseline) {
+		this.numberOfChangesFromBaseline = numberOfChangesFromBaseline;
 	}
 
 	private int number, costRank, diversityRank, persistenceRank;

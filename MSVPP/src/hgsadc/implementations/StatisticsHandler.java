@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 public class StatisticsHandler {
 	
@@ -231,6 +232,19 @@ public class StatisticsHandler {
 			sumVisitsPerVoyage += getAverageVisitsPerVoyage(individual); 
 		}
 		return sumVisitsPerVoyage / population.size();
+	}
+	
+	private void writeParetoFront(PrintWriter writer, Set<Individual> paretoFront, Dominator dominator){
+		writer.println("======================= Non-dominated solutions =======================");
+		for (String objective : dominator.getObjectiveNames()){
+			writer.print(objective + "\t");
+		}
+		writer.print("\n");
+		for (Individual nonDominatedSolution : paretoFront){
+			// TODO: Continue here...................
+		}
+		
+		
 	}
 
 }

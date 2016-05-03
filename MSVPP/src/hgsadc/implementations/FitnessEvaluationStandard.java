@@ -131,17 +131,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	}
 	
 	protected void updatePenalizedCostRank(ArrayList<Individual> individuals) {
-		Collections.sort(individuals, new Comparator<Individual>() {
-			public int compare(Individual ind1, Individual ind2) {
-				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {
-					return -1;
-				}
-				else if (ind1.getPenalizedCost() > ind2.getPenalizedCost()) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(individuals, Utilities.getPenalizedCostComparator());
 		for (int i = 0; i < individuals.size(); i++) {
 			Individual individual = individuals.get(i);
 			individual.setCostRank(i+1);
@@ -149,17 +139,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	}
 	
 	protected void updateDiversityContributionRank(ArrayList<Individual> individuals) {
-		Collections.sort(individuals, new Comparator<Individual>() {
-			public int compare(Individual ind1, Individual ind2) {
-				if (ind1.getDiversityContribution() < ind2.getDiversityContribution()) {
-					return 1;
-				}
-				else if (ind1.getDiversityContribution() > ind2.getDiversityContribution()) {
-					return -1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(individuals, Utilities.getDiversityContributionComparator());
 		for (int i = 0; i < individuals.size(); i++) {
 			Individual individual = individuals.get(i);
 			individual.setDiversityRank(i+1);

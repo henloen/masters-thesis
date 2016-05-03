@@ -6,6 +6,7 @@ import java.util.Comparator;
 
 import hgsadc.Individual;
 import hgsadc.ProblemData;
+import hgsadc.Utilities;
 
 public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
 
@@ -23,17 +24,7 @@ public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
 	}
 
 	private void updatePersistenceRank(ArrayList<Individual> individuals) {
-		Collections.sort(individuals, new Comparator<Individual>() {
-			public int compare(Individual ind1, Individual ind2) {
-				if (ind1.getPersistence() < ind2.getPersistence()) {
-					return -1;
-				}
-				else if (ind1.getPersistence() > ind2.getPersistence()) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(individuals, Utilities.getPersistenceComparator());
 		for (int i = 0; i < individuals.size(); i++) {
 			Individual individual = individuals.get(i);
 			individual.setPersistenceRank(i+1);

@@ -3,6 +3,7 @@ package hgsadc;
 import hgsadc.implementations.DiversificationStandard;
 import hgsadc.implementations.EducationStandard;
 import hgsadc.implementations.FeasibleFleetChecker;
+import hgsadc.implementations.FitnessEvaluationMultiObjective;
 import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationAimed;
@@ -171,7 +172,9 @@ public class HGSprocesses {
 	
 	private void selectFitnessEvaluationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Fitness evaluation protocol")) {
-			case "standard": fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
+			case "Cost": fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
+				break;
+			case "Cost+Persistence" : fitnessEvaluationProtocol = new FitnessEvaluationMultiObjective(problemData);
 				break;
 			default: fitnessEvaluationProtocol = null;
 				break;

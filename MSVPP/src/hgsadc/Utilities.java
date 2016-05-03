@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.Set;
 
 import hgsadc.implementations.DayVesselCell;
+import hgsadc.implementations.Dominator;
 
 public class Utilities {
 	
@@ -60,39 +61,6 @@ public class Utilities {
 		allElements.addAll(list1);
 		allElements.addAll(list2);
 		return allElements;
-	}
-	
-	//sorts so the elements with the lowest biased fitness are first in the list
-	public static Comparator<Individual> getBiasedFitnessComparator() {
-		return new Comparator<Individual>() {
-			public int compare(Individual ind1, Individual ind2) {
-				if (ind1.getBiasedFitness() < ind2.getBiasedFitness()) {
-					return -1;
-				}
-				else if (ind1.getBiasedFitness() > ind2.getBiasedFitness()) {
-					return 1;
-				}
-				else {
-					return 0;
-				}
-			}
-		};
-	}
-	
-	public static Comparator<Individual> getPenalizedCostComparator() {
-		return new Comparator<Individual>() {
-			public int compare(Individual ind1, Individual ind2) {
-				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {
-					return -1;
-				}
-				else if (ind1.getPenalizedCost() > ind2.getPenalizedCost()) {
-					return 1;
-				}
-				else {
-					return 0;
-				}
-			}
-		};
 	}
 	
 	public static <K> Comparator<Map.Entry<K, Double>> getMapEntryWithDoubleComparator() {
@@ -197,5 +165,117 @@ public class Utilities {
 		return cartProduct;
 	}
 
+	public static ArrayList<Set<Individual>> nonDominatedSorting(ArrayList<Individual> population, Dominator dominator){
+		ArrayList<Set<Individual>> paretoFronts = new ArrayList<>();
+		Set<Individual> paretoFront1 = new HashSet<>();
+		
+		HashMap<Individual, Integer> dominationCount = new HashMap<>(); // Number of individuals that dominates the individual
+		HashMap<Individual, Set<Individual>> dominatedSet = new HashMap<>(); // Set of individuals the individual dominates
+		
+		for (Individual ind: population){
+			int domCount = 0;
+			Set<Individual> domSet = new HashSet<>();
+			
+			for (Individual otherInd : population){
+				if (ind == otherInd) continue; // Do not compare with self
+				
+				if (dominator.dominates(ind, otherInd)){ // ind dominates otherInd
+					domSet.add(otherInd);
+				}
+				else if (dominator.dominates(otherInd, ind)){ // otherInd dominates ind
+					domCount++;
+				}
+			}
+			
+			dominationCount.put(ind, domCount);
+			dominatedSet.put(ind, domSet);
+			
+			if (domCount == 0){
+				paretoFront1.add(ind);
+			}
+		}
+		
+		paretoFronts.add(paretoFront1); // First non-dominated front
+		
+		Set<Individual> previousFront = paretoFront1;
+		while ( !previousFront.isEmpty()){ 
+			Set<Individual> nextFront = new HashSet<>();
+			for (Individual dominatorInd : previousFront){
+				for (Individual dominatedInd : dominatedSet.get(dominatorInd)){
+					int domCount = dominationCount.get(dominatedInd);
+					dominationCount.put(dominatedInd, domCount-1); // Reduce domination count by 1
+					if (domCount-1 == 0){
+						nextFront.add(dominatedInd);
+					}
+				}
+			}
+			previousFront = nextFront;
+			paretoFronts.add(nextFront);
+		}
+		
+		return paretoFronts;
+		
+	}
+
+	//sorts so the elements with the lowest biased fitness are first in the list
+	public static Comparator<Individual> getBiasedFitnessComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getBiasedFitness() < ind2.getBiasedFitness()) {
+					return -1;
+				}
+				else if (ind1.getBiasedFitness() > ind2.getBiasedFitness()) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		};
+	}
+
+	public static Comparator<Individual> getPenalizedCostComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {
+					return -1;
+				}
+				else if (ind1.getPenalizedCost() > ind2.getPenalizedCost()) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		};
+	}
+
+	public static Comparator<Individual> getPersistenceComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getNumberOfChangesFromBaseline() < ind2.getNumberOfChangesFromBaseline()) {
+					return -1;
+				}
+				else if (ind1.getNumberOfChangesFromBaseline() > ind2.getNumberOfChangesFromBaseline()) {
+					return 1;
+				}
+				return 0;
+			}
+		};
+	}
+
+	public static Comparator<Individual> getDiversityContributionComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getDiversityContribution() < ind2.getDiversityContribution()) {
+					return 1;
+				}
+				else if (ind1.getDiversityContribution() > ind2.getDiversityContribution()) {
+					return -1;
+				}
+				return 0;
+			}
+		};
+	}
 	
 }

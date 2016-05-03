@@ -1,10 +1,12 @@
 package hgsadc;
 
 import hgsadc.implementations.GenotypeHGS;
+import hgsadc.implementations.Dominator;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
 
 public class HGSmain {
 	
@@ -16,25 +18,35 @@ public class HGSmain {
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
 	private Individual bestFeasibleIndividual;
 	private long startTime, stopTime;
+	private Set<Individual> paretoFront;
+	private Dominator dominator; // Defines domination criteria
 	
 	private int iteration;
 	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
-		boolean feasibleFleet = true;
+		
 		int vesselsRemoved = 0;
-		while (feasibleFleet) {
-			if (main.isFeasibleFleet(vesselsRemoved)) {
-				vesselsRemoved ++;
-			}
-			else {
-				feasibleFleet = false;
+		
+		if (main.isVariableFleetProblem()){ // TODO How to handle this with multiobjective? Possible to run multiple times and save all non-dominated solutions
+			boolean feasibleFleet = true;
+			while (feasibleFleet) {
+				if (main.isFeasibleFleet(vesselsRemoved)) {
+					vesselsRemoved ++;
+				}
+				else {
+					feasibleFleet = false;
+				}
 			}
 		}
 		main.fullHGSADCrun(vesselsRemoved-1);
 	}
 	
+	private boolean isVariableFleetProblem() {
+		return Boolean.parseBoolean(problemData.getHeuristicParameters().get("Variable fleet"));
+	}
+
 	private boolean isFeasibleFleet(int vesselsRemoved) {
 		problemData = io.readData(vesselsRemoved);
 		problemData.generatePatterns(); 
@@ -77,8 +89,22 @@ public class HGSmain {
 	private void initialize() {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
+		problemData = io.readData(0);
+		selectDominationCriteria(problemData);
 	}
 	
+	private void selectDominationCriteria(ProblemData problemData) {
+		String dominationCriteria = problemData.getHeuristicParameters().get("Objectives");
+		switch (dominationCriteria){
+			case "Cost" : dominator = null;
+				break;
+			case "Cost+Persistence" : dominator = new Dominator(true, true);
+				break;
+			default : dominator = null;
+		}
+		
+	}
+
 	private void terminate() {
 		System.out.println("Final population:");
 		printPopulation();
@@ -300,5 +326,9 @@ public class HGSmain {
 			System.out.println(geno.getVesselDeparturePatternChromosome());
 		}
 	}
-
+	
+	private Set<Individual> getParetoFront(){
+		ArrayList<Set<Individual>> paretoFronts = Utilities.nonDominatedSorting(feasiblePopulation, dominator);
+		return paretoFronts.get(0);
+	}
 }
