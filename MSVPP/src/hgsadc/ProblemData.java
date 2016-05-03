@@ -21,6 +21,7 @@ public class ProblemData {
 	private HashMap<Integer, Vessel> vesselsByNumber;
 	private HashMap<Integer, Set<Set<Integer>>> installationDeparturePatterns, vesselDeparturePatterns;
 	private HashSet<DayVesselCell> allDayVesselCells;
+	private HashMap<Integer, Set<Integer>> baselineInstallationPattern;
 	
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
 			HashMap<Integer, Integer> depotCapacity,
@@ -40,8 +41,33 @@ public class ProblemData {
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
 		lengthOfPlanningPeriod = depotCapacity.size();
 		allDayVesselCells = generateAllDayVesselCells();
+		baselineInstallationPattern = generateBaselineInstallationPattern(problemInstanceParameters.get("BaselineDeparturePattern"));
 	}
 	
+	private HashMap<Integer, Set<Integer>> generateBaselineInstallationPattern(String baselineString) {
+		HashMap<Integer, Set<Integer>> baseline = new HashMap<>();
+		
+		
+		String[] lines = baselineString.split("\n");
+		for (int installation = 0; installation < customerInstallations.size(); installation++){
+			
+			String[] splitLine = lines[installation].split(" ");
+			Set<Integer> installationPattern = new HashSet<>();
+			
+			for (int day = 0; day < getLengthOfPlanningPeriod(); day++){
+				String dayInstallationDeparture = splitLine[day];
+				
+				if (dayInstallationDeparture.equals("1")){
+					installationPattern.add(day);
+				}
+			}
+			baseline.put(installation, installationPattern);
+		}
+		
+		
+		return baseline;
+	}
+
 	private HashSet<DayVesselCell> generateAllDayVesselCells() {
 		HashSet<DayVesselCell> allDayVesselCells = new HashSet<>();
 		for (int day = 0; day < lengthOfPlanningPeriod; day++){

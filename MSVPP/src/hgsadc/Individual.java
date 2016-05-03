@@ -14,10 +14,18 @@ public class Individual {
 
 	private Genotype genotype;
 	private Phenotype phenotype;
-	private double penalizedCost, diversityContribution, biasedFitness;
+	private double penalizedCost, diversityContribution, biasedFitness, persistence;
 	
 
-	private int number, costRank, diversityRank;
+	public double getPersistence() {
+		return persistence;
+	}
+
+	public void setPersistence(double persistence) {
+		this.persistence = persistence;
+	}
+
+	private int number, costRank, diversityRank, persistenceRank;
 	private static int numberOfIndividuals = 0;
 	
 	public Individual(Genotype genotype) {
@@ -90,6 +98,14 @@ public class Individual {
 		this.diversityRank = diversityRank;
 	}
 	
+	public int getPersistenceRank() {
+		return persistenceRank;
+	}
+	
+	public void setPersistenceRank(int persistenceRank){
+		this.persistenceRank = persistenceRank;
+	}
+	
 	public double getBiasedFitness() {
 		return biasedFitness;
 	}
@@ -127,4 +143,5 @@ public class Individual {
 		return  str;
 	}
 	*/
+
 }

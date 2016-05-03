@@ -1,8 +1,10 @@
 package hgsadc;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -50,9 +52,52 @@ public class IO {
 			vessels = readVessels(1,41);
 			distances = readDistances(1,51);
 		}
+		String baselineDeparturePattern = readBaselineDeparturePattern(problemInstanceParameters);
+		problemInstanceParameters.put("BaselineDeparturePattern", baselineDeparturePattern);
+		
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}
 	
+	private String readBaselineDeparturePattern(HashMap<String, String> problemInstanceParameters) {
+		int problemSize = Integer.parseInt(problemInstanceParameters.get("Problem size"));
+		boolean timeWindows = Boolean.parseBoolean(problemInstanceParameters.get("Time windows"));
+		int totalNumberOfVisits = getTotalNumberOfVisits();
+		String baselineFile = "data/hgs/input/baseline/" + problemSize + "-";
+		
+		
+		if (!timeWindows){
+			baselineFile += "0";
+		}
+		else {
+			baselineFile += "X";
+		}
+		baselineFile += "-" + totalNumberOfVisits + ".txt";
+		
+		System.out.println("Opening baselinefile " + baselineFile);
+		
+		Scanner sc = null;
+		try {
+			sc = new Scanner(new File(baselineFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Baseline file " + baselineFile + " not found.");
+		}
+		
+		String line = sc.nextLine();
+//		System.out.println("Reading line " + line);
+		while (line.length() < 12 || !line.substring(0, 13).equals("BaselineSigma")){
+			line = sc.nextLine();
+//			System.out.println("Reading line " + line);
+		}
+		
+		String baselineString = "";
+		for (int installation = 0; installation < getNumberOfInstallations(); installation++){
+			baselineString += sc.nextLine() + "\n";
+		}
+		
+		return baselineString;
+	}
+
 	private HashMap<String, String> readParameters(int column, int startRow) {
 		int nameColumn = column; //0-indexed
 		int valueColumn = column+1; //0-indexed
@@ -195,6 +240,13 @@ public class IO {
 	
 	private int getNumberOfInstallations() {
 		return Integer.parseInt(problemInstanceParameters.get("Problem size"));
+	}
+	private int getTotalNumberOfVisits(){
+		int visits = 0;
+		for (Installation inst : installations){
+			visits += inst.getFrequency();
+		}
+		return visits-1; // Subtract visit to supply depot
 	}
 	
 	private int dayToInt(String dayString) {

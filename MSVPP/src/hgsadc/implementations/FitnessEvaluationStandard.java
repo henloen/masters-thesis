@@ -16,7 +16,11 @@ import java.util.Set;
 
 public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	
-	private double ncloseProp, nEliteProp, durationViolationPenalty, capacityViolationPenalty, numberOfInstallationsPenalty;
+	private double ncloseProp;
+	protected double nEliteProp;
+	private double durationViolationPenalty;
+	private double capacityViolationPenalty;
+	private double numberOfInstallationsPenalty;
 	private HashMap<Individual, HashMap<Individual, Double>> hammingDistances;
 
 	public FitnessEvaluationStandard(ProblemData problemData) {
@@ -126,7 +130,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		calculateBiasedFitness(individuals);
 	}
 	
-	private void updatePenalizedCostRank(ArrayList<Individual> individuals) {
+	protected void updatePenalizedCostRank(ArrayList<Individual> individuals) {
 		Collections.sort(individuals, new Comparator<Individual>() {
 			public int compare(Individual ind1, Individual ind2) {
 				if (ind1.getPenalizedCost() < ind2.getPenalizedCost()) {
@@ -144,7 +148,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		}
 	}
 	
-	private void updateDiversityContributionRank(ArrayList<Individual> individuals) {
+	protected void updateDiversityContributionRank(ArrayList<Individual> individuals) {
 		Collections.sort(individuals, new Comparator<Individual>() {
 			public int compare(Individual ind1, Individual ind2) {
 				if (ind1.getDiversityContribution() < ind2.getDiversityContribution()) {
@@ -172,7 +176,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 	}
 	
 	
-	private void updateDiversityContribution(ArrayList<Individual> individuals) {
+	protected void updateDiversityContribution(ArrayList<Individual> individuals) {
 		int nclose = (int) (individuals.size() * ncloseProp);
 		for (Individual individual : individuals) {
 			ArrayList<Individual> nclosest = getnClosest(individual, nclose);
