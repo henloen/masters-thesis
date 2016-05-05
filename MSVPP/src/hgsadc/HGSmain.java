@@ -6,6 +6,7 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 
 public class HGSmain {
@@ -19,7 +20,7 @@ public class HGSmain {
 	private Individual bestFeasibleIndividual;
 	private long startTime, stopTime;
 	private Set<Individual> paretoFront;
-	private Dominator dominator; // Defines domination criteria
+	private Dominator dominator; // Defines domination criteria. If single-objective, this is equal to null
 	
 	private int iteration;
 	
@@ -111,7 +112,15 @@ public class HGSmain {
 		printRunStatistics();
 		printBestSolutions();
 		stopTime = System.nanoTime();
-		processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
+		
+		if (dominator == null){ // Single-objective problem
+			processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
+		}
+		else {
+			paretoFront = getParetoFront();
+			processes.exportRunStatistics(outputFileName, stopTime - startTime, paretoFront);
+		}
+		
 	}
 
 	private void createInitialPopulation(){
@@ -158,7 +167,7 @@ public class HGSmain {
 		if (processes.isDiversifyIteration()) {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
-		//printPopulation();
+//		printPopulation();
 	}
 	
 	private boolean stoppingCriterionFleetAdjustment(int maxIterations){
@@ -305,30 +314,50 @@ public class HGSmain {
 	}
 
 	private void printBestSolutions() {
-		System.out.println("==================== Best feasible solution found ==========================");
-		if (bestFeasibleIndividual == null){
-			System.out.println("Tough luck, no feasible solutions in final population");
+		if (dominator != null){
+			printParetoFront();
 		}
 		else {
-			System.out.println(bestFeasibleIndividual.getFullText());
-			System.out.println(bestFeasibleIndividual.getPhenotype().getScheduleString());
-		}
-		Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
-		System.out.println("==================== Best infeasible solution found ==========================");
-		if (bestInfeasibleSolution == null){
-			System.out.println("Hmmm, no infeasible solutions in final population");
-		}
-		else {
-			System.out.println(bestInfeasibleSolution.getFullText());
-			System.out.println(bestInfeasibleSolution.getPhenotype().getScheduleString());
-			GenotypeHGS geno = (GenotypeHGS) bestInfeasibleSolution.getGenotype();
-			System.out.println(geno.getInstallationDeparturePatternChromosome());
-			System.out.println(geno.getVesselDeparturePatternChromosome());
+			System.out.println("==================== Best feasible solution found ==========================");
+			if (bestFeasibleIndividual == null){
+				System.out.println("Tough luck, no feasible solutions in final population");
+			}
+			else {
+				System.out.println(bestFeasibleIndividual.getFullText());
+				System.out.println(bestFeasibleIndividual.getPhenotype().getScheduleString());
+			}
+			Individual bestInfeasibleSolution = getBestSolution(infeasiblePopulation);
+			System.out.println("==================== Best infeasible solution found ==========================");
+			if (bestInfeasibleSolution == null){
+				System.out.println("Hmmm, no infeasible solutions in final population");
+			}
+			else {
+				System.out.println(bestInfeasibleSolution.getFullText());
+				System.out.println(bestInfeasibleSolution.getPhenotype().getScheduleString());
+				GenotypeHGS geno = (GenotypeHGS) bestInfeasibleSolution.getGenotype();
+				System.out.println(geno.getInstallationDeparturePatternChromosome());
+				System.out.println(geno.getVesselDeparturePatternChromosome());
+			}
+			
 		}
 	}
 	
+	private void printParetoFront() {
+		paretoFront = getParetoFront();
+		System.out.println("======================== Pareto front (hopefully) ================================");
+		for (Individual individual : paretoFront) {
+			System.out.println("Cost : " + individual.getPenalizedCost() + " Persistence: " + individual.getNumberOfChangesFromBaseline());
+		}
+		for (Individual individual : paretoFront){
+			System.out.println(individual.getFullText());
+		}
+	}
+
 	private Set<Individual> getParetoFront(){
 		ArrayList<Set<Individual>> paretoFronts = Utilities.nonDominatedSorting(feasiblePopulation, dominator);
-		return paretoFronts.get(0);
+		ArrayList<Individual> paretoFrontList = new ArrayList<>(paretoFronts.get(0));
+		Set<Individual> paretoFrontWithoutClones = new HashSet<>(processes.getClones(paretoFrontList));
+		
+		return Utilities.removeObjectiveClones(paretoFrontWithoutClones, dominator);
 	}
 }

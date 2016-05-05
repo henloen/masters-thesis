@@ -14,14 +14,15 @@ public class Individual {
 
 	private Genotype genotype;
 	private Phenotype phenotype;
-	private double penalizedCost, diversityContribution, biasedFitness, numberOfChangesFromBaseline;
+	private double penalizedCost, diversityContribution, biasedFitness;
+	private int numberOfChangesFromBaseline;
 	
 
-	public double getNumberOfChangesFromBaseline() {
+	public int getNumberOfChangesFromBaseline() {
 		return numberOfChangesFromBaseline;
 	}
 
-	public void setNumberOfChangesFromBaseline(double numberOfChangesFromBaseline) {
+	public void setNumberOfChangesFromBaseline(int numberOfChangesFromBaseline) {
 		this.numberOfChangesFromBaseline = numberOfChangesFromBaseline;
 	}
 
@@ -66,7 +67,7 @@ public class Individual {
 	public String getFullText() {
 		DecimalFormat numberFormat = new DecimalFormat("0.00");
 		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + numberFormat.format(penalizedCost)
-				+ ", cost rank: " + costRank + ", diversity contribution: "
+				+ ", persistence " + numberOfChangesFromBaseline + ", cost rank: " + costRank + ", diversity contribution: "
 				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
 				 + ", capviol: " + numberFormat.format(phenotype.getCapacityViolation())
 				 + ", durviol: " + numberFormat.format(phenotype.getDurationViolation())

@@ -65,5 +65,21 @@ public class Dominator {
 		
 		return names;
 	}
+
+	public boolean hasEqualObjectiveValues(Individual ind1, Individual ind2) {
+		boolean costEqual = false, persistenceEqual = false, robustnessEqual = false;
+		
+		if (minimizeCost){
+			costEqual = costCompare(ind1, ind2) == 0;
+		}
+		if (maximizePersistence){
+			persistenceEqual= persistenceCompare(ind1, ind2) == 0;
+		}
+		if (maximizeRobustness){
+			robustnessEqual = robustnessCompare(ind1, ind2) == 0;
+		}
+		
+		return (!minimizeCost || costEqual) && (!maximizePersistence || persistenceEqual) && (!maximizeRobustness || robustnessEqual);  
+	}
 	
 }

@@ -5,6 +5,7 @@ import hgsadc.implementations.EducationStandard;
 import hgsadc.implementations.FeasibleFleetChecker;
 import hgsadc.implementations.FitnessEvaluationMultiObjective;
 import hgsadc.implementations.FitnessEvaluationStandard;
+import hgsadc.implementations.GenoToPhenoConverterMultiObjective;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.InitialPopulationAimed;
 import hgsadc.implementations.InitialPopulationStandard;
@@ -24,6 +25,7 @@ import hgsadc.protocols.SurvivorSelectionProtocol;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
 
 public class HGSprocesses {
@@ -163,7 +165,9 @@ public class HGSprocesses {
 	
 	private void selectGenoToPhenoConverterProtocol() {
 		switch (problemData.getHeuristicParameters().get("Genotype to phenotype converter protocol")) {
-			case "standard": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
+			case "Cost": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
+				break;
+			case "Cost+Persistence" : genoToPhenoConverterProtocol = new GenoToPhenoConverterMultiObjective(problemData);
 				break;
 			default: genoToPhenoConverterProtocol = null;
 				break;
@@ -251,6 +255,16 @@ public class HGSprocesses {
 		statisticsHandler.exportStatistics(outputFileName, runningTime, bestFeasibleIndividual,
 				diversificationProtocol.getDiversificationNumbers(), reproductionProtocol.getNumberOfCrossoverRestarts(),
 				initialPopulationProtocol.getNumberOfConstructionHeuristicRestarts());
+	}
+	
+	public void exportRunStatistics(String outputFileName, long runningTime, Set<Individual> paretoFront) {
+		statisticsHandler.exportStatistics(outputFileName, runningTime, paretoFront,
+				diversificationProtocol.getDiversificationNumbers(), reproductionProtocol.getNumberOfCrossoverRestarts(),
+				initialPopulationProtocol.getNumberOfConstructionHeuristicRestarts());
+	}
+	
+	public ArrayList<Individual> getClones(ArrayList<Individual> subpopulation){
+		return survivorSelectionProtocol.getClones(subpopulation, fitnessEvaluationProtocol);
 	}
 
 

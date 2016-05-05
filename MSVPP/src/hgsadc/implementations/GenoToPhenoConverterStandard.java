@@ -9,12 +9,13 @@ import hgsadc.protocols.Phenotype;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GenoToPhenoConverterStandard implements
 		GenoToPhenoConverterProtocol {
 
-	private ProblemData problemData;
+	protected ProblemData problemData;
 	
 	public GenoToPhenoConverterStandard(ProblemData problemData) {
 		this.problemData = problemData;
@@ -67,4 +68,5 @@ public class GenoToPhenoConverterStandard implements
 		phenotype.setCapacityViolation(capacityViolation);
 		phenotype.setNumberOfInstallationsViolation(numberOfInstallationsViolation);
 	}
+	
 }

@@ -47,10 +47,12 @@ public class ProblemData {
 	private HashMap<Integer, Set<Integer>> generateBaselineInstallationPattern(String baselineString) {
 		HashMap<Integer, Set<Integer>> baseline = new HashMap<>();
 		
+//		System.out.println("Generating baselineInstallationPattern.......");
+//		System.out.println("BaselineString: " + baselineString);
 		
 		String[] lines = baselineString.split("\n");
-		for (int installation = 0; installation < customerInstallations.size(); installation++){
-			
+		for (int installation = 1; installation < lines.length; installation++){ 
+			// NOTE: Baseline may have more or fewer installations than the current problem
 			String[] splitLine = lines[installation].split(" ");
 			Set<Integer> installationPattern = new HashSet<>();
 			
@@ -64,8 +66,13 @@ public class ProblemData {
 			baseline.put(installation, installationPattern);
 		}
 		
+//		System.out.println("\nResulting baseline: " + baseline);
 		
 		return baseline;
+	}
+	
+	public HashMap<Integer, Set<Integer>> getBaselineInstallationPattern(){
+		return this.baselineInstallationPattern;
 	}
 
 	private HashSet<DayVesselCell> generateAllDayVesselCells() {

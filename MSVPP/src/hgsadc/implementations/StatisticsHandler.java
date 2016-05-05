@@ -101,6 +101,38 @@ public class StatisticsHandler {
 		writer.close();
 	}
 	
+	public void exportStatistics(String outputFileName, long runningTime, Set<Individual> paretoFront,
+			ArrayList<Integer> diversificationNumbers, int numberOfCrossoverRestarts, int numberOfConstructionHeuristicRestarts) {
+		PrintWriter writer = null;
+		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + 
+				"_" + problemData.getHeuristicParameters().get("Variation case") + ".txt";
+		try {
+			writer = new PrintWriter(fileName, "UTF-8");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Something went wrong when writing to output file");
+		}
+		lastGeneration = Collections.max(statistics.keySet());
+		DecimalFormat numberFormat = new DecimalFormat("0.00");
+		
+		skipNumberOfRows += (11+problemData.getVessels().size()) * (paretoFront.size()-1);
+
+		writer.println("Skip number of rows: " + skipNumberOfRows);
+		writer.println("Time used: " + numberFormat.format((double) runningTime/1000000000) + " seconds");
+		writeParameters(writer);
+		writeRunStatistics(writer, diversificationNumbers, numberOfCrossoverRestarts, numberOfConstructionHeuristicRestarts);
+		
+		for (Individual nonDominatedSolution : paretoFront){
+			writeSolution(writer, nonDominatedSolution);
+		}
+		writeParetoFront(writer, paretoFront);
+//		writeStatisticsHeader(writer);
+//		for (int i=0; i<lastGeneration+1; i++) {
+//			writeIterationStatisticsMultiObjective(i, writer);
+//		}
+		writer.close();
+	}
+	
 	private void writeRunStatistics(PrintWriter writer,
 			ArrayList<Integer> diversificationNumbers,
 			int numberOfCrossoverRestarts,
@@ -155,8 +187,9 @@ public class StatisticsHandler {
 		}
 		else {
 			writer.println("Penalized cost: " + df.format(individual.getPenalizedCost()));
-			double bestKnownSailingCost = Double.parseDouble(problemData.getProblemInstanceParameters().get("Best known sailing cost"));
-			writer.println("Gap from BKS: " + df.format(((individual.getPenalizedCost() / bestKnownSailingCost)-1)));
+			writer.println("Persistence: " + individual.getNumberOfChangesFromBaseline());
+			writer.println("Baseline: " + problemData.getBaselineInstallationPattern());
+			writer.println("Solution: " + ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome()); 
 			writer.println(individual.getPhenotype().getScheduleString());
 			writer.println("Chartered fleet:");
 			for (Vessel vessel : problemData.getVessels()) {
@@ -234,17 +267,18 @@ public class StatisticsHandler {
 		return sumVisitsPerVoyage / population.size();
 	}
 	
-	private void writeParetoFront(PrintWriter writer, Set<Individual> paretoFront, Dominator dominator){
+	private void writeParetoFront(PrintWriter writer, Set<Individual> paretoFront){
+		DecimalFormat df = new DecimalFormat("0");
+		
 		writer.println("======================= Non-dominated solutions =======================");
-		for (String objective : dominator.getObjectiveNames()){
-			writer.print(objective + "\t");
-		}
-		writer.print("\n");
+		writer.print("Cost\t");
+		writer.println("Persistence");
 		for (Individual nonDominatedSolution : paretoFront){
-			// TODO: Continue here...................
+			writer.print(df.format(nonDominatedSolution.getPenalizedCost()));
+			writer.print("   ");
+			writer.print(nonDominatedSolution.getNumberOfChangesFromBaseline());
+			writer.println();
 		}
-		
-		
 	}
 
 }

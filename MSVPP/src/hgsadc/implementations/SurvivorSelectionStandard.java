@@ -37,7 +37,8 @@ public class SurvivorSelectionStandard implements SurvivorSelectionProtocol {
 		}
 	}
 	
-	private ArrayList<Individual> getClones (ArrayList<Individual> subpopulation, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
+	@Override
+	public ArrayList<Individual> getClones (ArrayList<Individual> subpopulation, FitnessEvaluationProtocol fitnessEvaluationProtocol) {
 		ArrayList<Individual> clones = new ArrayList<Individual>();
 		for (int i = 0; i < subpopulation.size()-1; i++) {
 			for (int j = i+1; j < subpopulation.size(); j++) {

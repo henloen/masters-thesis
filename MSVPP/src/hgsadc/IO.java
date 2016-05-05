@@ -53,7 +53,7 @@ public class IO {
 			distances = readDistances(1,51);
 		}
 		
-		String baselineDeparturePattern = readBaselineDeparturePattern(problemInstanceParameters);
+		String baselineDeparturePattern = readBaselineDeparturePattern(heuristicParameters);
 		problemInstanceParameters.put("BaselineDeparturePattern", baselineDeparturePattern);
 
 		for (int i = 0; i < removeVessels; i++) {
@@ -62,41 +62,33 @@ public class IO {
 		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
 	}
 	
-	private String readBaselineDeparturePattern(HashMap<String, String> problemInstanceParameters) {
-		int problemSize = Integer.parseInt(problemInstanceParameters.get("Problem size"));
-		boolean timeWindows = Boolean.parseBoolean(problemInstanceParameters.get("Time windows"));
-		int totalNumberOfVisits = getTotalNumberOfVisits();
-		String baselineFile = "data/hgs/input/baseline/" + problemSize + "-";
+	private String readBaselineDeparturePattern(HashMap<String, String> heuristicParameters) {
+		String baselineFile = "data/hgs/input/baseline/" + heuristicParameters.get("Baseline file") + ".txt";
 		
-		
-		if (!timeWindows){
-			baselineFile += "0";
-		}
-		else {
-			baselineFile += "X";
-		}
-		baselineFile += "-" + totalNumberOfVisits + ".txt";
-		
-		System.out.println("Opening baselinefile " + baselineFile);
+//		System.out.println("Opening baselinefile " + baselineFile);
 		
 		Scanner sc = null;
 		try {
 			sc = new Scanner(new File(baselineFile));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("Baseline file " + baselineFile + " not found.");
+			System.err.println("Baseline file " + baselineFile + " not found.");
 		}
 		
 		String line = sc.nextLine();
 //		System.out.println("Reading line " + line);
-		while (line.length() < 12 || !line.substring(0, 13).equals("BaselineSigma")){
+		while (line.length() < 12 || !line.startsWith("BaselineSigma")){
 			line = sc.nextLine();
 //			System.out.println("Reading line " + line);
 		}
 		
-		String baselineString = "";
-		for (int installation = 0; installation < getNumberOfInstallations(); installation++){
-			baselineString += sc.nextLine() + "\n";
+		String baselineString = "\n";
+		line = sc.nextLine();
+//		System.out.println("Reading line " + line);
+		while (!line.startsWith("]")){
+			baselineString += line + "\n";
+			line = sc.nextLine();
+//			System.out.println("Reading line " + line);
 		}
 		
 		return baselineString;
@@ -135,11 +127,16 @@ public class IO {
 	private ArrayList<Installation> readInstallations(int startColumn, int startRow) {
 		ArrayList<Installation> installations = new ArrayList<Installation>();
 		ArrayList<ArrayList<String>> installationData = readTable(startColumn, startRow);
+		System.out.println(installationData);
 		int instNumber = 0; //start at 0, the depot is installation 0
 		for (int i=0; i<getNumberOfInstallations()+1; i++) { //+1 because of the depot
 			Installation installation = convertStringsToInstallation(installationData.get(i), instNumber);
-			installations.add(installation);
-			instNumber++;
+			
+			if (installation.getFrequency() > 0){
+				installations.add(installation);
+				System.out.println("Adding installation " + installation.getNumber() + installation.getName());
+				instNumber++;
+			}
 		}
 		return installations;
 	}
@@ -164,12 +161,19 @@ public class IO {
 		ArrayList<String> headerRow = distanceData.get(0);
 		setInstallationsByName();
 		for (int i = 1; i<getNumberOfInstallations()+2; i++){ //+1 because of the depot and +1 because of the header row
+			
+			Installation fromInstallation = getInstallationByName(distanceData.get(i).get(0));
+			
+			if (fromInstallation == null) continue;
+			
 			HashMap<Installation, Double> installationDistances = new HashMap<Installation, Double>();
 			for (int j = 1; j<getNumberOfInstallations()+2; j++) {
 				Installation toInstallation = getInstallationByName(headerRow.get(j));
+				if (toInstallation == null) continue;
+				
 				installationDistances.put(toInstallation, Utilities.parseDouble(distanceData.get(i).get(j)));
 			}
-			distances.put(getInstallationByName(distanceData.get(i).get(0)), installationDistances);
+			distances.put(fromInstallation, installationDistances);
 		}
 		return distances;
 	}

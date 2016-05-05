@@ -277,5 +277,23 @@ public class Utilities {
 			}
 		};
 	}
+
+	public static Set<Individual> removeObjectiveClones(Set<Individual> subpopulation, Dominator dominator) {
+		Set<Individual> individualsToRemove = new HashSet<>();
+		for (Individual ind : subpopulation){
+			for (Individual otherInd : subpopulation){
+				if (ind == otherInd) continue; // Do not compare with self
+				if (individualsToRemove.contains(ind)) continue; // Individual has already been removed
+				
+				if (dominator.hasEqualObjectiveValues(ind, otherInd)){
+					individualsToRemove.add(otherInd);
+				}
+			}
+		}
+		subpopulation.removeAll(individualsToRemove);
+		
+		return subpopulation;
+		
+	}
 	
 }
