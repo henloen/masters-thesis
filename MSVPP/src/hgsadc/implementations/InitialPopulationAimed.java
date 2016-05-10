@@ -125,7 +125,7 @@ public class InitialPopulationAimed implements InitialPopulationProtocol {
 		Set<Set<Integer>> possibleVesselDeparturePatterns = getPossibleVesselPatterns(allPatternsForNumberOfDepartures, individualVesselDeparturePatterns, unvisitedDays, unvisitedDaysThatNeedsVisit ); //get all vessel patterns with the selected number of departures that visit enough of the unvisited installations, e.g. if it's the last vessel the pattern has to visit all unvisited installations
 		if (possibleVesselDeparturePatterns.size() == 0) {
 			if (numberOfVesselDepartures > 0) {
-				System.out.println("No possible patterns, start over!");//workaround until a smarter heuristic is fixed
+//				System.out.println("No possible patterns, start over!");//workaround until a smarter heuristic is fixed
 				return null;
 			}
 			else {//the number of departures is 0, so naturally there are no possible patterns

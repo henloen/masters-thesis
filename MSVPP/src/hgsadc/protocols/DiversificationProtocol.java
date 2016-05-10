@@ -10,12 +10,10 @@ public interface DiversificationProtocol {
 
 	void resetDiversificationCounter();
 
-	void incrementCounter();
-
-	void updateCounterSinceLastImprovement(double newBestSolution);
-
 	void addDiversification(int iteration);
 
 	ArrayList<Integer> getDiversificationNumbers();
+
+	void updateIterationsSinceImprovementCounter(boolean improvingSolutionFound);
 
 }

@@ -165,7 +165,7 @@ public class Utilities {
 		return cartProduct;
 	}
 
-	public static ArrayList<Set<Individual>> nonDominatedSorting(ArrayList<Individual> population, Dominator dominator){
+	public static ArrayList<Set<Individual>> nonDominatedSorting(Collection<Individual> population, Dominator dominator){
 		ArrayList<Set<Individual>> paretoFronts = new ArrayList<>();
 		Set<Individual> paretoFront1 = new HashSet<>();
 		
@@ -173,22 +173,12 @@ public class Utilities {
 		HashMap<Individual, Set<Individual>> dominatedSet = new HashMap<>(); // Set of individuals the individual dominates
 		
 		for (Individual ind: population){
-			int domCount = 0;
-			Set<Individual> domSet = new HashSet<>();
-			
-			for (Individual otherInd : population){
-				if (ind == otherInd) continue; // Do not compare with self
-				
-				if (dominator.dominates(ind, otherInd)){ // ind dominates otherInd
-					domSet.add(otherInd);
-				}
-				else if (dominator.dominates(otherInd, ind)){ // otherInd dominates ind
-					domCount++;
-				}
-			}
+			Set<Individual> indDominatesSet = Utilities.getIndividualsDominatedBy(ind, population, dominator);
+			Set<Individual> indDominatedBySet = Utilities.getIndidividualsDominating(ind, population, dominator);
+			int domCount = indDominatedBySet.size();
 			
 			dominationCount.put(ind, domCount);
-			dominatedSet.put(ind, domSet);
+			dominatedSet.put(ind, indDominatesSet);
 			
 			if (domCount == 0){
 				paretoFront1.add(ind);
@@ -215,6 +205,42 @@ public class Utilities {
 		
 		return paretoFronts;
 		
+	}
+	/**
+	 * 
+	 * @param ind
+	 * @param population
+	 * @return Set of individuals that dominates the given individual
+	 */
+	public static Set<Individual> getIndidividualsDominating(Individual ind, Collection<Individual> population, Dominator dominator) {
+		Set<Individual> dominatingIndividuals = new HashSet<>();
+		
+		for (Individual otherInd : population){
+			if (ind == otherInd) continue; // Do not compare with self
+			
+			if (dominator.dominates(otherInd, ind)){ // otherInd dominates ind
+				dominatingIndividuals.add(otherInd);
+			}
+		}
+		return dominatingIndividuals;
+	}
+	/**
+	 * 
+	 * @param ind
+	 * @param population
+	 * @return Set of individuals that are dominated by the given individual
+	 */
+	public static Set<Individual> getIndividualsDominatedBy(Individual ind, Collection<Individual> population, Dominator dominator) {
+		Set<Individual> dominatedIndividuals = new HashSet<>();
+		
+		for (Individual otherInd : population){
+			if (ind == otherInd) continue; // Do not compare with self
+			
+			if (dominator.dominates(ind, otherInd)){ // ind dominates otherInd
+				dominatedIndividuals.add(otherInd);
+			}
+		}
+		return dominatedIndividuals;
 	}
 
 	//sorts so the elements with the lowest biased fitness are first in the list
@@ -294,6 +320,19 @@ public class Utilities {
 		
 		return subpopulation;
 		
+	}
+	
+	public static Set<Individual> getObjectiveClones(Individual ind, Set<Individual> subpopulation, Dominator dominator){
+		Set<Individual> clones = new HashSet<>();
+		
+		for (Individual otherInd : subpopulation){
+			if (ind == otherInd) continue; // Do not compare with self
+			
+			if (dominator.hasEqualObjectiveValues(ind, otherInd)){
+				clones.add(otherInd);
+			}
+		}
+		return clones;
 	}
 	
 }

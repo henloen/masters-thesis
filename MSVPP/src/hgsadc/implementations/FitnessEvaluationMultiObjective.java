@@ -31,11 +31,13 @@ public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
 		}
 		
 	}
-	private void calculateBiasedFitness(ArrayList<Individual> individuals){
+	
+	@Override
+	protected void calculateBiasedFitness(ArrayList<Individual> individuals){
 		int nIndividuals = individuals.size(); 
 		double nElite = (nIndividuals * nEliteProp);
 		for (Individual individual : individuals) {
-			double biasedFitness = individual.getCostRank() + 10*individual.getPersistenceRank() + (1 - (nElite/nIndividuals)) * individual.getDiversityRank();
+			double biasedFitness = individual.getCostRank() + individual.getPersistenceRank() + (1 - (nElite/nIndividuals)) * individual.getDiversityRank();
 			individual.setBiasedFitness(biasedFitness);
 		}
 	}

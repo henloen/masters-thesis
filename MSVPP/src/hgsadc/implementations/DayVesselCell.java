@@ -6,6 +6,10 @@ public class DayVesselCell {
 	public final int vessel;
 	
 	public DayVesselCell(int day, int vessel) {
+		if (day < 0 || vessel < 1){
+			throw new IllegalArgumentException("Day: " + day + ", PSV: " + vessel + " is an invalid DayVesselCell");
+		}
+		
 		this.day = day;
 		this.vessel = vessel;
 	}

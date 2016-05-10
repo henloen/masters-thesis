@@ -4,6 +4,7 @@ import hgsadc.implementations.GenotypeHGS;
 import hgsadc.implementations.Dominator;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -82,6 +83,7 @@ public class HGSmain {
 		
 		System.out.println("Creating initial population...");
 		createInitialPopulation();
+		processes.updateIterationsSinceImprovementCounter(true); // Resets counters
 		runEvolutionaryLoop();
 		terminate();
 	}
@@ -99,7 +101,9 @@ public class HGSmain {
 		switch (dominationCriteria){
 			case "Cost" : dominator = null;
 				break;
-			case "Cost+Persistence" : dominator = new Dominator(true, true);
+			case "Cost+Persistence" :
+				dominator = new Dominator(true, true);
+				paretoFront = new HashSet<>();
 				break;
 			default : dominator = null;
 		}
@@ -117,7 +121,6 @@ public class HGSmain {
 			processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
 		}
 		else {
-			paretoFront = getParetoFront();
 			processes.exportRunStatistics(outputFileName, stopTime - startTime, paretoFront);
 		}
 		
@@ -147,7 +150,7 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
-		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation);//record initial population
+		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation); // record initial population
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
@@ -161,9 +164,9 @@ public class HGSmain {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
-		addToSubpopulation(offspring);
+		boolean isImprovingSolution = addToSubpopulation(offspring);
+		processes.updateIterationsSinceImprovementCounter(isImprovingSolution);
 		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
-		updateCounters();
 		if (processes.isDiversifyIteration()) {
 			diversify(feasiblePopulation, infeasiblePopulation);
 		}
@@ -195,19 +198,6 @@ public class HGSmain {
 		*/
 	}
 	
-	private void updateCounters() {
-		Individual bestFeasibleIndividual = getBestSolution(feasiblePopulation);
-		double bestPenalizedCost;
-		
-		if (bestFeasibleIndividual == null){
-			bestPenalizedCost = Double.POSITIVE_INFINITY;
-		}
-		else {
-			bestPenalizedCost = bestFeasibleIndividual.getPenalizedCost();
-		}
-		processes.updateDiversificationCounter(bestPenalizedCost);
-	}
-
 	private void diversify(ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
 		/*  1. Eliminate all but the best third of each subpopulation in terms of penalized cost
 		 *  2. Create 4� new individual 
@@ -253,15 +243,62 @@ public class HGSmain {
 		}
 	}
 	
-	private void addToSubpopulation(Individual individual) {
+	private boolean addToSubpopulation(Individual individual) {
+		boolean isImprovingSolution = false;
+
 		if (individual.isFeasible()) {
-			if ((bestFeasibleIndividual == null)
-				|| (individual.getPenalizedCost() < bestFeasibleIndividual.getPenalizedCost())) {
-				bestFeasibleIndividual = individual;
+			if (dominator == null){ // Single-objective problem
+				if ((bestFeasibleIndividual == null)
+						|| (individual.getPenalizedCost() < bestFeasibleIndividual.getPenalizedCost())) {
+					bestFeasibleIndividual = individual;
+					isImprovingSolution = true; // Improving solution found
+				}
+				else {
+					isImprovingSolution = false; // No improving solution found
+				}
+			}
+			else { // Multi-objective problem
+				Set<Individual> dominatingIndividuals = Utilities.getIndidividualsDominating(individual, paretoFront, dominator);
+				
+//				System.out.println("=============== Current pareto front =======================");
+//				for (Individual paretoInd : paretoFront){
+//					System.out.println(paretoInd.getObjectiveValues());
+//				}
+//				System.out.println();
+//				System.out.println(individual.getObjectiveValues() + " is dominated by: ");
+//				for (Individual dom : dominatingIndividuals) {
+//					System.out.println(dom.getObjectiveValues());
+//				}
+//				System.out.println();
+				
+				if (dominatingIndividuals.isEmpty()){
+					Set<Individual> dominatedIndividuals = Utilities.getIndividualsDominatedBy(individual, paretoFront, dominator);
+					
+//					System.out.println(individual.getObjectiveValues() + " dominates: ");
+//					for (Individual dom : dominatedIndividuals) {
+//						System.out.println(dom.getObjectiveValues());
+//					}
+					paretoFront.removeAll(dominatedIndividuals);
+					
+					Set<Individual> clones = Utilities.getObjectiveClones(individual, paretoFront, dominator);
+					
+					if (clones.isEmpty()){
+						paretoFront.add(individual);
+						isImprovingSolution = true; // Improving solution found
+					}
+					else {
+						isImprovingSolution = false; // New solution already in pareto front. No improving solution found
+					}
+					
+				}
+				else {
+					isImprovingSolution = false; // No improving solution found
+				}
 			}
 			feasiblePopulation.add(individual);
 		}
 		else {
+			isImprovingSolution = false; // No improving solution found
 			infeasiblePopulation.add(individual);
 		}			
 		processes.addDiversityDistance(individual);
@@ -273,6 +310,8 @@ public class HGSmain {
 		else {
 			checkSubpopulationSize(infeasiblePopulation, feasiblePopulation);
 		}
+		
+		return isImprovingSolution;
 	}
 	
 	// 
@@ -343,16 +382,18 @@ public class HGSmain {
 	}
 	
 	private void printParetoFront() {
-		paretoFront = getParetoFront();
-		System.out.println("======================== Pareto front (hopefully) ================================");
+		DecimalFormat df = new DecimalFormat("0");
+		System.out.println("======================== Pareto front  ==========================================");
 		for (Individual individual : paretoFront) {
-			System.out.println("Cost : " + individual.getPenalizedCost() + " Persistence: " + individual.getNumberOfChangesFromBaseline());
+			System.out.println("Cost : " + df.format(individual.getPenalizedCost()) + " Persistence: " + individual.getNumberOfChangesFromBaseline());
 		}
+		System.out.println();
 		for (Individual individual : paretoFront){
 			System.out.println(individual.getFullText());
 		}
 	}
 
+	// DEPRECATED
 	private Set<Individual> getParetoFront(){
 		ArrayList<Set<Individual>> paretoFronts = Utilities.nonDominatedSorting(feasiblePopulation, dominator);
 		ArrayList<Individual> paretoFrontList = new ArrayList<>(paretoFronts.get(0));

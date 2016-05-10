@@ -54,6 +54,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 				+ durationViolationPenalty*phenotype.getDurationViolation() 
 				+ capacityViolationPenalty*phenotype.getCapacityViolation()
 				+ numberOfInstallationsPenalty*phenotype.getNumberOfInstallationsViolation();
+		penalizedCost = Math.round(penalizedCost);
 		individual.setPenalizedCost(penalizedCost);
 	}
 	
@@ -146,7 +147,7 @@ public class FitnessEvaluationStandard implements FitnessEvaluationProtocol {
 		}
 	}
 	
-	private void calculateBiasedFitness(ArrayList<Individual> individuals) {
+	protected void calculateBiasedFitness(ArrayList<Individual> individuals) {
 		int nIndividuals = individuals.size(); 
 		double nElite = (nIndividuals * nEliteProp);
 		for (Individual individual : individuals) {

@@ -1,5 +1,8 @@
-package hgsadc;
+package testsAndStuff;
 
+import hgsadc.IO;
+import hgsadc.Individual;
+import hgsadc.ProblemData;
 import hgsadc.implementations.EducationStandard;
 import hgsadc.implementations.FitnessEvaluationStandard;
 import hgsadc.implementations.GenoToPhenoConverterStandard;

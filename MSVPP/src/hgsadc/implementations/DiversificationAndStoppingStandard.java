@@ -4,24 +4,31 @@ import java.util.ArrayList;
 
 import hgsadc.protocols.DiversificationProtocol;
 
-public class DiversificationStandard implements DiversificationProtocol {
+public class DiversificationAndStoppingStandard implements DiversificationProtocol {
 
 	private final int iterationsBeforeDiversify, iterationsBeforeStopping; // Number of iterations without improvement before diversifying
 	private int diversificationIterationsWithoutImprovement, iterationsWithoutImprovement;
-	private double bestSolution;
 	private ArrayList<Integer> diversificationNumbers;
+	private long startTime, maxTime;
 	
-	public DiversificationStandard(int iterationsBeforeDiversify, int iterationsBeforeStopping) {
+	public DiversificationAndStoppingStandard(int iterationsBeforeDiversify, int iterationsBeforeStopping, int maxTime) {
 		this.iterationsBeforeDiversify = iterationsBeforeDiversify;
 		this.iterationsBeforeStopping = iterationsBeforeStopping;
 		this.diversificationIterationsWithoutImprovement = 0;
 		this.iterationsWithoutImprovement = 0;
 		this.diversificationNumbers = new ArrayList<Integer>();
-		bestSolution = Double.MAX_VALUE;
+		
+		startTime = System.nanoTime()/1000000000;
+		
+		if (maxTime <= 0){
+			this.maxTime = Long.MAX_VALUE;
+		}
+		else {
+			this.maxTime = maxTime;
+		}
 	}
 	
-	@Override
-	public void incrementCounter(){
+	public void incrementCounters(){
 		diversificationIterationsWithoutImprovement++;
 		iterationsWithoutImprovement++;
 	}
@@ -33,7 +40,9 @@ public class DiversificationStandard implements DiversificationProtocol {
 	
 	@Override
 	public boolean isStoppingIteration() {
-		return iterationsWithoutImprovement >= iterationsBeforeStopping;
+		long currentTime = System.nanoTime()/1000000000;
+		long elapsedTime = currentTime - startTime;
+		return iterationsWithoutImprovement >= iterationsBeforeStopping || elapsedTime >= maxTime;
 	}
 
 	@Override
@@ -46,20 +55,6 @@ public class DiversificationStandard implements DiversificationProtocol {
 	}
 	
 	@Override
-	public void updateCounterSinceLastImprovement(double newBestSolution){
-		//System.out.println("Current best solution : " + bestSolution);
-		//System.out.println("New best solution: " + newBestSolution);
-		if (newBestSolution < bestSolution){
-			//System.out.println("New solution is better");
-			bestSolution = newBestSolution;
-			resetDiversificationCounter();
-			resetStoppingCounter();
-		}
-		incrementCounter();
-		//System.out.println("Iterations since last improvement: " + iterationsWithoutImprovement);
-	}
-
-	@Override
 	public void addDiversification(int iteration) {
 		diversificationNumbers.add(iteration);
 	}
@@ -67,6 +62,18 @@ public class DiversificationStandard implements DiversificationProtocol {
 	@Override
 	public ArrayList<Integer> getDiversificationNumbers() {
 		return diversificationNumbers;
+	}
+
+	@Override
+	public void updateIterationsSinceImprovementCounter(boolean improvingSolutionFound) {
+		if (improvingSolutionFound){
+			resetStoppingCounter();
+			resetDiversificationCounter();
+		}
+		else {
+			incrementCounters();
+		}
+		
 	}
 	
 }

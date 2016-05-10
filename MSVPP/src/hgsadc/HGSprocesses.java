@@ -1,6 +1,7 @@
 package hgsadc;
 
-import hgsadc.implementations.DiversificationStandard;
+import hgsadc.implementations.DiversificationAndStoppingStandard;
+import hgsadc.implementations.EducationPersistence;
 import hgsadc.implementations.EducationStandard;
 import hgsadc.implementations.FeasibleFleetChecker;
 import hgsadc.implementations.FitnessEvaluationMultiObjective;
@@ -137,7 +138,7 @@ public class HGSprocesses {
 		selectReproductionProtocol();
 		initializePenaltyAdjustmentProtocol();
 		selectEducationProtocol();
-		selectDiversificationProtocol();
+		selectDiversificationAndStoppingProtocol();
 		selectSurvivorSelectionProtocol();
 		statisticsHandler = new StatisticsHandler(problemData, fitnessEvaluationProtocol);
 		initializeFeasibleFleetChecker();
@@ -205,16 +206,22 @@ public class HGSprocesses {
 
 	private void selectEducationProtocol() {
 		switch (problemData.getHeuristicParameters().get("Education protocol")) {
-			case "standard": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol, genoToPhenoConverterProtocol);
+			case "Cost": educationProtocol = new EducationStandard(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol, genoToPhenoConverterProtocol);
+				break;
+			case "Cost+Persistence": educationProtocol = new EducationPersistence(problemData, fitnessEvaluationProtocol, penaltyAdjustmentProtocol, genoToPhenoConverterProtocol);
 				break;
 			default: educationProtocol = null;
 				break;
 		}
 	}
 	
-	private void selectDiversificationProtocol() {
+	private void selectDiversificationAndStoppingProtocol() {
 		switch (problemData.getHeuristicParameters().get("Diversification protocol")) {
-			case "standard": diversificationProtocol = new DiversificationStandard(problemData.getHeuristicParameterInt("Iterations before diversify"), problemData.getHeuristicParameterInt("Max iterations without improvement"));
+			case "standard" :
+				int iterationsBeforeDiversify = problemData.getHeuristicParameterInt("Iterations before diversify");
+				int maxIterationsWithoutImprovement = problemData.getHeuristicParameterInt("Max iterations without improvement");
+				int maxTime = problemData.getHeuristicParameterInt("Max time");
+				diversificationProtocol = new DiversificationAndStoppingStandard(iterationsBeforeDiversify, maxIterationsWithoutImprovement, maxTime);
 				break;
 			default: diversificationProtocol = null;
 				break;
@@ -233,11 +240,6 @@ public class HGSprocesses {
 	public void recordDiversification(int iteration) {
 		diversificationProtocol.addDiversification(iteration);
 		diversificationProtocol.resetDiversificationCounter();
-	}
-
-	public void updateDiversificationCounter(double bestPenalizedCost) {
-		diversificationProtocol.updateCounterSinceLastImprovement(bestPenalizedCost);
-		
 	}
 
 	public String getRunStatistics() {
@@ -265,6 +267,10 @@ public class HGSprocesses {
 	
 	public ArrayList<Individual> getClones(ArrayList<Individual> subpopulation){
 		return survivorSelectionProtocol.getClones(subpopulation, fitnessEvaluationProtocol);
+	}
+
+	public void updateIterationsSinceImprovementCounter(boolean improvingSolutionFound) {
+		diversificationProtocol.updateIterationsSinceImprovementCounter(improvingSolutionFound);
 	}
 
 

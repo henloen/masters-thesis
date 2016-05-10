@@ -66,7 +66,8 @@ public class Individual {
 	
 	public String getFullText() {
 		DecimalFormat numberFormat = new DecimalFormat("0.00");
-		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + numberFormat.format(penalizedCost)
+		DecimalFormat noDecimalFormat = new DecimalFormat("0");
+		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + noDecimalFormat.format(penalizedCost)
 				+ ", persistence " + numberOfChangesFromBaseline + ", cost rank: " + costRank + ", diversity contribution: "
 				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
 				 + ", capviol: " + numberFormat.format(phenotype.getCapacityViolation())
@@ -144,5 +145,8 @@ public class Individual {
 		return  str;
 	}
 	*/
+	public String getObjectiveValues(){
+		return "Individual " + number + ", Cost: " + penalizedCost + ", Persistence: " + numberOfChangesFromBaseline;
+	}
 
 }
