@@ -1,0 +1,174 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\11-0-36.txt
+
+!Problem instance: 14-0-48
+!Total visits: 48
+!Solved on: 2016-05-06 15.16
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 98
+Robustness: 0.00
+Change: 16
+Total cost: 492393
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 492393
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 492393
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 2:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 15
+Robustness: 0.00
+Change: 14
+Total cost: 510033
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 510033
+!Optimality gap: 0.00799004
+!Charter cost:	 4.2e+006
+!Sailing cost:	 510033
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 3:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 13
+Robustness: 0.00
+Change: 12
+Total cost: 515249
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 515249
+!Optimality gap: 0.0170968
+!Charter cost:	 4.2e+006
+!Sailing cost:	 515249
+!Number of vessels used:	3
+!Number of voyages sailed: 7
+
+!==============================================================================================
+Iteration 4:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 11
+Robustness: 0.00
+Change: 8
+Total cost: 517426
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 517426
+!Optimality gap: 0.0174872
+!Charter cost:	 4.2e+006
+!Sailing cost:	 517426
+!Number of vessels used:	3
+!Number of voyages sailed: 7
+
+!==============================================================================================
+Iteration 5:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 7
+Robustness: 0.00
+Change: 6
+Total cost: 520502
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 520502
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 520502
+!Number of vessels used:	3
+!Number of voyages sailed: 7
+
+!==============================================================================================
+Iteration 6:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 5
+Robustness: 0.00
+Change: 4
+Total cost: 528669
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 528669
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 528669
+!Number of vessels used:	3
+!Number of voyages sailed: 7
+
+!==============================================================================================
+Iteration 7:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 3
+Robustness: 0.00
+Change: 2
+Total cost: 578985
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 578985
+!Optimality gap: 0.0826176
+!Charter cost:	 4.2e+006
+!Sailing cost:	 578985
+!Number of vessels used:	3
+!Number of voyages sailed: 9
+
+!==============================================================================================
+Iteration 8:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 1
+
+No feasible solution found
+
+!==============================================================================================
+Iteration 9:
+
+RobEpsilon: 0.02
+ChangeEpsilon: 98
+
+No feasible solution found
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 9
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		98		0.00		16		492393	
+	0.00		15		0.00		14		510033	
+	0.00		13		0.00		12		515249	
+	0.00		11		0.00		8		517426	
+	0.00		7		0.00		6		520502	
+	0.00		5		0.00		4		528669	
+	0.00		3		0.00		2		578985	
+	0.00		1		0.00		0		0	
+	0.02		98		0.00		0		0	
+
+Total time elapsed: -42967.6

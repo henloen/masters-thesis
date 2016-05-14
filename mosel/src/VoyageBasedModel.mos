@@ -9,7 +9,7 @@ parameters
 	 
 	 DataFilePath = '..\data\input\april 2016\fixed fleet\'
 	 InputDate = '2016-04-20'
-	 ProblemInstance = '4-0-13'
+	 ProblemInstance = '14-0-48'
 	 DataFile = DataFilePath + InputDate + " " + ProblemInstance + '.txt'
 	 
 	
@@ -17,12 +17,12 @@ parameters
 	 
 	 ! Change this to decide if fleet is fixed or not
 	 FixFleet = true
-	 UseEpsilonConstraintMethod = false
+	 UseEpsilonConstraintMethod = true
 	 ! Input file containing baseline solution to compare new solution with
-	 BaselineFilePath = '..\data\input\Baseline\'
-	 BaselineFile = BaselineFilePath + '3-0-16.txt'
-	 TestCase = 'testing robustness'
-	 nNBaseline = 3
+	 BaselineFilePath = '..\data\input\april 2016\baseline\'
+	 BaselineFile = BaselineFilePath + '11-0-36.txt'
+	 TestCase = 'Add 3 installations MOSEL'
+	 nNBaseline = 11
 	 
 	 
 	 ! Solver will stop and accept current best solution when optimality gap is lower than the limit
@@ -394,7 +394,13 @@ else
 	
 	!--------------------- OBJECTIVE FUNCTION ------------------------------------------------------------------------------------------------
 	
-	TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr) + Change;
+	if (FixFleet) then ! Only look at sailing cost
+		TotalCost := sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr) + Change;
+	else		! Include charter cost
+		TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr) + Change;
+	end-if
+	
+	
 	! Adds a small cost on change, in order to find the minimum change solution if there are multiple solution with equal cost
 		
 		
@@ -715,7 +721,8 @@ procedure WriteParetoFront
 		writeln("");
 	end-do
 end-procedure
-	
+
+
 procedure WriteElapsedTime
 	EndTime := time(SYS_NOW);
 	writeln("\nTotal time elapsed: " + ((EndTime-StartTime)/1000));
