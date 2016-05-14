@@ -44,7 +44,11 @@ public class EducationStandard implements EducationProtocol {
 		routeImprovement(individual);
 		patternImprovement(individual);
 		routeImprovement(individual);
-		
+
+		updatePenaltyAdjustmentCounter(individual);
+	}
+	
+	protected void updatePenaltyAdjustmentCounter(Individual individual){
 		if (!isRepair){
 			penaltyAdjustmentProtocol.countAddedIndividual(individual);
 		}
@@ -156,7 +160,7 @@ public class EducationStandard implements EducationProtocol {
 	}
 
 
-	private void vesselPatternImprovement(Individual individual) {
+	protected void vesselPatternImprovement(Individual individual) {
 		/*
 		for each day t with more than one vessel departure
 			for all combinations of two voyages departing that day
@@ -254,7 +258,7 @@ public class EducationStandard implements EducationProtocol {
 //			System.out.println("Iterations without change: " + iterationsWithoutChange + " no of installations: " + nInstallations);
 			for (Installation installation : problemData.getCustomerInstallations()){
 //				System.out.println("Changing pattern of installation " + installation.getNumber());
-				HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation = getCopyOfGiantTourWithoutInstallation(installation, individual);
+				HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation = getCopyOfGiantTourWithoutInstallation(installation, individual.getGenotype().getGiantTourChromosome());
 				int frequency = installation.getFrequency();
 
 				double bestPatternCost = Double.MAX_VALUE;
@@ -289,7 +293,7 @@ public class EducationStandard implements EducationProtocol {
 //	}
 	
 	protected Individual applyInsertions(Individual individual, ArrayList<VoyageInsertion> bestInsertions, Installation installation) {
-		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = getCopyOfGiantTourWithoutInstallation(installation, individual);
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = getCopyOfGiantTourWithoutInstallation(installation, individual.getGenotype().getGiantTourChromosome());
 		
 		for (VoyageInsertion voyageInsertion : bestInsertions) {
 			applyInsertion(voyageInsertion, giantTour);
@@ -314,9 +318,9 @@ public class EducationStandard implements EducationProtocol {
 	}
 
 	protected HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> getCopyOfGiantTourWithoutInstallation(
-			Installation installation, Individual individual) {
+			Installation installation, HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour) {
 		
-		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourCopy = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourCopy = Utilities.deepCopyGiantTour(giantTour);
 		
 		for (Integer day : giantTourCopy.keySet()){
 			HashMap<Integer, ArrayList<Integer>> daySchedule = giantTourCopy.get(day);
@@ -681,6 +685,7 @@ public class EducationStandard implements EducationProtocol {
 		return new VoyageInsertion(cell, installation, bestPosInVoyage, bestInsertionCostForVoyage); 
 	}
 	
+	// ********************* NOT USED *********************
 	public void installationPatternSwap(Individual individual) {
 		HashMap<Integer, ArrayList<Installation>> installationsByFrequency = problemData.getInstallationsByFrequency();
 		

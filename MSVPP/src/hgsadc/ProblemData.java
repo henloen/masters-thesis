@@ -41,7 +41,21 @@ public class ProblemData {
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
 		lengthOfPlanningPeriod = depotCapacity.size();
 		allDayVesselCells = generateAllDayVesselCells();
-		baselineInstallationPattern = generateBaselineInstallationPattern(problemInstanceParameters.get("BaselineDeparturePattern"));
+		
+		String objectives = heuristicParameters.get("Objectives");
+		if (objectives.equals("Cost+Persistence")){
+			baselineInstallationPattern = generateBaselineInstallationPattern(problemInstanceParameters.get("BaselineDeparturePattern"));
+		}
+	}
+	
+	public Set<Installation> getInstallationsWithFrequency(int frequency){
+		Set<Installation> instsWithFrequency = new HashSet<>();
+		for (Installation inst : getCustomerInstallations()){
+			if (inst.getFrequency() == frequency){
+				instsWithFrequency.add(inst);
+			}
+		}
+		return instsWithFrequency;
 	}
 	
 	private HashMap<Integer, Set<Integer>> generateBaselineInstallationPattern(String baselineString) {
@@ -157,6 +171,10 @@ public class ProblemData {
 	public int getMaxVoyageDurationHours() {
 		int maxDays = Integer.parseInt(problemInstanceParameters.get("Maximum duration"));
 		return getMaxVoyageDurationHoursFromDays(maxDays);
+	}
+	
+	public int getMaxInstallationsPerVoyage(){
+		return Integer.parseInt(getProblemInstanceParameters().get("Maximum number of installations"));
 	}
 	
 	public int getMaxVoyageDurationHoursFromDays(int days) {

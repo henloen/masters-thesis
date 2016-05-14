@@ -25,6 +25,17 @@ public class HGSmain {
 	
 	private int iteration;
 	
+	public static int PERSISTENCE_EDUCATIONS = 0;
+	public static int COST_EDUCATIONS = 0;
+	public static int PERSISTENCE_COST_EDUCATIONS = 0;
+	public static int COST_PERSISTENCE_EDUCATIONS = 0;
+	
+	public static int UNFEASIBLE_PERSISTENCE_EDUCATIONS = 0;
+	public static int CUM_PERSISTENCE_REDUCED = 0;
+	public static int NOFEASIBLEVESSELDAYS = 0;
+	public static int NODAYSWITHTOOFEWVOYAGES = 0;
+	public static int NODAYSWITHTOOMANYVOYAGES = 0;
+	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize();
@@ -43,6 +54,20 @@ public class HGSmain {
 			}
 		}
 		main.fullHGSADCrun(vesselsRemoved-1);
+		
+		System.out.println("=======================================================");
+		System.out.println("Persistence educations: " + PERSISTENCE_EDUCATIONS);
+		System.out.println("Cost educations: " + COST_EDUCATIONS);
+		System.out.println("Cost+Persistence educations: " + COST_PERSISTENCE_EDUCATIONS);
+		System.out.println("Persistence+Cost educations: " + PERSISTENCE_COST_EDUCATIONS);
+		System.out.println();
+		System.out.println("Failed move voyage-educations: " + UNFEASIBLE_PERSISTENCE_EDUCATIONS);
+		System.out.println("No days with too few: " + NODAYSWITHTOOFEWVOYAGES);
+		System.out.println("No days with too many: " + NODAYSWITHTOOMANYVOYAGES);
+		System.out.println("No feasible vessel days: " + NOFEASIBLEVESSELDAYS);
+		System.out.println();
+		System.out.println("Persistence/education: " + (double) CUM_PERSISTENCE_REDUCED/(PERSISTENCE_COST_EDUCATIONS + COST_PERSISTENCE_EDUCATIONS + PERSISTENCE_EDUCATIONS));
+		
 	}
 	
 	private boolean isVariableFleetProblem() {
@@ -85,10 +110,20 @@ public class HGSmain {
 		createInitialPopulation();
 		processes.updateIterationsSinceImprovementCounter(true); // Resets counters
 		runEvolutionaryLoop();
+//		postEducation();
 		terminate();
 	}
 	
 	
+	private void postEducation() {
+		if (dominator != null){
+			for (Individual individual : paretoFront){
+				processes.educate(individual);
+				processes.repair(individual, 1);
+			}
+		}
+	}
+
 	private void initialize() {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
@@ -164,6 +199,7 @@ public class HGSmain {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
 		processes.educate(offspring);
+		processes.repair(offspring);
 		boolean isImprovingSolution = addToSubpopulation(offspring);
 		processes.updateIterationsSinceImprovementCounter(isImprovingSolution);
 		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
@@ -390,6 +426,7 @@ public class HGSmain {
 		System.out.println();
 		for (Individual individual : paretoFront){
 			System.out.println(individual.getFullText());
+			System.out.println("Type of education: " + individual.typeOfEducation);
 		}
 	}
 

@@ -53,8 +53,11 @@ public class IO {
 			distances = readDistances(1,51);
 		}
 		
-		String baselineDeparturePattern = readBaselineDeparturePattern(heuristicParameters);
-		problemInstanceParameters.put("BaselineDeparturePattern", baselineDeparturePattern);
+		String objectives = heuristicParameters.get("Objectives");
+		if (objectives.equals("Cost+Persistence")){
+			String baselineDeparturePattern = readBaselineDeparturePattern(heuristicParameters);
+			problemInstanceParameters.put("BaselineDeparturePattern", baselineDeparturePattern);
+		}
 
 		for (int i = 0; i < removeVessels; i++) {
 			vessels.remove(vessels.size()-1);

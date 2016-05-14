@@ -28,6 +28,12 @@ public class GenoToPhenoConverterMultiObjective extends GenoToPhenoConverterStan
 		HashMap<Integer, Set<Integer>> installationPattern = genotype.getInstallationDeparturePatternChromosome();
 		HashMap<Integer, Set<Integer>> baselinePattern = problemData.getBaselineInstallationPattern();
 		
+		int nChanges = calculateNumberOfChangesFromBaseline(installationPattern, baselinePattern);
+		individual.setNumberOfChangesFromBaseline(nChanges);
+//		System.out.println("Individual: " + individual + " has " + nChanges + " from baseline");
+	}
+	
+	public int calculateNumberOfChangesFromBaseline(HashMap<Integer, Set<Integer>> installationPattern, HashMap<Integer, Set<Integer>> baselinePattern){
 		int nChanges = 0;
 		for (Integer installation : installationPattern.keySet()){
 			if (baselinePattern.containsKey(installation)){ // Do not check installations that are not in both baseline and new problem
@@ -48,6 +54,7 @@ public class GenoToPhenoConverterMultiObjective extends GenoToPhenoConverterStan
 				
 			}
 		}
-		individual.setNumberOfChangesFromBaseline(nChanges);
+		return nChanges;
+
 	}
 }

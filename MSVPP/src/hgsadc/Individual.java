@@ -17,6 +17,8 @@ public class Individual {
 	private double penalizedCost, diversityContribution, biasedFitness;
 	private int numberOfChangesFromBaseline;
 	
+	public String typeOfEducation = "";
+	
 
 	public int getNumberOfChangesFromBaseline() {
 		return numberOfChangesFromBaseline;
@@ -68,7 +70,7 @@ public class Individual {
 		DecimalFormat numberFormat = new DecimalFormat("0.00");
 		DecimalFormat noDecimalFormat = new DecimalFormat("0");
 		return "" + number + ", biased fitness: " + numberFormat.format(biasedFitness) + ", penalized cost: " + noDecimalFormat.format(penalizedCost)
-				+ ", persistence " + numberOfChangesFromBaseline + ", cost rank: " + costRank + ", diversity contribution: "
+				+ ", persistence " + numberOfChangesFromBaseline + ", cost rank: " + costRank + ", persistence rank: " + persistenceRank + ", diversity contribution: "
 				+ numberFormat.format(diversityContribution) + ", diversity rank: " + diversityRank
 				 + ", capviol: " + numberFormat.format(phenotype.getCapacityViolation())
 				 + ", durviol: " + numberFormat.format(phenotype.getDurationViolation())
@@ -147,6 +149,17 @@ public class Individual {
 	*/
 	public String getObjectiveValues(){
 		return "Individual " + number + ", Cost: " + penalizedCost + ", Persistence: " + numberOfChangesFromBaseline;
+	}
+	
+	public HashMap<Integer, Integer> getNumberOfVoyagesPerDay() {
+		HashMap<Integer, Integer> numberOfDeparturesPerDay = new HashMap<>();
+		HashMap<Integer, Set<Integer>> vesselDeparturesPerDay = genotype.getVesselDeparturesPerDay(); 
+		
+		for (Integer day : vesselDeparturesPerDay.keySet()){
+			int nDeparturesOnDay = vesselDeparturesPerDay.get(day).size();
+			numberOfDeparturesPerDay.put(day, nDeparturesOnDay);
+		}
+		return numberOfDeparturesPerDay;
 	}
 
 }

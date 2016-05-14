@@ -83,9 +83,6 @@ public class HGSprocesses {
 	public Individual generateOffspring(ArrayList<Individual> parents) {
 		Individual individual = reproductionProtocol.crossover(parents);
 		convertGenotypeToPhenotype(individual);
-		if (!individual.isFeasible()){
-			repair(individual, problemData.getHeuristicParameterDouble("Repair rate"));
-		}
 		return individual;
 	}
 
@@ -99,15 +96,17 @@ public class HGSprocesses {
 	}
 	
 	public void repair(Individual individual, double probability) {
-		double randomDouble = new Random().nextDouble();
-		if (probability < randomDouble) {
-			
-			int penaltyMultiplier = 10;
-			educationProtocol.repairEducate(individual, penaltyMultiplier);
-			
-			if (!individual.isFeasible()){
-				penaltyMultiplier = 100;
+		if (!individual.isFeasible()){
+			double randomDouble = new Random().nextDouble();
+			if (probability < randomDouble) {
+				
+				int penaltyMultiplier = 10;
 				educationProtocol.repairEducate(individual, penaltyMultiplier);
+				
+				if (!individual.isFeasible()){
+					penaltyMultiplier = 100;
+					educationProtocol.repairEducate(individual, penaltyMultiplier);
+				}
 			}
 		}
 	}

@@ -112,4 +112,15 @@ public class PhenotypeHGS implements Phenotype {
 		return str;
 	}
 
+	@Override
+	public boolean existsViolationsOnDay(int day) {
+		for (Voyage voyage : giantTour.get(day).values()){
+			if (voyage.getCapacityViolation() > 0 || voyage.getDurationViolation() > 0
+					|| voyage.getNumberOfInstallationsViolation() > 0){
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

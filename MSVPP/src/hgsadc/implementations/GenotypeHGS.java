@@ -171,7 +171,15 @@ public class GenotypeHGS implements Genotype {
 
 	@Override
 	public HashMap<Integer, Set<Integer>> getVesselDeparturesPerDay() {
-		return Utilities.getReversedHashMap(vesselDeparturePatternChromosome);
+		HashMap<Integer, Set<Integer>> vesselDeparturesPerDay = Utilities.getReversedHashMap(vesselDeparturePatternChromosome);
+		int nDays = giantTourChromosome.size();
+		
+		for (int day = 0; day < nDays; day++){
+			if (!vesselDeparturesPerDay.containsKey(day)){
+				vesselDeparturesPerDay.put(day, new HashSet<Integer>()); // No departures on that day
+			}
+		}
+		return vesselDeparturesPerDay;
 	}
 	
 	@Override

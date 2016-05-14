@@ -29,7 +29,6 @@ public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
 			Individual individual = individuals.get(i);
 			individual.setPersistenceRank(i+1);
 		}
-		
 	}
 	
 	@Override

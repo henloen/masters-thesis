@@ -34,5 +34,7 @@ public interface Phenotype {
 	boolean isDurationFeasible();
 
 	boolean isNumberOfInstallationsFeasible();
+
+	public boolean existsViolationsOnDay(int dayToAdd);
 	
 }
