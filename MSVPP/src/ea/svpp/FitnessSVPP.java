@@ -5,8 +5,8 @@ import java.util.HashMap;
 import ea.Individual;
 import ea.Population;
 import ea.protocols.FitnessEvaluationProtocol;
-import voyageGenerationDPold.Vessel;
-import voyageGenerationDPold.Voyage;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class FitnessSVPP implements FitnessEvaluationProtocol {
 	

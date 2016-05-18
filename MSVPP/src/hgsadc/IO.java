@@ -49,8 +49,8 @@ public class IO {
 		}
 		else if (datasetSheet  == 3) {
 			installations = readInstallations(1,3);
-			vessels = readVessels(1,41);
-			distances = readDistances(1,51);
+			vessels = readVessels(1,44);
+			distances = readDistances(1,54);
 		}
 		
 		String objectives = heuristicParameters.get("Objectives");
@@ -138,6 +138,7 @@ public class IO {
 			if (installation.getFrequency() > 0){
 				installations.add(installation);
 				System.out.println("Adding installation " + installation.getNumber() + installation.getName());
+				System.out.println("Frequency: " + installation.getFrequency());
 				instNumber++;
 			}
 		}
