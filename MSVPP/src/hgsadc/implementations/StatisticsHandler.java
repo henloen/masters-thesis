@@ -42,11 +42,11 @@ public class StatisticsHandler {
 	}
 
 	
-	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
+	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation, Individual bestFeasibleIndividual) {
 		HashMap<String, Double> iterationStatistics = new HashMap<String, Double>();
 		ArrayList<Individual> entirePopulation = Utilities.getAllElements(feasiblePopulation, infeasiblePopulation);
 		Individual bestPenalizedCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation, infeasiblePopulation);
-		Individual bestFeasibleCostIndividual = getBestPenalizedCostIndividual(feasiblePopulation);
+		Individual bestFeasibleCostIndividual = bestFeasibleIndividual;
 		iterationStatistics.put("# feasible solutions", (double) feasiblePopulation.size());
 		iterationStatistics.put("# infeasible solutions", (double) infeasiblePopulation.size());
 		iterationStatistics.put("best penalized cost", bestPenalizedCostIndividual.getPenalizedCost());

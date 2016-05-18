@@ -1,0 +1,90 @@
+Epsilon-constraint method
+Baseline file: \\file.stud.iot.ntnu.no\Home\thombor\Desktop\GitHub\masters-thesis\mosel\data\input\baseline\..\april 2016\baseline\4-0-13.txt
+
+!Problem instance: 7-0-22
+!Total visits: 22
+!Solved on: 2016-05-06 14.31
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 49
+Robustness: 0.00
+Change: 8
+Total cost: 341016
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 341016
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 341016
+!Number of vessels used:	2
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 2:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 7
+Robustness: 0.00
+Change: 4
+Total cost: 341471
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 341471
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 341471
+!Number of vessels used:	2
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 3:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 3
+Robustness: 0.00
+Change: 2
+Total cost: 349850
+
+Number of robust voyages: 0
+
+!----------------------------------------------------------------------------
+!Total cost: 349850
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 349850
+!Number of vessels used:	2
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 4:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 1
+
+No feasible solution found
+
+!==============================================================================================
+Iteration 5:
+
+RobEpsilon: 0.02
+ChangeEpsilon: 49
+
+No feasible solution found
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 5
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		49		0.00		8		341016	
+	0.00		7		0.00		4		341471	
+	0.00		3		0.00		2		349850

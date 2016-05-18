@@ -240,8 +240,8 @@ public class HGSprocesses {
 		return stats;
 	}
 	
-	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
-			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
+	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation, Individual bestIndividual) {
+			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation, bestIndividual);
 	}
 	
 	public void exportRunStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual) {

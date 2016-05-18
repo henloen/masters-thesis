@@ -112,11 +112,11 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
-		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation);//record initial population
+		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation, bestFeasibleIndividual);//record initial population
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
-			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
+			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation, bestFeasibleIndividual);
 			iteration++;
 		}
 		System.out.println();
