@@ -93,6 +93,7 @@ public class IO {
 			line = sc.nextLine();
 //			System.out.println("Reading line " + line);
 		}
+		sc.close();
 		
 		return baselineString;
 	}

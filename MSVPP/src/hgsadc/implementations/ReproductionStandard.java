@@ -324,8 +324,15 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		for (Integer day : admissibleDays) {
 			for (int vessel = 1; vessel <= problemData.getVessels().size(); vessel++){
-				if (GenotypeHGS.feasibleVesselPattern(day, vessel, vesselChromosome, problemData)){
+				if (vesselChromosome.get(vessel).contains(day)){
 					admissibleCells.add(new DayVesselCell(day, vessel));
+				}
+				else {
+					// Vessel does not depart on this day yet
+					int depotCapacity = problemData.getDepotCapacity().get(day);
+					if (GenotypeHGS.availableDepotCapacity(day, depotCapacity, giantTourChromosome) && GenotypeHGS.feasibleVesselPattern(day, vessel, vesselChromosome, problemData)){
+						admissibleCells.add(new DayVesselCell(day, vessel));
+					}
 				}
 			}
 		}
@@ -345,9 +352,8 @@ public class ReproductionStandard implements ReproductionProtocol {
 		
 		Set<Integer> admissibleDays = new HashSet<Integer>();
 		for (int day = 0; day < problemData.getLengthOfPlanningPeriod(); day++){
-			int depotCapacity = problemData.getDepotCapacity().get(day);
 			
-			if (GenotypeHGS.availableDepotCapacity(day, depotCapacity, giantTourChromosome) && GenotypeHGS.feasibleInstallationPattern(installation, day, installationChromosome, problemData)){
+			if (GenotypeHGS.feasibleInstallationPattern(installation, day, installationChromosome, problemData)){
 				admissibleDays.add(day);
 			}
 		}

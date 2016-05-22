@@ -1,5 +1,5 @@
 Skip number of rows: 54
-Time used: 576,74 seconds
+Time used: 540,08 seconds
 
 Problem instance parameters: 
 Problem size = 30
@@ -76,8 +76,8 @@ Granularity threshold in RI = 0,4
 
 Number of iterations: 5000
 Diversifaction happened at iterations: [2000, 4000]
-Number of crossover restarts: 2530
-Number of construction heuristic restarts: 72
+Number of crossover restarts: 2251
+Number of construction heuristic restarts: 80
 
 ======================= Non-dominated solutions =======================
 Cost	Persistence

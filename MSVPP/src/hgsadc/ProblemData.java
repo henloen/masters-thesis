@@ -65,9 +65,10 @@ public class ProblemData {
 //		System.out.println("BaselineString: " + baselineString);
 		
 		String[] lines = baselineString.split("\n");
-		for (int installation = 1; installation < lines.length; installation++){ 
+		for (Installation installation : getCustomerInstallations()){ 
 			// NOTE: Baseline may have more or fewer installations than the current problem
-			String[] splitLine = lines[installation].split(" ");
+			int instNum = installation.getNumber();
+			String[] splitLine = lines[instNum].split(" ");
 			Set<Integer> installationPattern = new HashSet<>();
 			
 			for (int day = 0; day < getLengthOfPlanningPeriod(); day++){
@@ -77,7 +78,7 @@ public class ProblemData {
 					installationPattern.add(day);
 				}
 			}
-			baseline.put(installation, installationPattern);
+			baseline.put(instNum, installationPattern);
 		}
 		
 //		System.out.println("\nResulting baseline: " + baseline);
