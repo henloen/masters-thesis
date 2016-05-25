@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import voyageGenerationDPold.Installation;
-import voyageGenerationDPold.Vessel;
-import voyageGenerationDPold.Voyage;
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public abstract class UtilitiesSVPP {
 	

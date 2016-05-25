@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import ea.Individual;
-import voyageGenerationDPold.Installation;
-import voyageGenerationDPold.Vessel;
-import voyageGenerationDPold.Voyage;
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class ProblemDataSVPP implements Serializable {
 	

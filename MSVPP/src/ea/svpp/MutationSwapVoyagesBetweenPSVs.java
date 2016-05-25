@@ -5,9 +5,9 @@ import java.util.Set;
 
 import ea.Individual;
 import ea.protocols.MutationOperator;
-import voyageGenerationDPold.Installation;
-import voyageGenerationDPold.Vessel;
-import voyageGenerationDPold.Voyage;
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class MutationSwapVoyagesBetweenPSVs extends MutationOperator {
 	

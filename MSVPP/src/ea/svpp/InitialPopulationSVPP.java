@@ -10,9 +10,9 @@ import java.util.Set;
 import ea.Individual;
 import ea.Parameters;
 import ea.protocols.InitialPopulationProtocol;
-import voyageGenerationDPold.Installation;
-import voyageGenerationDPold.Vessel;
-import voyageGenerationDPold.Voyage;
+import voyageGenerationDP.Installation;
+import voyageGenerationDP.Vessel;
+import voyageGenerationDP.Voyage;
 
 public class InitialPopulationSVPP implements InitialPopulationProtocol {
 	

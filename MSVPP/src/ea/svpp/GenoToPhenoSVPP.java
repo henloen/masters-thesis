@@ -6,7 +6,7 @@ import java.util.Set;
 import ea.Individual;
 import ea.Population;
 import ea.protocols.GenoToPhenoProtocol;
-import voyageGenerationDPold.Vessel;
+import voyageGenerationDP.Vessel;
 
 public class GenoToPhenoSVPP implements GenoToPhenoProtocol {
 

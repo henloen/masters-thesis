@@ -1,0 +1,95 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\12-0-40.txt
+
+!Problem instance: 12-0-40_load reduction 25%
+!Total visits: 40
+!Solved on: 2016-05-16 17.45
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+ChangeEpsilon: 84
+Change: 18
+Total cost: 389441
+
+!----------------------------------------------------------------------------
+!Total cost: 389441
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 389441
+!Number of vessels used:	2
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 2:
+
+ChangeEpsilon: 17
+Change: 14
+Total cost: 406083
+
+!----------------------------------------------------------------------------
+!Total cost: 406083
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 406083
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 3:
+
+ChangeEpsilon: 13
+Change: 6
+Total cost: 409663
+
+!----------------------------------------------------------------------------
+!Total cost: 409663
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 409663
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 4:
+
+ChangeEpsilon: 5
+Change: 2
+Total cost: 409772
+
+!----------------------------------------------------------------------------
+!Total cost: 409772
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 409772
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 5:
+
+ChangeEpsilon: 1
+Change: 0
+Total cost: 411228
+
+!----------------------------------------------------------------------------
+!Total cost: 411228
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 411228
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!==============================================================================================
+
+!Total time elapsed: 137.668
+!Number of Pareto-optimal solutions: 5
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		84		0.00		18		389441	
+	0.00		17		0.00		14		406083	
+	0.00		13		0.00		6		409663	
+	0.00		5		0.00		2		409772	
+	0.00		1		0.00		0		411228	

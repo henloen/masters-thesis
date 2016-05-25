@@ -146,6 +146,8 @@ public class EducationPersistence extends EducationStandard {
 		int dayToMoveFrom = -1;
 		int vesselToMoveTo = -1;
 		
+		
+		// Pick days to move to and from
 		do {
 			if(daysWithTooFewVoyages.isEmpty()){
 				HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
@@ -213,6 +215,65 @@ public class EducationPersistence extends EducationStandard {
 		individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
 	}
 	
+	private void installationPatternImprovementForPersistence(Individual individual){
+			/*
+			 * pick one random installation i
+			 * change departure pattern to the correct (baseline) pattern
+			 * if (new pattern is feasible wrt depot, feasible patterns, psv patterns)
+			 * 		keep pattern
+			 * else
+			 * 		move on to next random installation
+			 * end-if
+			 */
+	//		System.out.println("\nPersistenceEducating individual " + individual);
+			HashMap<Integer, Set<Integer>> baselinePattern = problemData.getBaselineInstallationPattern();
+			HashMap<Integer, Set<Integer>> currentPattern = ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome();
+			
+			HashMap<Integer, Set<Integer>> vesselPatterns = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome();
+			HashMap<Integer, Set<Integer>> reversedVesselPatterns = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturesPerDay();
+			
+			Set<Integer> alreadyCheckedInstallations = new HashSet<>();
+			
+			while (alreadyCheckedInstallations.size() < problemData.getCustomerInstallations().size()){
+				
+				Installation inst = Utilities.pickRandomElementFromList(problemData.getCustomerInstallations());
+				int instNumber = inst.getNumber();
+	//			System.out.println("Changing pattern of installation " + instNumber);
+				
+				if (!baselinePattern.containsKey(instNumber) || inst.getFrequency() != baselinePattern.get(instNumber).size()){
+					alreadyCheckedInstallations.add(instNumber);
+					continue;
+				}
+				
+				Set<Integer> baselineInstPattern =  baselinePattern.get(instNumber);
+				
+				if (baselineInstPattern.equals(currentPattern.get(instNumber))){
+					// Zero changes in this installation's pattern, or baseline does not contain the installation
+	//				System.out.println("Baseline = current pattern: ");
+	//				System.out.println("Baseline: " + baselineInstPattern);
+	//				System.out.println("Current: " + currentPattern.get(instNumber));
+					alreadyCheckedInstallations.add(instNumber);
+					continue;
+				}
+				HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation = getCopyOfGiantTourWithoutInstallation(inst, individual.getGenotype().getGiantTourChromosome());
+				
+				ArrayList<VoyageInsertion> insertions = new ArrayList<>();
+				for (Integer day : baselineInstPattern){
+					insertions.add(findLeastCostInsertionOnDay(instNumber, day, giantTourWithoutInstallation, vesselPatterns, reversedVesselPatterns));
+				}
+				Individual newIndividual = applyInsertions(individual, insertions, inst);
+				individual.setGenotypeAndUpdatePenalizedCost(newIndividual.getGenotype(), genoToPhenoConverter, fitnessEvaluationProtocol);
+				alreadyCheckedInstallations.add(instNumber);
+				break; // Only change one installation at a time
+	
+				/* Feasibility checks:
+				*	Depot capacity: not necessary, can always add installation to an existing voyage
+				*	PSV patterns: not neccessary, is penalized in penalized cost
+				**/
+			}
+			
+		}
+
 	private Set<Installation> getInstallationsWithDepartureOnDay(HashMap<Integer, Set<Integer>> baselinePattern, int day) {
 		HashSet<Installation> installationsDepartingOnDay = new HashSet<>();
 		for (Entry<Integer, Set<Integer>> instAndPattern : baselinePattern.entrySet()){
@@ -276,12 +337,16 @@ public class EducationPersistence extends EducationStandard {
 		Set<Integer> newPattern = new HashSet<>(installationPattern);
 		newPattern.remove(dayToMoveFrom);
 		newPattern.add(dayToMoveTo);
+	
 		
 		Set<Set<Integer>> feasiblePatternsForInstallation = problemData.getInstallationDeparturePatterns().get(installation.getFrequency()); 
+
 		if (feasiblePatternsForInstallation.contains(newPattern)){
+//			System.out.println("Feasible");
 			return true;
 		}
 		else {
+//			System.out.println("Infeasible");
 			return false;
 		}
 	}
@@ -516,66 +581,6 @@ public class EducationPersistence extends EducationStandard {
 		}
 			
 	}
-
-	private void installationPatternImprovementForPersistence(Individual individual){
-		/*
-		 * pick one random installation i
-		 * change departure pattern to the correct (baseline) pattern
-		 * if (new pattern is feasible wrt depot, feasible patterns, psv patterns)
-		 * 		keep pattern
-		 * else
-		 * 		move on to next random installation
-		 * end-if
-		 */
-//		System.out.println("\nPersistenceEducating individual " + individual);
-		HashMap<Integer, Set<Integer>> baselinePattern = problemData.getBaselineInstallationPattern();
-		HashMap<Integer, Set<Integer>> currentPattern = ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome();
-		
-		HashMap<Integer, Set<Integer>> vesselPatterns = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome();
-		HashMap<Integer, Set<Integer>> reversedVesselPatterns = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturesPerDay();
-		
-		Set<Integer> alreadyCheckedInstallations = new HashSet<>();
-		
-		while (alreadyCheckedInstallations.size() < problemData.getCustomerInstallations().size()){
-			
-			Installation inst = Utilities.pickRandomElementFromList(problemData.getCustomerInstallations());
-			int instNumber = inst.getNumber();
-//			System.out.println("Changing pattern of installation " + instNumber);
-			
-			if (!baselinePattern.containsKey(instNumber)){
-				alreadyCheckedInstallations.add(instNumber);
-				continue;
-			}
-			
-			Set<Integer> baselineInstPattern =  baselinePattern.get(instNumber);
-			
-			if (baselineInstPattern.equals(currentPattern.get(instNumber))){
-				// Zero changes in this installation's pattern, or baseline does not contain the installation
-//				System.out.println("Baseline = current pattern: ");
-//				System.out.println("Baseline: " + baselineInstPattern);
-//				System.out.println("Current: " + currentPattern.get(instNumber));
-				alreadyCheckedInstallations.add(instNumber);
-				continue;
-			}
-			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourWithoutInstallation = getCopyOfGiantTourWithoutInstallation(inst, individual.getGenotype().getGiantTourChromosome());
-			
-			ArrayList<VoyageInsertion> insertions = new ArrayList<>();
-			for (Integer day : baselineInstPattern){
-				insertions.add(findLeastCostInsertionOnDay(instNumber, day, giantTourWithoutInstallation, vesselPatterns, reversedVesselPatterns));
-			}
-			Individual newIndividual = applyInsertions(individual, insertions, inst);
-			individual.setGenotypeAndUpdatePenalizedCost(newIndividual.getGenotype(), genoToPhenoConverter, fitnessEvaluationProtocol);
-			alreadyCheckedInstallations.add(instNumber);
-			break; // Only change one installation at a time
-
-			/* Feasibility checks:
-			*	Depot capacity: not necessary, can always add installation to an existing voyage
-			*	PSV patterns: not neccessary, is penalized in penalized cost
-			**/
-		}
-		
-	}
-		
 
 	private void costEducate(Individual individual){
 		routeImprovement(individual);

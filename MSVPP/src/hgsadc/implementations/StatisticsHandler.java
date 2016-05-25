@@ -195,10 +195,33 @@ public class StatisticsHandler {
 			for (Vessel vessel : problemData.getVessels()) {
 				writer.println(vessel.fullText());
 			}
+			writeSolutionSigma(writer, individual);
 			writer.println();
 		}
 	}
 	
+	public void writeSolutionSigma(PrintWriter writer, Individual individual){
+		writer.println("BaselineSigma: (installation patterns for this solution)");
+		
+		HashMap<Integer, Set<Integer>> installationChromosome = ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome();
+		
+		for (int inst = 1; inst <= problemData.getCustomerInstallations().size(); inst++){
+			Set<Integer> patternForInst = installationChromosome.get(inst);
+			String installationPatternString = "";
+			
+			for (int day = 0; day < problemData.getLengthOfPlanningPeriod(); day++){
+				if (patternForInst.contains(day)){
+					installationPatternString += "1 ";
+				}
+				else {
+					installationPatternString += "0 ";
+				}
+			}
+			writer.println(installationPatternString);
+		}
+		writer.println("\n]");
+		
+	}
 	public String getCurrentTime() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm");
 		Date date = new Date();
