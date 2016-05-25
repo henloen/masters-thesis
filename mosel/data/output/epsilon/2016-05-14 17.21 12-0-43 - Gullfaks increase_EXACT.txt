@@ -1,0 +1,24 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\12-0-40.txt
+
+!Problem instance: 12-0-40 - GF_Increase
+!Total visits: 43
+!Solved on: 2016-05-14 17.21
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+ChangeEpsilon: 84
+
+No feasible solution found
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 1
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		84		0.00		0		0	
+
+Total time elapsed: 12.677

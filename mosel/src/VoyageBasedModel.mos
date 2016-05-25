@@ -7,9 +7,9 @@ uses  "mmxprs", "mmsystem", "mmive"; ! Use Xpress-Optimizer
 parameters
 	 ! Input file is specified here
 	 
-	 DataFilePath = '..\data\input\april 2016\fixed fleet\'
+	 DataFilePath = '..\data\input\april 2016\fixed fleet\variation cases\'
 	 InputDate = '2016-04-20'
-	 ProblemInstance = '14-0-48'
+	 ProblemInstance = '12-0-40_1 extra PSV'
 	 DataFile = DataFilePath + InputDate + " " + ProblemInstance + '.txt'
 	 
 	
@@ -20,9 +20,9 @@ parameters
 	 UseEpsilonConstraintMethod = true
 	 ! Input file containing baseline solution to compare new solution with
 	 BaselineFilePath = '..\data\input\april 2016\baseline\'
-	 BaselineFile = BaselineFilePath + '11-0-36.txt'
-	 TestCase = 'Add 3 installations MOSEL'
-	 nNBaseline = 11
+	 BaselineFile = BaselineFilePath + '15-0-52.txt'
+	 TestCase = '_EXACT'
+	 nNBaseline = 15
 	 
 	 
 	 ! Solver will stop and accept current best solution when optimality gap is lower than the limit
@@ -243,9 +243,9 @@ declarations
 	
 	!----------------------------------------- ROBUSTNESS CONSTRAINTS -----------------------------------------------
 	
-	SlackThreshold: array(L) of integer; ! Minimum slack for a voyage to count as robust
-	nRobustVoyages: linctr; ! Number of voyages with more hours of slack than the SlackThreshold
-	EpsilonRobustnessCon: linctr; ! Constrains robustness
+	!SlackThreshold: array(L) of integer; ! Minimum slack for a voyage to count as robust
+	!nRobustVoyages: linctr; ! Number of voyages with more hours of slack than the SlackThreshold
+	!EpsilonRobustnessCon: linctr; ! Constrains robustness
 	
 end-declarations
 
@@ -386,7 +386,7 @@ else
 	
 	!----------------------- ROBUSTNESS -------------------------------------------------
 	
-	SlackThreshold :: [4, 6];
+	!SlackThreshold :: [4, 6];
 	
 	! NUMBER OF VOYAGES USED THAT HAVE AT LEAST THE REQUIRED SLACK
 	!nRobustVoyages := sum(vv in V, ll in L, ss in SlackThreshold(ll)..maxS, rr in Rvls(vv,ll,ss), tt in T) x(vv,rr,tt);
@@ -419,25 +419,25 @@ else
 	!--------------------- EPSILON-METHOD ----------------------------------------------	
 	
 	MaxNVoyages := nV*floor(nT/minL); ! Equals maximum number of voyages used. Sets maximum number of possible robustness values
-	RobustnessStep := 1/MaxNVoyages;
+!	RobustnessStep := 1/MaxNVoyages;
 	
 	iteration := 0;
 	AllParetoSolutionsFound := false;
 	
 	
-	RobustnessEpsilon := 0.0;
+!	RobustnessEpsilon := 0.0;
 	
-	forall(RobustnessIteration in 0..MaxNVoyages) do
+	! forall(RobustnessIteration in 0..MaxNVoyages) do
 	! Outer loop goes through all possible levels of robustness
 		ChangeEpsilon := nT * nN;
 		
-		RobustnessEpsilon := RobustnessIteration * RobustnessStep;
+	!	RobustnessEpsilon := RobustnessIteration * RobustnessStep;
 		
 		
 		
-		EpsilonRobustnessCon := nRobustVoyages >= RobustnessEpsilon * nVoyagesUsed;
+	!	EpsilonRobustnessCon := nRobustVoyages >= RobustnessEpsilon * nVoyagesUsed;
 		
-		RobustnessLowerBound := 0;
+	!	RobustnessLowerBound := 0;
 		
 		while(ChangeEpsilon >= 0) do
 			! Inner loop goes through all possible levels of change
@@ -458,17 +458,17 @@ else
 					if (ChangeEpsilon = nT * nN) then
 						AllParetoSolutionsFound := true;
 					end-if
-				break;
+					break;
 			end-if
 			
 			UncastedSolutionChange := sum(ii in N, tt in T | ii <= nNBaseline) getsol(gamma(ii, tt));
 			SolutionChange := integer(round(UncastedSolutionChange));
 			
-			SolutionRobustness := integer(round(getsol(nRobustVoyages)/getsol(nVoyagesUsed)));
+			!SolutionRobustness := integer(round(getsol(nRobustVoyages)/getsol(nVoyagesUsed)));
 			
-			if (SolutionRobustness < RobustnessLowerBound) then
-				RobustnessLowerBound := SolutionRobustness;
-			end-if
+			!if (SolutionRobustness < RobustnessLowerBound) then
+			!	RobustnessLowerBound := SolutionRobustness;
+			!end-if
 					
 			
 			SaveParetoSolution(true)
@@ -483,18 +483,18 @@ else
 		
 		end-do
 		
-		if (AllParetoSolutionsFound) then
-			break;
-		end-if
+		!if (AllParetoSolutionsFound) then
+		!	break;
+		!end-if
 				
-	end-do
+	!end-do
 	
 	!--------------------- EPSILON-METHOD END --------------------------------------------------	
 	
 	!--------------------- OUTPUT --------------------------------------------------------------
-	
-	WriteParetoFront;	
+		
 	WriteElapsedTime;
+	WriteParetoFront;
 	
 	fclose(F_OUTPUT);
 	writeln("Model finished running");
@@ -508,7 +508,7 @@ end-if
 procedure WriteIterationEpsilons
 	writeln("\n!==============================================================================================");
 	writeln("Iteration " + iteration + ":\n");
-	writeln("RobEpsilon: " + strfmt(RobustnessEpsilon, 0, 2));
+	!writeln("RobEpsilon: " + strfmt(RobustnessEpsilon, 0, 2));
 	writeln("ChangeEpsilon: " + ChangeEpsilon);
 end-procedure
 
@@ -518,15 +518,15 @@ procedure SaveParetoSolution(IsFeasibleSolution:boolean)
 
 	! ----------- SAVING TO MOSEL ARRAY -----------------------------
 	
-	ParetoFront(iteration, '1 RobEpsilon(L)') := RobustnessEpsilon;
+	!ParetoFront(iteration, '1 RobEpsilon(L)') := RobustnessEpsilon;
 	ParetoFront(iteration, '2 ChangeEpsilon(U)') := ChangeEpsilon;
 	
 	if (IsFeasibleSolution) then
-		ParetoFront(iteration, '3 Robustness') := SolutionRobustness;
+	!	ParetoFront(iteration, '3 Robustness') := SolutionRobustness;
 		ParetoFront(iteration, '4 TotalChange') := SolutionChange;
 		ParetoFront(iteration, '5 TotalCost') := getobjval-SolutionChange;
 	else
-		ParetoFront(iteration, '3 Robustness') := 0;
+	!	ParetoFront(iteration, '3 Robustness') := 0;
 		ParetoFront(iteration, '4 TotalChange') := 0;
 		ParetoFront(iteration, '5 TotalCost') := 0;
 	end-if
@@ -540,10 +540,10 @@ procedure WriteIterationResults
 
 	! -------- WRITING TO OUTPUT FILE -------------------------------
 	
-	writeln("Robustness: " + strfmt(SolutionRobustness, 0, 2));
+!	writeln("Robustness: " + strfmt(SolutionRobustness, 0, 2));
 	writeln("Change: " + SolutionChange);
 	writeln("Total cost: " + (getobjval-SolutionChange));
-	writeln("\nNumber of robust voyages: " + getsol(nRobustVoyages));
+!	writeln("\nNumber of robust voyages: " + getsol(nRobustVoyages));
 	
 	WriteSolution;
 		
@@ -697,7 +697,9 @@ procedure WriteGamma
 end-procedure
 
 procedure WriteParetoFront
-	nParetoSolutions := ceil( getsize(ParetoFront)/5 );
+	! ============================= IMPORTANT: Change the denominator if robustness is added =================================
+	nParetoSolutions := ceil( getsize(ParetoFront)/3);
+	
 	
 	writeln("\n!==============================================================================================\n");
 	writeln("!Number of Pareto-optimal solutions: " + nParetoSolutions);

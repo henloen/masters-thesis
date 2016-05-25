@@ -1,0 +1,120 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\11-0-36.txt
+
+!Problem instance: 11-0-36 - GF_Increase_1 extra PSV
+!Total visits: 39
+!Solved on: 2016-05-18 15.49
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+ChangeEpsilon: 77
+Change: 13
+Total cost: 425543
+
+!----------------------------------------------------------------------------
+!Total cost: 425543
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 425543
+!Number of vessels used:	3
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 2:
+
+ChangeEpsilon: 12
+Change: 11
+Total cost: 425660
+
+!----------------------------------------------------------------------------
+!Total cost: 425660
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 425660
+!Number of vessels used:	3
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 3:
+
+ChangeEpsilon: 10
+Change: 9
+Total cost: 425807
+
+!----------------------------------------------------------------------------
+!Total cost: 425807
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 425807
+!Number of vessels used:	3
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 4:
+
+ChangeEpsilon: 8
+Change: 7
+Total cost: 425924
+
+!----------------------------------------------------------------------------
+!Total cost: 425924
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 425924
+!Number of vessels used:	3
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 5:
+
+ChangeEpsilon: 6
+Change: 5
+Total cost: 428350
+
+!----------------------------------------------------------------------------
+!Total cost: 428350
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 428350
+!Number of vessels used:	3
+!Number of voyages sailed: 5
+
+!==============================================================================================
+Iteration 6:
+
+ChangeEpsilon: 4
+Change: 3
+Total cost: 443719
+
+!----------------------------------------------------------------------------
+!Total cost: 443719
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 443719
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!==============================================================================================
+Iteration 7:
+
+ChangeEpsilon: 2
+
+No feasible solution found
+
+Total time elapsed: 69.955
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 7
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		77		0.00		13		425543	
+	0.00		12		0.00		11		425660	
+	0.00		10		0.00		9		425807	
+	0.00		8		0.00		7		425924	
+	0.00		6		0.00		5		428350	
+	0.00		4		0.00		3		443719	
+	0.00		2		0.00		0		0	
