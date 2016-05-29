@@ -9,18 +9,30 @@ import hgsadc.ProblemData;
 import hgsadc.Utilities;
 
 public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
-
+	
+	private Dominator dominationCriteria;
+	
 	public FitnessEvaluationMultiObjective(ProblemData problemData) {
 		super(problemData);
+		dominationCriteria = problemData.dominationCriteria;
 	}
 
 	@Override
 	public void updateBiasedFitness(ArrayList<Individual> individuals) {
 		updateDiversityContribution(individuals);
-		updatePenalizedCostRank(individuals);
 		updateDiversityContributionRank(individuals);
-		updatePersistenceRank(individuals);
+		if (dominationCriteria.minimizeCost) updatePenalizedCostRank(individuals);
+		if (dominationCriteria.maximizePersistence) updatePersistenceRank(individuals);
+		if (dominationCriteria.maximizeRobustness) updateRobustnessRank(individuals);
 		calculateBiasedFitness(individuals);
+	}
+
+	private void updateRobustnessRank(ArrayList<Individual> individuals) {
+		Collections.sort(individuals, Utilities.getRobustnessComparator());
+		for (int i = 0; i < individuals.size(); i++) {
+			Individual individual = individuals.get(i);
+			individual.setRobustnessRank(i+1);
+		}
 	}
 
 	private void updatePersistenceRank(ArrayList<Individual> individuals) {
@@ -36,7 +48,11 @@ public class FitnessEvaluationMultiObjective extends FitnessEvaluationStandard{
 		int nIndividuals = individuals.size(); 
 		double nElite = (nIndividuals * nEliteProp);
 		for (Individual individual : individuals) {
-			double biasedFitness = individual.getCostRank() + individual.getPersistenceRank() + (1 - (nElite/nIndividuals)) * individual.getDiversityRank();
+			double biasedFitness = (1 - (nElite/nIndividuals)) * individual.getDiversityRank();
+			
+			if (dominationCriteria.minimizeCost) biasedFitness += individual.getCostRank();
+			if (dominationCriteria.maximizePersistence) biasedFitness += individual.getPersistenceRank();
+			if (dominationCriteria.maximizeRobustness) biasedFitness += individual.getRobustnessRank();
 			individual.setBiasedFitness(biasedFitness);
 		}
 	}

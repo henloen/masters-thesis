@@ -14,6 +14,12 @@ public class Dominator {
 		this.maximizePersistence = maximizePersistence;
 	}
 
+	public Dominator(boolean minimizeCost, boolean maximizePersistence, boolean maximizeRobustness) {
+		this.minimizeCost = minimizeCost;
+		this.maximizePersistence = maximizePersistence;
+		this.maximizeRobustness = maximizeRobustness;
+	}
+
 	public boolean dominates(Individual ind1, Individual ind2) {
 		int costCompare = 0, persistenceCompare = 0, robustnessCompare = 0;
 		
@@ -45,8 +51,7 @@ public class Dominator {
 	}
 	
 	private int robustnessCompare(Individual ind1, Individual ind2) {
-		// TODO Auto-generated method stub
-		return 0;
+		return Utilities.getRobustnessComparator().compare(ind1, ind2);
 	}
 
 	private int persistenceCompare(Individual ind1, Individual ind2) {

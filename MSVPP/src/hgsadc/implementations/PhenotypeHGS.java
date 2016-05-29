@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class PhenotypeHGS implements Phenotype {
 	
@@ -121,6 +122,20 @@ public class PhenotypeHGS implements Phenotype {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public int getNumberOfVoyagesSailed() {
+		int nVoyagesSailed = 0;
+		
+		for (Integer day : giantTour.keySet()){
+			for (Voyage voyage : giantTour.get(day).values()){
+				if (voyage != null){
+					nVoyagesSailed++;
+				}
+			}
+		}
+		return nVoyagesSailed;
 	}
 
 }

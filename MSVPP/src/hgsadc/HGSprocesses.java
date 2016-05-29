@@ -167,7 +167,10 @@ public class HGSprocesses {
 		switch (problemData.getHeuristicParameters().get("Genotype to phenotype converter protocol")) {
 			case "Cost": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
 				break;
-			case "Cost+Persistence" : genoToPhenoConverterProtocol = new GenoToPhenoConverterMultiObjective(problemData);
+			case "Cost+Persistence" :
+			case "Cost+Robustness":
+			case "Cost+Persistence+Robustness":
+				genoToPhenoConverterProtocol = new GenoToPhenoConverterMultiObjective(problemData);
 				break;
 			default: genoToPhenoConverterProtocol = null;
 				break;
@@ -178,7 +181,10 @@ public class HGSprocesses {
 		switch (problemData.getHeuristicParameters().get("Fitness evaluation protocol")) {
 			case "Cost": fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
 				break;
-			case "Cost+Persistence" : fitnessEvaluationProtocol = new FitnessEvaluationMultiObjective(problemData);
+			case "Cost+Persistence" :
+			case "Cost+Robustness" :
+			case "Cost+Persistence+Robustness":
+				fitnessEvaluationProtocol = new FitnessEvaluationMultiObjective(problemData);
 				break;
 			default: fitnessEvaluationProtocol = null;
 				break;

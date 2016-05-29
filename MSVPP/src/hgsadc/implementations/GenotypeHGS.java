@@ -28,6 +28,12 @@ public class GenotypeHGS implements Genotype {
 		this.giantTourChromosome = giantTourChromosome;
 	}
 
+	/**
+	 * 
+	 * @param giantTourChromosome
+	 * @param nInstallations
+	 * @param nVessels
+	 */
 	public GenotypeHGS(HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTourChromosome, int nInstallations, int nVessels) {
 		
 		List<HashMap<Integer, Set<Integer>>> chromosomes = generateDeparturePatternChromosomesFromGiantTour(giantTourChromosome, nInstallations, nVessels);
@@ -43,7 +49,7 @@ public class GenotypeHGS implements Genotype {
 	
 	/** 
 	 * @param giantTourChromosome
-	 * @param nInstallations
+	 * @param nInstallations, excluding depot
 	 * @param nVessels
 	 * @return A List containing two elements, 1: installationDepartureChromosome and 2: vessselDepartureChromosome
 	 */

@@ -21,8 +21,6 @@ public class HGSmain {
 	private Individual bestFeasibleIndividual;
 	private long startTime, stopTime;
 	private Set<Individual> paretoFront;
-	private Dominator dominator; // Defines domination criteria. If single-objective, this is equal to null
-	
 	private int iteration;
 	
 	public static int PERSISTENCE_EDUCATIONS = 0;
@@ -46,7 +44,7 @@ public class HGSmain {
 			boolean feasibleFleet = true;
 			while (feasibleFleet) {
 				if (main.isFeasibleFleet(vesselsRemoved)) {
-					vesselsRemoved ++;
+					vesselsRemoved++;
 				}
 				else {
 					feasibleFleet = false;
@@ -55,19 +53,19 @@ public class HGSmain {
 		}
 		main.fullHGSADCrun(vesselsRemoved-1);
 		
-		System.out.println("=======================================================");
-		System.out.println("Persistence educations: " + PERSISTENCE_EDUCATIONS);
-		System.out.println("Cost educations: " + COST_EDUCATIONS);
-		System.out.println("Cost+Persistence educations: " + COST_PERSISTENCE_EDUCATIONS);
-		System.out.println("Persistence+Cost educations: " + PERSISTENCE_COST_EDUCATIONS);
-		System.out.println();
-		System.out.println("Failed move voyage-educations: " + UNFEASIBLE_PERSISTENCE_EDUCATIONS);
-		System.out.println("No days with too few: " + NODAYSWITHTOOFEWVOYAGES);
-		System.out.println("No days with too many: " + NODAYSWITHTOOMANYVOYAGES);
-		System.out.println("No feasible vessel days: " + NOFEASIBLEVESSELDAYS);
-		System.out.println();
-		System.out.println("Persistence/education: " + (double) CUM_PERSISTENCE_REDUCED/(PERSISTENCE_COST_EDUCATIONS + COST_PERSISTENCE_EDUCATIONS + PERSISTENCE_EDUCATIONS));
-		
+//		System.out.println("=======================================================");
+//		System.out.println("Persistence educations: " + PERSISTENCE_EDUCATIONS);
+//		System.out.println("Cost educations: " + COST_EDUCATIONS);
+//		System.out.println("Cost+Persistence educations: " + COST_PERSISTENCE_EDUCATIONS);
+//		System.out.println("Persistence+Cost educations: " + PERSISTENCE_COST_EDUCATIONS);
+//		System.out.println();
+//		System.out.println("Failed move voyage-educations: " + UNFEASIBLE_PERSISTENCE_EDUCATIONS);
+//		System.out.println("No days with too few: " + NODAYSWITHTOOFEWVOYAGES);
+//		System.out.println("No days with too many: " + NODAYSWITHTOOMANYVOYAGES);
+//		System.out.println("No feasible vessel days: " + NOFEASIBLEVESSELDAYS);
+//		System.out.println();
+//		System.out.println("Persistence/education: " + (double) CUM_PERSISTENCE_REDUCED/(PERSISTENCE_COST_EDUCATIONS + COST_PERSISTENCE_EDUCATIONS + PERSISTENCE_EDUCATIONS));
+//		
 	}
 	
 	private boolean isVariableFleetProblem() {
@@ -96,6 +94,11 @@ public class HGSmain {
 	
 	private void fullHGSADCrun(int vesselsRemoved) {
 		problemData = io.readData(vesselsRemoved);
+		
+		if (problemData.dominationCriteria != null){ // If multi-objective
+			paretoFront = new HashSet<>();
+		}
+		
 		problemData.generatePatterns(); 
 		processes = new HGSprocesses(problemData);
 		
@@ -110,13 +113,12 @@ public class HGSmain {
 		createInitialPopulation();
 		processes.updateIterationsSinceImprovementCounter(true); // Resets counters
 		runEvolutionaryLoop();
-//		postEducation();
 		terminate();
 	}
 	
-	
+	// DEPRECATED. GIVES INFEASIBLE FINAL SOLUTIONS
 	private void postEducation() {
-		if (dominator != null){
+		if (problemData.dominationCriteria != null){
 			for (Individual individual : paretoFront){
 				processes.educate(individual);
 				processes.repair(individual, 1);
@@ -128,21 +130,6 @@ public class HGSmain {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
 		problemData = io.readData(0);
-		selectDominationCriteria(problemData);
-	}
-	
-	private void selectDominationCriteria(ProblemData problemData) {
-		String dominationCriteria = problemData.getHeuristicParameters().get("Objectives");
-		switch (dominationCriteria){
-			case "Cost" : dominator = null;
-				break;
-			case "Cost+Persistence" :
-				dominator = new Dominator(true, true);
-				paretoFront = new HashSet<>();
-				break;
-			default : dominator = null;
-		}
-		
 	}
 
 	private void terminate() {
@@ -152,7 +139,7 @@ public class HGSmain {
 		printBestSolutions();
 		stopTime = System.nanoTime();
 		
-		if (dominator == null){ // Single-objective problem
+		if (problemData.dominationCriteria == null){ // Single-objective problem
 			processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
 		}
 		else {
@@ -283,7 +270,7 @@ public class HGSmain {
 		boolean isImprovingSolution = false;
 
 		if (individual.isFeasible()) {
-			if (dominator == null){ // Single-objective problem
+			if (problemData.dominationCriteria == null){ // Single-objective problem
 				if ((bestFeasibleIndividual == null)
 						|| (individual.getPenalizedCost() < bestFeasibleIndividual.getPenalizedCost())) {
 					bestFeasibleIndividual = individual;
@@ -294,7 +281,7 @@ public class HGSmain {
 				}
 			}
 			else { // Multi-objective problem
-				Set<Individual> dominatingIndividuals = Utilities.getIndidividualsDominating(individual, paretoFront, dominator);
+				Set<Individual> dominatingIndividuals = Utilities.getIndidividualsDominating(individual, paretoFront, problemData.dominationCriteria);
 				
 //				System.out.println("=============== Current pareto front =======================");
 //				for (Individual paretoInd : paretoFront){
@@ -308,7 +295,7 @@ public class HGSmain {
 //				System.out.println();
 				
 				if (dominatingIndividuals.isEmpty()){
-					Set<Individual> dominatedIndividuals = Utilities.getIndividualsDominatedBy(individual, paretoFront, dominator);
+					Set<Individual> dominatedIndividuals = Utilities.getIndividualsDominatedBy(individual, paretoFront, problemData.dominationCriteria);
 					
 //					System.out.println(individual.getObjectiveValues() + " dominates: ");
 //					for (Individual dom : dominatedIndividuals) {
@@ -316,7 +303,7 @@ public class HGSmain {
 //					}
 					paretoFront.removeAll(dominatedIndividuals);
 					
-					Set<Individual> clones = Utilities.getObjectiveClones(individual, paretoFront, dominator);
+					Set<Individual> clones = Utilities.getObjectiveClones(individual, paretoFront, problemData.dominationCriteria);
 					
 					if (clones.isEmpty()){
 						paretoFront.add(individual);
@@ -389,7 +376,7 @@ public class HGSmain {
 	}
 
 	private void printBestSolutions() {
-		if (dominator != null){
+		if (problemData.dominationCriteria != null){
 			printParetoFront();
 		}
 		else {
@@ -421,21 +408,22 @@ public class HGSmain {
 		DecimalFormat df = new DecimalFormat("0");
 		System.out.println("======================== Pareto front  ==========================================");
 		for (Individual individual : paretoFront) {
-			System.out.println("Cost : " + df.format(individual.getPenalizedCost()) + " Persistence: " + individual.getNumberOfChangesFromBaseline());
+			System.out.println("Cost : " + df.format(individual.getPenalizedCost()) + " Persistence: " + individual.getNumberOfChangesFromBaseline() + " Robustness: " + individual.getRobustness());
 		}
 		System.out.println();
 		for (Individual individual : paretoFront){
 			System.out.println(individual.getFullText());
 			System.out.println("Type of education: " + individual.typeOfEducation);
+			System.out.println(individual.getRobustnessString());
 		}
 	}
 
 	// DEPRECATED
 	private Set<Individual> getParetoFront(){
-		ArrayList<Set<Individual>> paretoFronts = Utilities.nonDominatedSorting(feasiblePopulation, dominator);
+		ArrayList<Set<Individual>> paretoFronts = Utilities.nonDominatedSorting(feasiblePopulation, problemData.dominationCriteria);
 		ArrayList<Individual> paretoFrontList = new ArrayList<>(paretoFronts.get(0));
 		Set<Individual> paretoFrontWithoutClones = new HashSet<>(processes.getClones(paretoFrontList));
 		
-		return Utilities.removeObjectiveClones(paretoFrontWithoutClones, dominator);
+		return Utilities.removeObjectiveClones(paretoFrontWithoutClones, problemData.dominationCriteria);
 	}
 }

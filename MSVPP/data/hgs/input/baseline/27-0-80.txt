@@ -92,7 +92,6 @@ BaselineSigma: (installation patterns for this solution)
 0 0 0 0 0 1 0 
 1 0 1 0 0 1 0 
 0 1 0 0 0 1 0 
-
 ]
 
 Gen.	# feasible solutions	# infeasible solutions	cap. penality	dur. penality	num. penality	best penalized cost	best feasible cost	best cap. violation	best dur. violation	best num. violation	avg cap. violation	avg dur. violation	avg num. violation	gap from BKS	best visits pr voyage	avg visits pr voyage

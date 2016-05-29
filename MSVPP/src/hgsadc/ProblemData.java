@@ -6,12 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import hgsadc.implementations.DayVesselCell;
+import hgsadc.implementations.Dominator;
 
 public class ProblemData {
 	
 	private int lengthOfPlanningPeriod;
 	private HashMap<String, String> problemInstanceParameters, heuristicParameters;
-	private HashMap<Integer, Integer> depotCapacity; 
+	private HashMap<Integer, Integer> depotCapacity, minimumSlackForRobustness; 
 	private ArrayList<Installation> installations, customerInstallations;
 	private ArrayList<Vessel> vessels;
 	private HashMap<Installation, HashMap<Installation, Double>> distances;
@@ -23,11 +24,14 @@ public class ProblemData {
 	private HashSet<DayVesselCell> allDayVesselCells;
 	private HashMap<Integer, Set<Integer>> baselineInstallationPattern;
 	
+	public Dominator dominationCriteria; // Defines domination criteria. If single-objective, this is equal to null
+	
 	public ProblemData(HashMap<String, String> problemInstanceParameters,
 			HashMap<Integer, Integer> depotCapacity,
 			HashMap<String, String> heuristicParameters,
 			ArrayList<Installation> installations, ArrayList<Vessel> vessels,
-			HashMap<Installation, HashMap<Installation, Double>> distances) {
+			HashMap<Installation, HashMap<Installation, Double>> distances,
+			HashMap<Integer, Integer> minimumSlackForRobustness) {
 		this.problemInstanceParameters = problemInstanceParameters;
 		this.depotCapacity = depotCapacity;
 		this.heuristicParameters = heuristicParameters;
@@ -41,11 +45,18 @@ public class ProblemData {
 		setVesselsByNumber(); //generate hashmap to easily look up vessels by number
 		lengthOfPlanningPeriod = depotCapacity.size();
 		allDayVesselCells = generateAllDayVesselCells();
+		this.minimumSlackForRobustness = minimumSlackForRobustness;
+		
+		selectDominationCriteria();
 		
 		String objectives = heuristicParameters.get("Objectives");
 		if (objectives.equals("Cost+Persistence")){
 			baselineInstallationPattern = generateBaselineInstallationPattern(problemInstanceParameters.get("BaselineDeparturePattern"));
 		}
+	}
+	
+	public HashMap<Integer, Integer> getMinimumSlackForRobustness() {
+		return minimumSlackForRobustness;
 	}
 	
 	public Set<Installation> getInstallationsWithFrequency(int frequency){
@@ -68,6 +79,10 @@ public class ProblemData {
 		for (Installation installation : getCustomerInstallations()){ 
 			// NOTE: Baseline may have more or fewer installations than the current problem
 			int instNum = installation.getNumber();
+			
+			if (instNum >= lines.length){ // Installation is not in baseline
+				continue;
+			}
 			String[] splitLine = lines[instNum].split(" ");
 			Set<Integer> installationPattern = new HashSet<>();
 			
@@ -316,5 +331,25 @@ public class ProblemData {
 			}
 		}
 		System.out.println();
+	}
+	
+	private void selectDominationCriteria() {
+		String dominationCriteriaString = getHeuristicParameters().get("Objectives");
+		switch (dominationCriteriaString){
+			case "Cost" : dominationCriteria = null;
+				break;
+			case "Cost+Persistence" :
+				dominationCriteria = new Dominator(true, true);
+				break;
+			case "Cost+Robustness" :
+				dominationCriteria = new Dominator(true, false, true);
+				break;
+			case "Cost+Persistence+Robustness" :
+				dominationCriteria = new Dominator(true, true, true);
+				break;
+			default :
+				dominationCriteria = null;
+				break;
+		}
 	}
 }

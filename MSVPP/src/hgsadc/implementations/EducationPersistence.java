@@ -18,6 +18,7 @@ import hgsadc.Vessel;
 import hgsadc.Voyage;
 import hgsadc.protocols.FitnessEvaluationProtocol;
 import hgsadc.protocols.GenoToPhenoConverterProtocol;
+import hgsadc.protocols.Genotype;
 import hgsadc.protocols.Phenotype;
 
 public class EducationPersistence extends EducationStandard {
@@ -89,9 +90,10 @@ public class EducationPersistence extends EducationStandard {
 	
 	private void persistenceEducate(Individual individual) {
 //		System.out.println("\nEducating persistence on individual " + individual);
+//		installationPatternImprovementForPersistence(individual);
+//		moveVoyage(individual);
 		int oldPersistence = individual.getNumberOfChangesFromBaseline();
-		installationPatternImprovementForPersistence(individual);
-		moveVoyage(individual);
+		swapVoyages(individual);
 		int newPersistence = individual.getNumberOfChangesFromBaseline();
 //		System.out.println("Old persistence: " + oldPersistence);
 //		System.out.println("New persistence: " + newPersistence);
@@ -99,122 +101,12 @@ public class EducationPersistence extends EducationStandard {
 //		installationPatternImprovementForPersistence(individual);
 	}
 	
-	private void moveVoyage(Individual individual){
-		/* Calculates the minimum number of voyages required on each day in the baseline solution. If any day has too few voyages,
-		 * add new voyage on that day by removing another voyage
-		 */
-		Phenotype phenotype = individual.getPhenotype();
-		
-		HashMap<Integer, Integer> requiredVoyages = getRequiredNumberOfVoyagesPerDay();
-		HashMap<Integer, Integer> currentNumberOfVoyages = individual.getNumberOfVoyagesPerDay();
-		
-//		System.out.println("Required voyages: " + requiredVoyages);
-//		System.out.println("Current nvoyages: " + currentNumberOfVoyages);
-		
-		Set<Integer> daysWithTooFewVoyages = new HashSet<>();
-		Set<Integer> daysWithTooManyVoyages = new HashSet<>();
-		
-		for (Integer day : currentNumberOfVoyages.keySet()){
-			int requiredVoyagesOnDay = requiredVoyages.get(day);
-			int currentNumberOfVoyagesOnDay = currentNumberOfVoyages.get(day);
-			
-			if (currentNumberOfVoyagesOnDay < requiredVoyagesOnDay){
-				daysWithTooFewVoyages.add(day);
-			}
-			else if (currentNumberOfVoyagesOnDay > requiredVoyagesOnDay){
-				daysWithTooManyVoyages.add(day);
-			}
-		}
-//		System.out.println("Days too few: " + daysWithTooFewVoyages);
-//		System.out.println("Days too many: " + daysWithTooManyVoyages);
-		
-		// The algorithm needs to remove a voyage to create a new one
-		if (daysWithTooFewVoyages.isEmpty()){
-			HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
-			HGSmain.NODAYSWITHTOOFEWVOYAGES++;
-			return;
-		}
-		if (daysWithTooManyVoyages.isEmpty()){
-//			System.out.println("No feasible move");
-			HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
-			HGSmain.NODAYSWITHTOOMANYVOYAGES++;
-			return;
-		}
-
-		HashMap<Integer, Set<Integer>> vesselPattern = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome();
-		int dayToMoveTo = -1;
-		int dayToMoveFrom = -1;
-		int vesselToMoveTo = -1;
-		
-		
-		// Pick days to move to and from
-		do {
-			if(daysWithTooFewVoyages.isEmpty()){
-				HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
-//				System.out.println("No feasible move");
-				HGSmain.NOFEASIBLEVESSELDAYS++;
-				return;
-			}
-			dayToMoveTo = Utilities.pickAndRemoveRandomElementFromSet(daysWithTooFewVoyages);
-
-			Set<Integer> possibleDaysToMoveFrom = new HashSet<>(daysWithTooManyVoyages);
-			do {
-				if (possibleDaysToMoveFrom.isEmpty()){
-					dayToMoveFrom = -1;
-					break; // inner loop
-				}
-				dayToMoveFrom = Utilities.pickAndRemoveRandomElementFromSet(possibleDaysToMoveFrom);
-				vesselToMoveTo = findBestVesselToMoveVoyage(dayToMoveFrom, dayToMoveTo, vesselPattern, phenotype);
-			} while (vesselToMoveTo == -1); // No feasible vessel found on dayToMoveTo
-			
-			if (dayToMoveFrom != -1){
-				break; // Valid days found, breaking outer loop and proceeding
-			}
-		} while(true);
-		
-		// Create set of all installations departed to on dayToMoveFrom
-		HashMap<Vessel, Voyage> voyagesOnDayToMoveFrom = individual.getPhenotype().getGiantTour().get(dayToMoveFrom);
-		Set<Installation> departuresOnDay = new HashSet<>();
-		for (Voyage voy : voyagesOnDayToMoveFrom.values()){
-			if (voy != null){
-				departuresOnDay.addAll(voy.getVisitedInstallations());
-			}
-		}
-		
-		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
-		HashMap<Integer, Set<Integer>> installationChromosome = ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome();
-		
-		int installationsMoved = 0;
-		HashMap<Integer, Set<Integer>> baselinePattern = problemData.getBaselineInstallationPattern();
-		Set<Installation> instsWithBaselineOnDayToMoveTo = getInstallationsWithDepartureOnDay(baselinePattern, dayToMoveTo);
-		instsWithBaselineOnDayToMoveTo.retainAll(departuresOnDay);
-		
-		// Loop through all installations visited on dayToMoveFrom that needs to be visited on dayToMoveTo
-		for (Installation installation : instsWithBaselineOnDayToMoveTo) {
-			int instNum = installation.getNumber();
-			Set<Integer> installationPattern = installationChromosome.get(instNum);
-			Set<Integer> baselineInstPattern = baselinePattern.get(instNum);
-			
-			// Check if installation is already visited on dayToMoveTo or if new pattern is feasible
-			if (baselineInstPattern != null && canMoveInstallationVisit(installation, dayToMoveFrom, dayToMoveTo, installationPattern, baselineInstPattern)){
-				moveInstallationVisit(installation, vesselToMoveTo, dayToMoveFrom, dayToMoveTo, giantTour);
-				installationsMoved++;
-			}
-			if (installationsMoved >= problemData.getMaxInstallationsPerVoyage()){
-				break;
-			}
-		}
-		int nInstallations = problemData.getCustomerInstallations().size();
-		int nVessels = problemData.getVessels().size();
-		GenotypeHGS genotypeAfterMoving = new GenotypeHGS(giantTour, nInstallations, nVessels);
-		
-		mergeRemainingDepartures(dayToMoveFrom, vesselToMoveTo, giantTour, genotypeAfterMoving); // Merge remaining installation departures
-		
-		// Update individual
-		GenotypeHGS newGenotype = new GenotypeHGS(giantTour, nInstallations, nVessels);
-		individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
+	private void costEducate(Individual individual){
+		routeImprovement(individual);
+		patternImprovement(individual);
+		routeImprovement(individual);
 	}
-	
+
 	private void installationPatternImprovementForPersistence(Individual individual){
 			/*
 			 * pick one random installation i
@@ -272,6 +164,122 @@ public class EducationPersistence extends EducationStandard {
 				**/
 			}
 			
+		}
+
+	private void moveVoyage(Individual individual){
+			/* Calculates the minimum number of voyages required on each day in the baseline solution. If any day has too few voyages,
+			 * add new voyage on that day by removing another voyage
+			 */
+			Phenotype phenotype = individual.getPhenotype();
+			
+			HashMap<Integer, Integer> requiredVoyages = getRequiredNumberOfVoyagesPerDay();
+			HashMap<Integer, Integer> currentNumberOfVoyages = individual.getNumberOfVoyagesPerDay();
+			
+	//		System.out.println("Required voyages: " + requiredVoyages);
+	//		System.out.println("Current nvoyages: " + currentNumberOfVoyages);
+			
+			Set<Integer> daysWithTooFewVoyages = new HashSet<>();
+			Set<Integer> daysWithTooManyVoyages = new HashSet<>();
+			
+			for (Integer day : currentNumberOfVoyages.keySet()){
+				int requiredVoyagesOnDay = requiredVoyages.get(day);
+				int currentNumberOfVoyagesOnDay = currentNumberOfVoyages.get(day);
+				
+				if (currentNumberOfVoyagesOnDay < requiredVoyagesOnDay){
+					daysWithTooFewVoyages.add(day);
+				}
+				else if (currentNumberOfVoyagesOnDay > requiredVoyagesOnDay){
+					daysWithTooManyVoyages.add(day);
+				}
+			}
+	//		System.out.println("Days too few: " + daysWithTooFewVoyages);
+	//		System.out.println("Days too many: " + daysWithTooManyVoyages);
+			
+			// The algorithm needs to remove a voyage to create a new one
+			if (daysWithTooFewVoyages.isEmpty()){
+				HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
+				HGSmain.NODAYSWITHTOOFEWVOYAGES++;
+				return;
+			}
+			if (daysWithTooManyVoyages.isEmpty()){
+	//			System.out.println("No feasible move");
+				HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
+				HGSmain.NODAYSWITHTOOMANYVOYAGES++;
+				return;
+			}
+	
+			HashMap<Integer, Set<Integer>> vesselPattern = ((GenotypeHGS) individual.getGenotype()).getVesselDeparturePatternChromosome();
+			int dayToMoveTo = -1;
+			int dayToMoveFrom = -1;
+			int vesselToMoveTo = -1;
+			
+			
+			// Pick days to move to and from
+			do {
+				if(daysWithTooFewVoyages.isEmpty()){
+					HGSmain.UNFEASIBLE_PERSISTENCE_EDUCATIONS++;
+	//				System.out.println("No feasible move");
+					HGSmain.NOFEASIBLEVESSELDAYS++;
+					return;
+				}
+				dayToMoveTo = Utilities.pickAndRemoveRandomElementFromSet(daysWithTooFewVoyages);
+	
+				Set<Integer> possibleDaysToMoveFrom = new HashSet<>(daysWithTooManyVoyages);
+				do {
+					if (possibleDaysToMoveFrom.isEmpty()){
+						dayToMoveFrom = -1;
+						break; // inner loop
+					}
+					dayToMoveFrom = Utilities.pickAndRemoveRandomElementFromSet(possibleDaysToMoveFrom);
+					vesselToMoveTo = findBestVesselToMoveVoyage(dayToMoveFrom, dayToMoveTo, vesselPattern, phenotype);
+				} while (vesselToMoveTo == -1); // No feasible vessel found on dayToMoveTo
+				
+				if (dayToMoveFrom != -1){
+					break; // Valid days found, breaking outer loop and proceeding
+				}
+			} while(true);
+			
+			// Create set of all installations departed to on dayToMoveFrom
+			HashMap<Vessel, Voyage> voyagesOnDayToMoveFrom = individual.getPhenotype().getGiantTour().get(dayToMoveFrom);
+			Set<Installation> departuresOnDay = new HashSet<>();
+			for (Voyage voy : voyagesOnDayToMoveFrom.values()){
+				if (voy != null){
+					departuresOnDay.addAll(voy.getVisitedInstallations());
+				}
+			}
+			
+			HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
+			HashMap<Integer, Set<Integer>> installationChromosome = ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome();
+			
+			int installationsMoved = 0;
+			HashMap<Integer, Set<Integer>> baselinePattern = problemData.getBaselineInstallationPattern();
+			Set<Installation> instsWithBaselineOnDayToMoveTo = getInstallationsWithDepartureOnDay(baselinePattern, dayToMoveTo);
+			instsWithBaselineOnDayToMoveTo.retainAll(departuresOnDay);
+			
+			// Loop through all installations visited on dayToMoveFrom that needs to be visited on dayToMoveTo
+			for (Installation installation : instsWithBaselineOnDayToMoveTo) {
+				int instNum = installation.getNumber();
+				Set<Integer> installationPattern = installationChromosome.get(instNum);
+				Set<Integer> baselineInstPattern = baselinePattern.get(instNum);
+				
+				// Check if installation is already visited on dayToMoveTo or if new pattern is feasible
+				if (baselineInstPattern != null && canMoveInstallationVisit(installation, dayToMoveFrom, dayToMoveTo, installationPattern, baselineInstPattern)){
+					moveInstallationVisit(installation, vesselToMoveTo, dayToMoveFrom, dayToMoveTo, giantTour);
+					installationsMoved++;
+				}
+				if (installationsMoved >= problemData.getMaxInstallationsPerVoyage()){
+					break;
+				}
+			}
+			int nInstallations = problemData.getCustomerInstallations().size();
+			int nVessels = problemData.getVessels().size();
+			GenotypeHGS genotypeAfterMoving = new GenotypeHGS(giantTour, nInstallations, nVessels);
+			
+			mergeRemainingDepartures(dayToMoveFrom, vesselToMoveTo, giantTour, genotypeAfterMoving); // Merge remaining installation departures
+			
+			// Update individual
+			GenotypeHGS newGenotype = new GenotypeHGS(giantTour, nInstallations, nVessels);
+			individual.setGenotypeAndUpdatePenalizedCost(newGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
 		}
 
 	private Set<Installation> getInstallationsWithDepartureOnDay(HashMap<Integer, Set<Integer>> baselinePattern, int day) {
@@ -451,6 +459,9 @@ public class EducationPersistence extends EducationStandard {
 		return requiredVoyagesPerDayBaseline;
 	}
 	
+	
+	// ================================== METHODS BELOW HERE ARE NOT USED AND UNFINISHED =====================================
+	//
 	// METHOD ON ICE
 	private void swapInstallationPattern(Individual individual){
 		/*
@@ -581,10 +592,172 @@ public class EducationPersistence extends EducationStandard {
 		}
 			
 	}
+	
+	
+	// NOT IN USE
+	public void swapVoyages(Individual individual){
+		/*
+		 * Pick two random voyages, voyage1 and voyage2 both with same duration (in days) and departing on different days
+		 * 
+		 * For all installations in voyage1 and voyage2
+		 * 		if resulting pattern after swap is infeasible
+		 * 			choose new voyages
+		 * 		end-if
+		 * end-for									
+		 * 
+		 * if new pattern improves persistence
+		 *	 swap voyages in genotype
+		 * end-if 
+		 */
+		PhenotypeHGS phenotype = (PhenotypeHGS) individual.getPhenotype();
+		Set<DayVesselCell> copyOfAllDayVesselCells = new HashSet<>(problemData.getAllDayVesselCells());
+		List<Set<DayVesselCell>> cellCombinations = new ArrayList<>(Utilities.cartesianProduct(copyOfAllDayVesselCells));
+		
+		
+		System.out.println("CellCombinations:\n" + cellCombinations);
+		// All combinations of two DayVesselCells.
+		
+		Collections.shuffle(cellCombinations); // Shuffle list to make random
+		System.out.println("==================== SCHEDULE =========================");
+		System.out.println(phenotype.getScheduleString());
+		
+		// ========================== TESTING REMOVE ==============================
+		
+		Set<DayVesselCell> wantedCombo = new HashSet<>();
+		wantedCombo.add(new DayVesselCell(5,2));
+		wantedCombo.add(new DayVesselCell(4,1));
+		
+		cellCombinations.clear();
+		cellCombinations.add(wantedCombo);
+		
+		for (Set<DayVesselCell> cellCombo : cellCombinations){
+			System.out.println("\nTesting cellcombo: " + cellCombo);
+			ArrayList<DayVesselCell> cellComboList = new ArrayList<>(cellCombo); 
+			
+			if (cellCombo.size() != 2){
+				System.err.println("Cell combo has wrong size in persistenceEducation/swapVoyages. Cancelling voyage swap.");
+				return;
+			}
+			DayVesselCell cell1 = cellComboList.get(0);
+			DayVesselCell cell2 = cellComboList.get(1);
+			
+			if (cell1.day == cell2.day){
+				System.out.println("Cells on same day");
+				continue; // Need to swap between different days to have any effect on persistence
+			}
+			
+			Vessel vessel1 = problemData.getVesselByNumber(cell1.vessel);
+			Vessel vessel2 = problemData.getVesselByNumber(cell2.vessel);
+			
+			Voyage voyage1 = phenotype.getGiantTour().get(cell1.day).get(vessel1);
+			Voyage voyage2 = phenotype.getGiantTour().get(cell2.day).get(vessel2);
+			
+			if (voyage1 == null || voyage2 == null){
+				System.out.println("One voyage is empty");
+				continue; // If there is no voyage in either cell, try other combo
+			}
+			
+			if (voyage1.getDurationDays() != voyage2.getDurationDays()){
+				System.out.println("Voyages have different durations");
+				System.out.println("Voy1: " + voyage1.getDurationDays() + " days, Voy2: " + voyage2.getDurationDays() + " days");
+				System.out.println("Voy1: " + voyage1.getDuration() + " hours, Voy 2: " + voyage2.getDuration() + " hours");
+				continue; // Only swap voyages with equal length, to avoid feasibility issues
+			}
+			if (!isFeasibleVoyageSwap(cell1, cell2, voyage1, voyage2, individual)){
+				System.out.println("New pattern is infeasible");
+				continue; // Check if the resulting installation patterns are feasible
+			}
+			
+			Genotype improvedGenotype = getImprovedGenotype(individual, cell1, cell2);
+			if (improvedGenotype != null){
+				
+//				System.out.println("Swapping " + cell1 + " and " + cell2);
+//				System.out.println("Voyage 1: " + voyage1.getVisitedInstallations());
+//				System.out.println("Voyage 2: " + voyage2.getVisitedInstallations());
+				individual.setGenotypeAndUpdatePenalizedCost(improvedGenotype, genoToPhenoConverter, fitnessEvaluationProtocol);
+				return;
+			} // Else: try swapping two other voyages
+		}
+	}
+	// NOT IN USE
+	private Genotype getImprovedGenotype(Individual individual, DayVesselCell cell1, DayVesselCell cell2) {
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> tourChromosome = Utilities.deepCopyGiantTour(individual.getGenotype().getGiantTourChromosome());
 
-	private void costEducate(Individual individual){
-		routeImprovement(individual);
-		patternImprovement(individual);
-		routeImprovement(individual);
+		int numberOfChangesBeforeSwap = individual.getNumberOfChangesFromBaseline();
+		
+		ArrayList<Integer> voyage1 = tourChromosome.get(cell1.day).get(cell1.vessel);
+		ArrayList<Integer> voyage2 = tourChromosome.get(cell2.day).get(cell2.vessel);
+		
+		tourChromosome.get(cell1.day).put(cell1.vessel, new ArrayList<>(voyage2));
+		tourChromosome.get(cell2.day).put(cell2.vessel, new ArrayList<>(voyage1));
+		
+		int nInstallations = problemData.getCustomerInstallations().size();
+		int nVessels = problemData.getVessels().size();
+		Individual newIndividual = new Individual(new GenotypeHGS(tourChromosome, nInstallations, nVessels));
+		((GenoToPhenoConverterMultiObjective) genoToPhenoConverter).convertGenotypeToPhenotype(newIndividual);
+		
+		System.out.println("Trying to swap voyage " + cell1 + " and " + cell2);
+		System.out.println("Old persistence: " + numberOfChangesBeforeSwap);
+		System.out.println("New persistence: " + newIndividual.getNumberOfChangesFromBaseline());
+		
+		if (newIndividual.getNumberOfChangesFromBaseline() < numberOfChangesBeforeSwap){
+			return newIndividual.getGenotype();
+		}
+		else {
+			return null;
+		}
+	}
+
+	// NOT IN USE
+	private boolean isFeasibleVoyageSwap(DayVesselCell cell1, DayVesselCell cell2, Voyage voyage1, Voyage voyage2, Individual individual){
+		
+		GenotypeHGS genotype = (GenotypeHGS) individual.getGenotype();
+		HashMap<Integer, Set<Set<Integer>>> feasibleInstPatterns = problemData.getInstallationDeparturePatterns();
+		
+//		System.out.println("==================== SWAP =================");
+//		System.out.println("Cell1: " + cell1 + " Cell2: " + cell2);
+		
+		// Check installation patterns for voyage1
+		for (Installation inst : voyage1.getVisitedInstallations()){
+			int instNum = inst.getNumber();
+			Set<Integer> instPattern = new HashSet<>(genotype.getInstallationDeparturePatternChromosome().get(instNum));
+			
+			System.out.println("Old pattern for installation " + instNum + ":");
+			System.out.println(instPattern);
+			
+			if (!voyage2.getVisitedInstallations().contains(inst)){
+				instPattern.remove(cell1.day);
+			}
+			instPattern.add(cell2.day);
+			
+			System.out.println("New pattern:");
+			System.out.println(instPattern);
+			
+			if (!feasibleInstPatterns.get(inst.getFrequency()).contains(instPattern)){
+				System.out.println(instPattern + " is not feasible");
+				return false;
+			}
+		}
+		// Check installation patterns for voyag2
+		for (Installation inst : voyage2.getVisitedInstallations()){
+			int instNum = inst.getNumber();
+			Set<Integer> instPattern = new HashSet<>(genotype.getInstallationDeparturePatternChromosome().get(instNum));
+			
+			System.out.println("Old pattern for installation " + instNum + ":");
+			System.out.println(instPattern);
+			
+			if (!voyage1.getVisitedInstallations().contains(inst)){
+				instPattern.remove(cell2.day);
+			}
+			instPattern.add(cell1.day);
+			System.out.println("New pattern:");
+			System.out.println(instPattern);
+			
+			if (!feasibleInstPatterns.get(inst.getFrequency()).contains(instPattern)){
+				System.out.println(instPattern + " is not feasible");
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -181,13 +181,16 @@ public class StatisticsHandler {
 	}
 	
 	public void writeSolution(PrintWriter writer, Individual individual) {
-		DecimalFormat df = new DecimalFormat("0.00");
+		DecimalFormat costFmt = new DecimalFormat("0.00");
+		DecimalFormat robustnessFmt = new DecimalFormat("0");
+		
 		if (individual == null) {
 			writer.println("No feasible solution!");
 		}
 		else {
-			writer.println("Penalized cost: " + df.format(individual.getPenalizedCost()));
+			writer.println("Penalized cost: " + costFmt.format(individual.getPenalizedCost()));
 			writer.println("Persistence: " + individual.getNumberOfChangesFromBaseline());
+			writer.println("Robustness: " + robustnessFmt.format(individual.getRobustness()));
 			writer.println("Baseline: " + problemData.getBaselineInstallationPattern());
 			writer.println("Solution: " + ((GenotypeHGS) individual.getGenotype()).getInstallationDeparturePatternChromosome()); 
 			writer.println(individual.getPhenotype().getScheduleString());
@@ -279,7 +282,7 @@ public class StatisticsHandler {
 				}
 			}
 		}
-		return numberOfVisits / numberOfVoyages;
+		return numberOfVisits / numberOfVoyages;	
 	}
 	
 	private double getAverageVisitsPerVoyage(ArrayList<Individual> population) {
@@ -295,11 +298,14 @@ public class StatisticsHandler {
 		
 		writer.println("======================= Non-dominated solutions =======================");
 		writer.print("Cost\t");
-		writer.println("Persistence");
+		writer.print("Persistence\t");
+		writer.println("Robustness");
 		for (Individual nonDominatedSolution : paretoFront){
 			writer.print(df.format(nonDominatedSolution.getPenalizedCost()));
-			writer.print("   ");
+			writer.print("\t");
 			writer.print(nonDominatedSolution.getNumberOfChangesFromBaseline());
+			writer.print("\t\t");
+			writer.print(nonDominatedSolution.getRobustness());
 			writer.println();
 		}
 	}

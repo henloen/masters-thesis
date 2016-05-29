@@ -37,4 +37,6 @@ public interface Phenotype {
 
 	public boolean existsViolationsOnDay(int dayToAdd);
 	
+	public int getNumberOfVoyagesSailed();
+	
 }

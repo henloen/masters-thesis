@@ -15,20 +15,12 @@ public class Individual {
 	private Genotype genotype;
 	private Phenotype phenotype;
 	private double penalizedCost, diversityContribution, biasedFitness;
-	private int numberOfChangesFromBaseline;
+	private int numberOfChangesFromBaseline, numberOfRobustVoyages;
 	
 	public String typeOfEducation = "";
-	
 
-	public int getNumberOfChangesFromBaseline() {
-		return numberOfChangesFromBaseline;
-	}
+	private int number, costRank, diversityRank, persistenceRank, robustnessRank;
 
-	public void setNumberOfChangesFromBaseline(int numberOfChangesFromBaseline) {
-		this.numberOfChangesFromBaseline = numberOfChangesFromBaseline;
-	}
-
-	private int number, costRank, diversityRank, persistenceRank;
 	private static int numberOfIndividuals = 0;
 	
 	public Individual(Genotype genotype) {
@@ -37,6 +29,32 @@ public class Individual {
 		this.number = numberOfIndividuals;
 	}
 	
+	public int getNumberOfRobustVoyages(){
+		return numberOfRobustVoyages;
+	}
+	
+	public double getRobustness() {
+		return (double) numberOfRobustVoyages/getNumberOfVoyagesSailed();
+	}
+	
+	private int getNumberOfVoyagesSailed() {
+		return phenotype.getNumberOfVoyagesSailed();
+	}
+
+	public void setNumberOfRobustVoyages(int numberOfRobustVoyages) {
+		this.numberOfRobustVoyages = numberOfRobustVoyages;
+	}
+	public int getRobustnessRank() {
+		return robustnessRank;
+	}
+	
+	public int getNumberOfChangesFromBaseline() {
+		return numberOfChangesFromBaseline;
+	}
+	
+	public void setNumberOfChangesFromBaseline(int numberOfChangesFromBaseline) {
+		this.numberOfChangesFromBaseline = numberOfChangesFromBaseline;
+	}
 
 	public Set<Integer> getDaysWithVesselDeparture() {
 		return genotype.getDaysWithVesselDeparture();
@@ -148,7 +166,7 @@ public class Individual {
 	}
 	*/
 	public String getObjectiveValues(){
-		return "Individual " + number + ", Cost: " + penalizedCost + ", Persistence: " + numberOfChangesFromBaseline;
+		return "Individual " + number + ", Cost: " + penalizedCost + ", Persistence: " + numberOfChangesFromBaseline + ", Robustness: " + numberOfRobustVoyages;
 	}
 	
 	public HashMap<Integer, Integer> getNumberOfVoyagesPerDay() {
@@ -160,6 +178,23 @@ public class Individual {
 			numberOfDeparturesPerDay.put(day, nDeparturesOnDay);
 		}
 		return numberOfDeparturesPerDay;
+	}
+
+	public void setRobustnessRank(int robustnessRank) {
+		this.robustnessRank = robustnessRank;
+	}
+
+	public String getRobustnessString() {
+		String str = "=========================================================\n"
+				+ "Voyages sailed:\n";
+		
+		for (int day : phenotype.getGiantTour().keySet()){
+			for (Voyage voyage : phenotype.getGiantTour().get(day).values()){
+				if (voyage == null) continue;
+				str += "\n" + "Duration: " + voyage.getDurationDays() + " days, " + voyage.getDuration() + " hrs. Slack: " + voyage.getSlack() + " hrs";
+			}
+		}
+		return str;
 	}
 
 }

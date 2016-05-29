@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import jxl.Sheet;
@@ -13,7 +14,7 @@ public class IO {
 	
 	private String inputFileName;
 	private HashMap<String, String> problemInstanceParameters, heuristicParameters, charteredVessels;
-	private HashMap<Integer, Integer> depotCapacity;
+	private HashMap<Integer, Integer> depotCapacity, minimumSlackForRobustness;
 	private int datasetSheet;
 	ArrayList<Installation> installations;
 	ArrayList<Vessel> vessels;
@@ -36,6 +37,7 @@ public class IO {
 		depotCapacity = readDepotCapacity(8,2);
 		charteredVessels = readParameters(8, 16);
 		heuristicParameters = readParameters(1, 15);
+		minimumSlackForRobustness = readMinimumSlack(11, 11);
 		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
 		if (datasetSheet == 1) {
 			installations = readInstallations(1,3);
@@ -62,7 +64,7 @@ public class IO {
 		for (int i = 0; i < removeVessels; i++) {
 			vessels.remove(vessels.size()-1);
 		}
-		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances);
+		return new ProblemData(problemInstanceParameters, depotCapacity, heuristicParameters, installations, vessels, distances, minimumSlackForRobustness);
 	}
 	
 	private String readBaselineDeparturePattern(HashMap<String, String> heuristicParameters) {
@@ -204,6 +206,18 @@ public class IO {
 			System.out.println("Something went wrong when reading the problem instance data from Excel");
 		}
 		return table;
+	}
+	
+	private HashMap<Integer, Integer> readMinimumSlack(int startColumn, int startRow){
+		HashMap<Integer, Integer> minimumSlackForRobustness = new HashMap<>();
+		
+		HashMap<String, String> minimumSlackStrings = readParameters(startColumn, startRow);
+		for (Map.Entry<String, String> entry : minimumSlackStrings.entrySet()){
+			int duration = Integer.valueOf(entry.getKey());
+			int minSlack = Integer.valueOf(entry.getValue());
+			minimumSlackForRobustness.put(duration, minSlack);
+		}
+		return minimumSlackForRobustness;
 	}
 	
 	private Installation convertStringsToInstallation(ArrayList<String> row, int number) {

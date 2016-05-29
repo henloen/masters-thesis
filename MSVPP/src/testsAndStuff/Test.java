@@ -3,8 +3,11 @@ package testsAndStuff;
 import hgsadc.IO;
 import hgsadc.Individual;
 import hgsadc.ProblemData;
+import hgsadc.implementations.EducationPersistence;
 import hgsadc.implementations.EducationStandard;
+import hgsadc.implementations.FitnessEvaluationMultiObjective;
 import hgsadc.implementations.FitnessEvaluationStandard;
+import hgsadc.implementations.GenoToPhenoConverterMultiObjective;
 import hgsadc.implementations.GenoToPhenoConverterStandard;
 import hgsadc.implementations.GenotypeHGS;
 import hgsadc.implementations.PenaltyAdjustmentProtocol;
@@ -21,8 +24,101 @@ public class Test {
 	
 	public static void main(String[] args) {
 		Test test = new Test();
-		test.testVoyage();
+//		test.testVoyage();
+		test.testVoyageSwap();
 	}
+	
+	private void testVoyageSwap(){
+		IO io = new IO("data/hgs/input/input data hgs.xls");
+		ProblemData problemData = io.readData(0);
+		problemData.generatePatterns();
+		FitnessEvaluationProtocol fitnessEvaluationProtocol = new FitnessEvaluationMultiObjective(problemData);
+		GenoToPhenoConverterProtocol genoToPhenoProtocol = new GenoToPhenoConverterMultiObjective(problemData);
+		PenaltyAdjustmentProtocol penaltyProtocol = new PenaltyAdjustmentProtocol(0);
+		EducationPersistence education = new EducationPersistence(problemData, fitnessEvaluationProtocol, penaltyProtocol, genoToPhenoProtocol);
+		
+		Individual ind = generateTestIndividual();
+		genoToPhenoProtocol.convertGenotypeToPhenotype(ind);
+		
+		System.out.println("\nOld schedule: ");
+		System.out.println(ind.getPhenotype().getScheduleString());
+		System.out.println("Persistence: " + ind.getNumberOfChangesFromBaseline());
+		
+		education.swapVoyages(ind);
+
+		System.out.println("\nNew schedule: ");
+		System.out.println(ind.getPhenotype().getScheduleString());
+		System.out.println("Persistence: " + ind.getNumberOfChangesFromBaseline());
+	}
+	
+	private Individual generateTestIndividual(){
+		ArrayList<Integer> voy01 = new ArrayList<>();
+		voy01.add(1);
+		voy01.add(11);
+		voy01.add(7);
+		voy01.add(3);
+		voy01.add(4);
+		voy01.add(5);
+		
+		ArrayList<Integer> voy12 = new ArrayList<>();
+		voy12.add(2);
+		voy12.add(8);
+		voy12.add(10);
+		voy12.add(9);
+		voy12.add(11);
+		voy12.add(1);
+		
+		ArrayList<Integer> voy21 = new ArrayList<>();
+		voy21.add(5);
+		voy21.add(4);
+		voy21.add(3);
+		voy21.add(7);
+		voy21.add(6);
+		voy21.add(8);
+		
+		ArrayList<Integer> voy32 = new ArrayList<>();
+		voy32.add(5);
+		voy32.add(4);
+		voy32.add(3);
+		voy32.add(7);
+		voy32.add(11);
+		voy32.add(1);
+		
+		ArrayList<Integer> voy41 = new ArrayList<>();
+		voy41.add(1);
+		voy41.add(7);
+		voy41.add(11);
+		voy41.add(9);
+		voy41.add(8);
+		voy41.add(10);
+		voy41.add(2);
+		
+
+		ArrayList<Integer> voy52 = new ArrayList<>();
+		voy52.add(7);
+		voy52.add(5);
+		voy52.add(4);
+		voy52.add(3);
+		voy52.add(9);
+		voy52.add(8);
+		voy52.add(10);
+		voy52.add(2);
+		
+		
+		HashMap<Integer, HashMap<Integer, ArrayList<Integer>>> giantTour = GenotypeHGS.generateEmptyGiantTourChromosome(7, 2);
+		
+		giantTour.get(0).put(1, voy01);
+		giantTour.get(1).put(2, voy12);
+		giantTour.get(2).put(1, voy21);
+		giantTour.get(3).put(2, voy32);
+		giantTour.get(4).put(1, voy41);
+		giantTour.get(5).put(2, voy52);
+		
+		Individual ind = new Individual(new GenotypeHGS(giantTour, 11, 2));
+		
+		return ind;
+	}
+	
 	
 	private void testVoyage() {
 		IO io = new IO("data/hgs/input/input data hgs.xls");

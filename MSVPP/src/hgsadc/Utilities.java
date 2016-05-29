@@ -275,6 +275,22 @@ public class Utilities {
 			}
 		};
 	}
+	
+	public static Comparator<Individual> getRobustnessComparator() {
+		return new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				if (ind1.getRobustness() > ind2.getRobustness()) {
+					return -1;
+				}
+				else if (ind1.getRobustness() < ind2.getRobustness()) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		};
+	}
 
 	public static Comparator<Individual> getPersistenceComparator() {
 		return new Comparator<Individual>() {

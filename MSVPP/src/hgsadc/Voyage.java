@@ -11,7 +11,7 @@ public class Voyage {
 	private ArrayList<Installation> visitedInstallations; // Does not contain depot at end or start
 	private ArrayList<Integer> installations;
 	private Vessel vessel;
-	private int departureDay;
+	private int departureDay, slack;
 	private Set<Integer> vesselDeparturePattern;
 	
 	//the constructor needs to be rewritten if time windows are introduced
@@ -37,6 +37,7 @@ public class Voyage {
 			}
 			fromInstallation = toInstallation;
 		}
+		slack = calculateSlack();
 		setViolations(problemData);
 	}
 	
@@ -129,6 +130,23 @@ public class Voyage {
 	 */
 	public int getDurationDays(){
 		return  (int) Math.ceil((getDuration() + 8) / 24);
+	}
+	
+	public int getSlack(){
+		return slack;
+	}
+	public int calculateSlack(){
+		int durationDays = getDurationDays();
+		int dawnOfNextDay = durationDays * 24 + 8; // Time when the depot opens next time
+		int finishTimeForVoyage = (int) (Math.ceil(duration) + 16);
+		int slack = dawnOfNextDay - finishTimeForVoyage;
+
+//		System.out.println("\nDays: " + durationDays);
+//		System.out.println("Hours: " + duration);
+//		System.out.println("DawnOfNextDay: " + dawnOfNextDay);
+//		System.out.println("FinishTimeForVoyage: " + finishTimeForVoyage);
+//		System.out.println("Slack: " + slack);
+		return slack;
 	}
 	
 	public String toString() {
