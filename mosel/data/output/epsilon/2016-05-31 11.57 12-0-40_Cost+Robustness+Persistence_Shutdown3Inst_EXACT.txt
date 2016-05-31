@@ -1,0 +1,214 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\15-0-52.txt
+
+!Problem instance: 12-0-40
+!Total visits: 40
+!Solved on: 2016-05-31 11.57
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 84
+Robustness: 0.50
+Change: 40
+Total cost: 449252
+
+Number of robust voyages: 3
+
+!----------------------------------------------------------------------------
+!Total cost: 449252
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 449252
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 841, Thu. Cost: 63757. Duration: 2
+!Slack: 5
+!Vessel 1, Voyage 1786, Tue. Cost: 69017. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 3488, Sat. Cost: 85991. Duration: 3
+!Slack: 16
+!Vessel 2, Voyage 1828, Mon. Cost: 69247. Duration: 2
+!Slack: 1
+!Vessel 2, Voyage 3230, Wed. Cost: 70343. Duration: 2
+!Slack: 1
+!Vessel 2, Voyage 3706, Fri. Cost: 90897. Duration: 3
+!Slack: 13
+
+!==============================================================================================
+Iteration 2:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 39
+Robustness: 0.33
+Change: 38
+Total cost: 450156
+
+Number of robust voyages: 2
+
+!----------------------------------------------------------------------------
+!Total cost: 450156
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 450156
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 1786, Tue. Cost: 69017. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 1828, Thu. Cost: 69247. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 3488, Sat. Cost: 85991. Duration: 3
+!Slack: 16
+!Vessel 2, Voyage 1828, Mon. Cost: 69247. Duration: 2
+!Slack: 1
+!Vessel 2, Voyage 2210, Wed. Cost: 75098. Duration: 2
+!Slack: 0
+!Vessel 2, Voyage 3766, Fri. Cost: 81556. Duration: 3
+!Slack: 18
+
+!==============================================================================================
+Iteration 3:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 37
+Robustness: 0.33
+Change: 34
+Total cost: 451443
+
+Number of robust voyages: 2
+
+!----------------------------------------------------------------------------
+!Total cost: 451443
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 451443
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 1786, Tue. Cost: 69017. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 2423, Thu. Cost: 66962. Duration: 2
+!Slack: 3
+!Vessel 1, Voyage 3488, Sat. Cost: 85991. Duration: 3
+!Slack: 16
+!Vessel 2, Voyage 1828, Mon. Cost: 69247. Duration: 2
+!Slack: 1
+!Vessel 2, Voyage 2394, Wed. Cost: 67778. Duration: 2
+!Slack: 3
+!Vessel 2, Voyage 3453, Fri. Cost: 92448. Duration: 3
+!Slack: 12
+
+!==============================================================================================
+Iteration 4:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 33
+Robustness: 0.33
+Change: 32
+Total cost: 454215
+
+Number of robust voyages: 2
+
+!----------------------------------------------------------------------------
+!Total cost: 454215
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 454215
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 1829, Tue. Cost: 69080. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 2423, Thu. Cost: 66962. Duration: 2
+!Slack: 3
+!Vessel 1, Voyage 3488, Sat. Cost: 85991. Duration: 3
+!Slack: 16
+!Vessel 2, Voyage 1885, Wed. Cost: 68952. Duration: 2
+!Slack: 2
+!Vessel 2, Voyage 2387, Mon. Cost: 70782. Duration: 2
+!Slack: 1
+!Vessel 2, Voyage 3453, Fri. Cost: 92448. Duration: 3
+!Slack: 12
+
+!==============================================================================================
+Iteration 5:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 31
+Robustness: 0.50
+Change: 30
+Total cost: 458484
+
+Number of robust voyages: 3
+
+!----------------------------------------------------------------------------
+!Total cost: 458484
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 458484
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 2387, Mon. Cost: 70782. Duration: 2
+!Slack: 1
+!Vessel 1, Voyage 2817, Wed. Cost: 72449. Duration: 2
+!Slack: 0
+!Vessel 1, Voyage 3453, Fri. Cost: 92448. Duration: 3
+!Slack: 12
+!Vessel 2, Voyage 908, Tue. Cost: 64067. Duration: 2
+!Slack: 5
+!Vessel 2, Voyage 2330, Thu. Cost: 72747. Duration: 2
+!Slack: 0
+!Vessel 2, Voyage 3488, Sat. Cost: 85991. Duration: 3
+!Slack: 16
+
+!==============================================================================================
+Iteration 6:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 29
+
+No feasible solution found
+
+!==============================================================================================
+Iteration 7:
+
+RobEpsilon: 0.51
+ChangeEpsilon: 84
+
+No feasible solution found
+
+Total time elapsed: 204.861
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 7
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		84		0.50		40		449252	
+	0.00		39		0.33		38		450156	
+	0.00		37		0.33		34		451443	
+	0.00		33		0.33		32		454215	
+	0.00		31		0.50		30		458484	
+	0.00		29		0.00		0		0	
+	0.51		84		0.00		0		0	

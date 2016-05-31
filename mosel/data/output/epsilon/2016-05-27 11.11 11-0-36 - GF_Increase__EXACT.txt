@@ -1,0 +1,272 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\11-0-36.txt
+
+!Problem instance: 11-0-36 - GF_Increase
+!Total visits: 39
+!Solved on: 2016-05-27 11.11
+
+!Fixed fleet: false
+
+!==============================================================================================
+Iteration 1:
+
+ChangeEpsilon: 77
+Change: 23
+Total cost: 3.25125e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 3.25125e+006
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 451249
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  1	  0	  0
+!Installation 2:	  0	  1	  0	  0	  1	  1	  0
+!Installation 3:	  1	  0	  1	  1	  0	  1	  0
+!Installation 4:	  1	  0	  1	  1	  0	  1	  0
+!Installation 5:	  1	  0	  1	  1	  0	  1	  0
+!Installation 6:	  0	  0	  0	  0	  1	  0	  0
+!Installation 7:	  1	  0	  1	  1	  1	  1	  0
+!Installation 8:	  0	  1	  1	  0	  1	  1	  0
+!Installation 9:	  0	  1	  1	  0	  0	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  1	  0	  0
+!==============================================================================================
+Iteration 2:
+
+ChangeEpsilon: 22
+Change: 21
+Total cost: 3.25147e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 3.25147e+006
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 451467
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  1	  0	  0
+!Installation 2:	  0	  1	  0	  0	  1	  1	  0
+!Installation 3:	  1	  0	  1	  1	  0	  1	  0
+!Installation 4:	  1	  0	  1	  1	  0	  1	  0
+!Installation 5:	  1	  0	  1	  1	  0	  1	  0
+!Installation 6:	  0	  0	  1	  0	  0	  0	  0
+!Installation 7:	  1	  0	  1	  1	  1	  1	  0
+!Installation 8:	  0	  1	  1	  0	  1	  1	  0
+!Installation 9:	  0	  1	  0	  0	  1	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  1	  0	  0
+!==============================================================================================
+Iteration 3:
+
+ChangeEpsilon: 20
+Change: 20
+Total cost: 3.26058e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 3.26058e+006
+!Optimality gap: 0
+!Charter cost:	 2.8e+006
+!Sailing cost:	 460581
+!Number of vessels used:	2
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  1	  0	  0
+!Installation 2:	  0	  1	  0	  0	  1	  1	  0
+!Installation 3:	  1	  0	  1	  1	  0	  1	  0
+!Installation 4:	  1	  0	  1	  1	  0	  1	  0
+!Installation 5:	  1	  0	  1	  1	  1	  1	  0
+!Installation 6:	  0	  0	  1	  0	  0	  0	  0
+!Installation 7:	  1	  0	  1	  1	  1	  1	  0
+!Installation 8:	  0	  1	  1	  0	  1	  1	  0
+!Installation 9:	  0	  1	  0	  0	  1	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  1	  0	  0
+!==============================================================================================
+Iteration 4:
+
+ChangeEpsilon: 19
+Change: 19
+Total cost: 4.64666e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 4.64666e+006
+!Optimality gap: 0.227769
+!Charter cost:	 4.2e+006
+!Sailing cost:	 446657
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  1	  1	  0	  0	  1	  0	  0
+!Installation 3:	  1	  0	  1	  0	  1	  1	  0
+!Installation 4:	  1	  0	  1	  0	  1	  1	  0
+!Installation 5:	  1	  0	  1	  0	  1	  1	  0
+!Installation 6:	  0	  1	  0	  0	  0	  0	  0
+!Installation 7:	  1	  1	  1	  0	  1	  1	  0
+!Installation 8:	  1	  1	  0	  0	  1	  1	  0
+!Installation 9:	  0	  1	  1	  0	  0	  1	  0
+!Installation 10:	  1	  1	  0	  0	  1	  0	  0
+!Installation 11:	  0	  1	  1	  0	  1	  1	  0
+!==============================================================================================
+Iteration 5:
+
+ChangeEpsilon: 18
+Change: 11
+Total cost: 4.64525e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 4.64525e+006
+!Optimality gap: 0.235285
+!Charter cost:	 4.2e+006
+!Sailing cost:	 445253
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  0	  1	  0	  0	  1	  1	  0
+!Installation 3:	  1	  1	  0	  1	  1	  0	  0
+!Installation 4:	  1	  1	  0	  1	  1	  0	  0
+!Installation 5:	  1	  1	  0	  1	  1	  0	  0
+!Installation 6:	  0	  0	  0	  1	  0	  0	  0
+!Installation 7:	  1	  1	  0	  1	  1	  1	  0
+!Installation 8:	  1	  1	  0	  0	  1	  1	  0
+!Installation 9:	  1	  0	  0	  1	  1	  0	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  0	  1	  0
+!==============================================================================================
+Iteration 6:
+
+ChangeEpsilon: 10
+Change: 7
+Total cost: 4.64908e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 4.64908e+006
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 449076
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  1	  0	  0	  1	  1	  0	  0
+!Installation 3:	  1	  1	  0	  1	  1	  0	  0
+!Installation 4:	  1	  1	  0	  1	  1	  0	  0
+!Installation 5:	  1	  1	  0	  1	  1	  0	  0
+!Installation 6:	  0	  0	  0	  1	  0	  0	  0
+!Installation 7:	  1	  1	  0	  1	  1	  1	  0
+!Installation 8:	  1	  1	  0	  0	  1	  1	  0
+!Installation 9:	  0	  1	  0	  0	  1	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  0	  1	  0
+!==============================================================================================
+Iteration 7:
+
+ChangeEpsilon: 6
+Change: 5
+Total cost: 4.65011e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 4.65011e+006
+!Optimality gap: 0.0466079
+!Charter cost:	 4.2e+006
+!Sailing cost:	 450111
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  1	  1	  0	  0	  1	  0	  0
+!Installation 3:	  1	  1	  0	  1	  1	  0	  0
+!Installation 4:	  1	  1	  0	  1	  1	  0	  0
+!Installation 5:	  1	  1	  0	  1	  1	  0	  0
+!Installation 6:	  0	  0	  0	  1	  0	  0	  0
+!Installation 7:	  1	  1	  0	  1	  1	  1	  0
+!Installation 8:	  1	  1	  0	  0	  1	  1	  0
+!Installation 9:	  0	  1	  0	  0	  1	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  0	  1	  0
+!==============================================================================================
+Iteration 8:
+
+ChangeEpsilon: 4
+Change: 3
+Total cost: 4.65192e+006
+
+!----------------------------------------------------------------------------
+!Total cost: 4.65192e+006
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 451921
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Departures to each installation:
+
+!			Mon	Tue	Wed	Thu	Fri	Sat	Sun	
+!Installation 1:	  1	  1	  0	  1	  0	  1	  0
+!Installation 2:	  1	  1	  0	  0	  1	  0	  0
+!Installation 3:	  1	  1	  0	  1	  1	  0	  0
+!Installation 4:	  1	  1	  0	  1	  1	  0	  0
+!Installation 5:	  1	  1	  0	  1	  1	  0	  0
+!Installation 6:	  0	  1	  0	  0	  0	  0	  0
+!Installation 7:	  1	  1	  0	  1	  1	  1	  0
+!Installation 8:	  1	  1	  0	  0	  1	  1	  0
+!Installation 9:	  0	  1	  0	  0	  1	  1	  0
+!Installation 10:	  0	  1	  0	  0	  1	  1	  0
+!Installation 11:	  1	  1	  0	  1	  0	  1	  0
+!==============================================================================================
+Iteration 9:
+
+ChangeEpsilon: 2
+
+No feasible solution found
+
+Total time elapsed: 15291.7
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 9
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		77		0.00		23		3.25125e+006	
+	0.00		22		0.00		21		3.25147e+006	
+	0.00		20		0.00		20		3.26058e+006	
+	0.00		19		0.00		19		4.64666e+006	
+	0.00		18		0.00		11		4.64525e+006	
+	0.00		10		0.00		7		4.64908e+006	
+	0.00		6		0.00		5		4.65011e+006	
+	0.00		4		0.00		3		4.65192e+006	
+	0.00		2		0.00		0		0	

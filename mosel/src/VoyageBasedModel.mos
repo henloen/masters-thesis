@@ -7,9 +7,9 @@ uses  "mmxprs", "mmsystem", "mmive"; ! Use Xpress-Optimizer
 parameters
 	 ! Input file is specified here
 	 
-	 DataFilePath = '..\data\input\april 2016\fixed fleet\variation cases\'
-	 InputDate = '2016-04-20'
-	 ProblemInstance = '12-0-40_1 extra PSV'
+	 DataFilePath = '..\data\input\april 2016\fixed fleet\with slack\'
+	 InputDate = '2016-05-29'
+	 ProblemInstance = '11-0-36'
 	 DataFile = DataFilePath + InputDate + " " + ProblemInstance + '.txt'
 	 
 	
@@ -20,9 +20,9 @@ parameters
 	 UseEpsilonConstraintMethod = true
 	 ! Input file containing baseline solution to compare new solution with
 	 BaselineFilePath = '..\data\input\april 2016\baseline\'
-	 BaselineFile = BaselineFilePath + '15-0-52.txt'
-	 TestCase = '_EXACT'
-	 nNBaseline = 15
+	 BaselineFile = BaselineFilePath + '14-0-48.txt'
+	 TestCase = 'Cost+Persistence+Robustness_Shutdown3Inst_EXACT'
+	 nNBaseline = 14
 	 
 	 
 	 ! Solver will stop and accept current best solution when optimality gap is lower than the limit
@@ -79,9 +79,9 @@ T := 0 .. nT-1; ! Zero-indexed due to use of modulus operator in spread of depar
 L := minL .. maxL;
 R := 1 .. nR;
 
-!minS := 0;
-!maxS := 23;
-!S := minS..maxS; ! Possible hours of slack
+minS := 0;
+maxS := 23;
+S := minS..maxS; ! Possible hours of slack
 
 
 NBaseline := 1 .. nNBaseline;
@@ -89,7 +89,7 @@ NBaseline := 1 .. nNBaseline;
 ParetoIndex := {'1 RobEpsilon(L)', '2 ChangeEpsilon(U)', '3 Robustness', '4 TotalChange', '5 TotalCost'}; ! For indexing ParetoFront
 
 MaxParetoSolutions := (nT*nN+1)*(nV*floor(nT/minL));
-! Max number of changes is nT*nN+1
+! Max number of values for change is nT*nN+1 [Days times installations + 1 for the case with 0 changes]
 ! Max number of voyages is nV * (nT/minL) [maxNumber of voyages per PSV times number of PSVs]
 
 
@@ -98,7 +98,7 @@ declarations
 	Rv: array(V) of set of integer; ! Voyages a vessel can sail
 	Rvi: array(V, N) of set of integer; ! Voyages a vessel can sail that visit installation i
 	Rvl: array(V, L) of set of integer; ! Voyages a vessel can sail that has duration l
-	!Rvls: array(V, L, S) of set of integer; ! Voyages a vessel can sail that has duration l and slack s
+	Rvls: array(V, L, S) of set of integer; ! Voyages a vessel can sail that has duration l and slack s
 	Nf: array(F) of set of integer; ! Sets of installations requiring f visits
 	
 	OptimalFleet: array(V) of integer; ! 0 - not chartered, 1 - chartered
@@ -151,7 +151,7 @@ initializations from DataFile
 	Rv;
 	Rvi;
 	Rvl;
-	!Rvls;
+	Rvls;
 	Nf;
 	
 	!Parameters
@@ -228,7 +228,6 @@ declarations
 	SpreadDeparturesMaxCon: dynamic array(N, F, T) of linctr; ! (4.6) - Upper bound
 	OneDeparturePerDayCon: dynamic array(N, T) of linctr; ! (4.6) - Maximum one departure to an installation per day
 	
-	
 	nVoyagesUsed: linctr; ! Number of voyages sailed in solution
 				
 	!----------------------------------------- PERSISTENCE CONSTRAINTS -----------------------------------------------
@@ -243,9 +242,9 @@ declarations
 	
 	!----------------------------------------- ROBUSTNESS CONSTRAINTS -----------------------------------------------
 	
-	!SlackThreshold: array(L) of integer; ! Minimum slack for a voyage to count as robust
-	!nRobustVoyages: linctr; ! Number of voyages with more hours of slack than the SlackThreshold
-	!EpsilonRobustnessCon: linctr; ! Constrains robustness
+	SlackThreshold: array(L) of integer; ! Minimum slack for a voyage to count as robust
+	nRobustVoyages: linctr; ! Number of voyages with more hours of slack than the SlackThreshold
+	EpsilonRobustnessCon: linctr; ! Constrains robustness
 	
 end-declarations
 
@@ -386,10 +385,10 @@ else
 	
 	!----------------------- ROBUSTNESS -------------------------------------------------
 	
-	!SlackThreshold :: [4, 6];
+	SlackThreshold :: [4, 4, 6];
 	
 	! NUMBER OF VOYAGES USED THAT HAVE AT LEAST THE REQUIRED SLACK
-	!nRobustVoyages := sum(vv in V, ll in L, ss in SlackThreshold(ll)..maxS, rr in Rvls(vv,ll,ss), tt in T) x(vv,rr,tt);
+	nRobustVoyages := sum(vv in V, ll in L, ss in SlackThreshold(ll)..maxS, rr in Rvls(vv,ll,ss), tt in T) x(vv,rr,tt);
 	
 	
 	!--------------------- OBJECTIVE FUNCTION ------------------------------------------------------------------------------------------------
@@ -399,9 +398,7 @@ else
 	else		! Include charter cost
 		TotalCost := sum(vv in V)TimeCharterCost(vv) * delta(vv) + sum(vv in V, rr in Rv(vv), tt in T) x(vv, rr, tt) * VoyageCost(rr) + Change;
 	end-if
-	
-	
-	! Adds a small cost on change, in order to find the minimum change solution if there are multiple solution with equal cost
+	! Add a small cost on change, in order to find the minimum change solution if there are multiple solution with equal cost
 		
 		
 		
@@ -418,33 +415,40 @@ else
 	
 	!--------------------- EPSILON-METHOD ----------------------------------------------	
 	
-	MaxNVoyages := nV*floor(nT/minL); ! Equals maximum number of voyages used. Sets maximum number of possible robustness values
-!	RobustnessStep := 1/MaxNVoyages;
+	(!
+	if FixFleet then
+		numberOfPSVs := 0
+		forall(vv in V) do
+			if OptimalFleet(vv) = 1 then
+				numberOfPSVs := numberOfPSVs + 1
+			end-if
+		end-do
+	else
+		numberOfPSVs := nV
+	end-if
+	
+	!MaxNVoyages := numberOfPSVs*floor(nT/minL); ! Equals maximum number of voyages used. Sets maximum number of possible robustness values
+	!RobustnessStep := 1/MaxNVoyages;
+	!)
 	
 	iteration := 0;
 	AllParetoSolutionsFound := false;
 	
 	
-!	RobustnessEpsilon := 0.0;
+	RobustnessEpsilon := 0.0;
 	
-	! forall(RobustnessIteration in 0..MaxNVoyages) do
+	while (RobustnessEpsilon <= 1.0) do
 	! Outer loop goes through all possible levels of robustness
 		ChangeEpsilon := nT * nN;
 		
-	!	RobustnessEpsilon := RobustnessIteration * RobustnessStep;
-		
-		
-		
-	!	EpsilonRobustnessCon := nRobustVoyages >= RobustnessEpsilon * nVoyagesUsed;
-		
-	!	RobustnessLowerBound := 0;
+		EpsilonRobustnessCon := nRobustVoyages >= RobustnessEpsilon * nVoyagesUsed;
 		
 		while(ChangeEpsilon >= 0) do
 			! Inner loop goes through all possible levels of change
 			iteration := iteration + 1;
 			
 			WriteIterationEpsilons
-	
+			
 			EpsilonChangeCon := Change <= ChangeEpsilon;
 			
 			minimize(TotalCost);
@@ -458,36 +462,37 @@ else
 					if (ChangeEpsilon = nT * nN) then
 						AllParetoSolutionsFound := true;
 					end-if
+					
+					
 					break;
 			end-if
 			
 			UncastedSolutionChange := sum(ii in N, tt in T | ii <= nNBaseline) getsol(gamma(ii, tt));
 			SolutionChange := integer(round(UncastedSolutionChange));
 			
-			!SolutionRobustness := integer(round(getsol(nRobustVoyages)/getsol(nVoyagesUsed)));
-			
-			!if (SolutionRobustness < RobustnessLowerBound) then
-			!	RobustnessLowerBound := SolutionRobustness;
-			!end-if
-					
+			SolutionRobustness := getsol(nRobustVoyages)/getsol(nVoyagesUsed);
 			
 			SaveParetoSolution(true)
 			WriteIterationResults
+			WriteVoyagesUsed
+			
+			NextRobustness := SolutionRobustness + 0.01;
 			
 			if (SolutionChange = 0) then
 				break;
 			end-if
 			
 			ChangeEpsilon := SolutionChange - 1;
-			
 		
-		end-do
+		end-do ! ChangeEpsilon-loop
 		
-		!if (AllParetoSolutionsFound) then
-		!	break;
-		!end-if
-				
-	!end-do
+		if (AllParetoSolutionsFound) then
+			break;
+		end-if
+		
+		RobustnessEpsilon := NextRobustness;
+		
+	end-do ! RobustnessEpsilon-loop
 	
 	!--------------------- EPSILON-METHOD END --------------------------------------------------	
 	
@@ -508,7 +513,7 @@ end-if
 procedure WriteIterationEpsilons
 	writeln("\n!==============================================================================================");
 	writeln("Iteration " + iteration + ":\n");
-	!writeln("RobEpsilon: " + strfmt(RobustnessEpsilon, 0, 2));
+	writeln("RobEpsilon: " + strfmt(RobustnessEpsilon, 0, 2));
 	writeln("ChangeEpsilon: " + ChangeEpsilon);
 end-procedure
 
@@ -518,15 +523,15 @@ procedure SaveParetoSolution(IsFeasibleSolution:boolean)
 
 	! ----------- SAVING TO MOSEL ARRAY -----------------------------
 	
-	!ParetoFront(iteration, '1 RobEpsilon(L)') := RobustnessEpsilon;
+	ParetoFront(iteration, '1 RobEpsilon(L)') := RobustnessEpsilon;
 	ParetoFront(iteration, '2 ChangeEpsilon(U)') := ChangeEpsilon;
 	
 	if (IsFeasibleSolution) then
-	!	ParetoFront(iteration, '3 Robustness') := SolutionRobustness;
+		ParetoFront(iteration, '3 Robustness') := SolutionRobustness;
 		ParetoFront(iteration, '4 TotalChange') := SolutionChange;
 		ParetoFront(iteration, '5 TotalCost') := getobjval-SolutionChange;
 	else
-	!	ParetoFront(iteration, '3 Robustness') := 0;
+		ParetoFront(iteration, '3 Robustness') := 0;
 		ParetoFront(iteration, '4 TotalChange') := 0;
 		ParetoFront(iteration, '5 TotalCost') := 0;
 	end-if
@@ -534,16 +539,29 @@ procedure SaveParetoSolution(IsFeasibleSolution:boolean)
 	
 end-procedure
 
+(!
+procedure RemoveParetoClones
+	! Removes solutions from the Pareto front that have equal objective values
+	nParetoSolutions := ceil( getsize(ParetoFront)/5);
+	
+	forall(sol in 1.. round( nParetoSolutions)) do
+		forall(index in ParetoIndex)do		
+			1+2
+		end-do
+		writeln("");
+	end-do
+	
+end-procedure
+
+function boolean IsClone()
+!)
 
 procedure WriteIterationResults
 	
-
-	! -------- WRITING TO OUTPUT FILE -------------------------------
-	
-!	writeln("Robustness: " + strfmt(SolutionRobustness, 0, 2));
+	writeln("Robustness: " + strfmt(SolutionRobustness, 0, 2));
 	writeln("Change: " + SolutionChange);
 	writeln("Total cost: " + (getobjval-SolutionChange));
-!	writeln("\nNumber of robust voyages: " + getsol(nRobustVoyages));
+	writeln("\nNumber of robust voyages: " + getsol(nRobustVoyages));
 	
 	WriteSolution;
 		
@@ -611,11 +629,16 @@ procedure WriteVoyagesUsed
 	writeln("\n!----------------------------------------------------------------------------");	
 	writeln("!Voyages used: \n");
 	
-	nVoyagesUsed := 0;
 	forall(vv in V, rr in Rv(vv), tt in T) do
 		if (getsol(x(vv,rr,tt)) > 0.5) then
 			writeln("!Vessel " + vv + ", Voyage " + rr + ", " + DayNames(tt) + ". Cost: " + VoyageCost(rr) + ". Duration: " + VoyageDuration(rr));
-			nVoyagesUsed := nVoyagesUsed + 1;
+			
+			forall(ss in S, ll in L) do
+				if rr in Rvls(vv, ll, ss) then
+					writeln("!Slack: " + ss)
+				end-if
+			end-do
+			
 		end-if	
 	end-do
 end-procedure		
@@ -697,8 +720,8 @@ procedure WriteGamma
 end-procedure
 
 procedure WriteParetoFront
-	! ============================= IMPORTANT: Change the denominator if robustness is added =================================
-	nParetoSolutions := ceil( getsize(ParetoFront)/3);
+	
+	nParetoSolutions := ceil( getsize(ParetoFront)/5);
 	
 	
 	writeln("\n!==============================================================================================\n");
@@ -729,7 +752,6 @@ procedure WriteElapsedTime
 	EndTime := time(SYS_NOW);
 	writeln("\nTotal time elapsed: " + ((EndTime-StartTime)/1000));
 end-procedure
-
 
 !======================================= PROCEDURES FOR PRINTING-END ===========================================================================
 
