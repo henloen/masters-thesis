@@ -100,7 +100,11 @@ def getMinCost(filepath):
 
 def exportPlot(filename):
 	#add labels
-	pl.xlabel('# changes from baseline')
+	if persistence
+		pl.xlabel('# changes from baseline')
+	else
+		pl.xlabel('Robustness')
+		
 	pl.ylabel('% increase from minimum sailing cost')
 	pl.legend(loc=0, markerscale=(1.0/markerScale))
 

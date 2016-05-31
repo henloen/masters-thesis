@@ -1,0 +1,52 @@
+Epsilon-constraint method
+Baseline file: ..\data\input\april 2016\baseline\14-0-48.txt
+
+!Problem instance: 14-0-48
+!Total visits: 48
+!Solved on: 2016-05-30 14.13
+
+!Fixed fleet: true
+
+!==============================================================================================
+Iteration 1:
+
+RobEpsilon: 0.00
+ChangeEpsilon: 98
+Robustness: 1.00
+Change: 0
+Total cost: 492393
+
+Number of robust voyages: 6
+
+!----------------------------------------------------------------------------
+!Total cost: 492393
+!Optimality gap: 0
+!Charter cost:	 4.2e+006
+!Sailing cost:	 492393
+!Number of vessels used:	3
+!Number of voyages sailed: 6
+
+!----------------------------------------------------------------------------
+!Voyages used: 
+
+!Vessel 1, Voyage 11917, Mon. Cost: 84988. Duration: 3
+!Slack: 16
+!Vessel 1, Voyage 12911, Thu. Cost: 82850. Duration: 3
+!Slack: 17
+!Vessel 2, Voyage 10525, Wed. Cost: 80036. Duration: 3
+!Slack: 17
+!Vessel 2, Voyage 10525, Sat. Cost: 80036. Duration: 3
+!Slack: 17
+!Vessel 3, Voyage 10551, Tue. Cost: 85070. Duration: 3
+!Slack: 15
+!Vessel 3, Voyage 11902, Fri. Cost: 79413. Duration: 3
+!Slack: 17
+
+Total time elapsed: 71.458
+
+!==============================================================================================
+
+!Number of Pareto-optimal solutions: 1
+!Pareto Front:
+1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
+	0.00		98		1.00		0		492393	

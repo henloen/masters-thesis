@@ -29,7 +29,7 @@ public class VGMain {
 	
 	private static IO io;
 	private static long startTime, stopTime;
-	private static String inputFileName = "data/voyageGeneration/input/Input data kopi.xls",
+	private static String inputFileName = "data/voyageGeneration/input/input data hgs.xls",
 			outputFileName = "data/voyageGeneration/output/"; //sets the folder, see the constructor of IO for the filename format
 	//heuristic parameters
 	private static int removeLongestArcs = 0, minInstallationsHeur = 0, maxArcsRemovedInstallation = 2;
