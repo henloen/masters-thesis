@@ -50,7 +50,7 @@ public class ProblemData {
 		selectDominationCriteria();
 		
 		String objectives = heuristicParameters.get("Objectives");
-		if (objectives.equals("Cost+Persistence")){
+		if (objectives.equals("Cost+Persistence") || objectives.equals("Cost+Persistence+Robustness")){
 			baselineInstallationPattern = generateBaselineInstallationPattern(problemInstanceParameters.get("BaselineDeparturePattern"));
 		}
 	}

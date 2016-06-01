@@ -167,7 +167,7 @@ public class HGSprocesses {
 		switch (problemData.getHeuristicParameters().get("Genotype to phenotype converter protocol")) {
 			case "Cost": genoToPhenoConverterProtocol = new GenoToPhenoConverterStandard(problemData);
 				break;
-			case "Cost+Persistence" :
+			case "Cost+Persistence":
 			case "Cost+Robustness":
 			case "Cost+Persistence+Robustness":
 				genoToPhenoConverterProtocol = new GenoToPhenoConverterMultiObjective(problemData);

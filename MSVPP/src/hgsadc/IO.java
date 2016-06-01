@@ -56,7 +56,7 @@ public class IO {
 		}
 		
 		String objectives = heuristicParameters.get("Objectives");
-		if (objectives.equals("Cost+Persistence")){
+		if (objectives.equals("Cost+Persistence") || objectives.equals("Cost+Persistence+Robustness")){
 			String baselineDeparturePattern = readBaselineDeparturePattern(heuristicParameters);
 			problemInstanceParameters.put("BaselineDeparturePattern", baselineDeparturePattern);
 		}

@@ -211,9 +211,5 @@ Total time elapsed: 150.504
 1 RobEpsilon(L)	2 ChangeEpsilon(U)	3 Robustness	4 TotalChange	5 TotalCost	
 	0.00		77		0.60		0		405146	
 	0.61		77		0.80		4		409987	
-	0.61		3		0.00		0		0	
 	0.81		77		0.83		14		431077	
-	0.81		13		0.83		12		437921	
-	0.81		11		0.00		0		0	
 	0.84		77		1.00		16		431579	
-	0.84		15		0.00		0		0	

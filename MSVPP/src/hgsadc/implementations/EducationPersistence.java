@@ -90,15 +90,8 @@ public class EducationPersistence extends EducationStandard {
 	
 	private void persistenceEducate(Individual individual) {
 //		System.out.println("\nEducating persistence on individual " + individual);
-//		installationPatternImprovementForPersistence(individual);
-//		moveVoyage(individual);
-		int oldPersistence = individual.getNumberOfChangesFromBaseline();
-		swapVoyages(individual);
-		int newPersistence = individual.getNumberOfChangesFromBaseline();
-//		System.out.println("Old persistence: " + oldPersistence);
-//		System.out.println("New persistence: " + newPersistence);
-		HGSmain.CUM_PERSISTENCE_REDUCED += (oldPersistence - newPersistence);
-//		installationPatternImprovementForPersistence(individual);
+		installationPatternImprovementForPersistence(individual);
+		moveVoyage(individual);
 	}
 	
 	private void costEducate(Individual individual){
@@ -166,6 +159,8 @@ public class EducationPersistence extends EducationStandard {
 			
 		}
 
+	
+	// NOT USED
 	private void moveVoyage(Individual individual){
 			/* Calculates the minimum number of voyages required on each day in the baseline solution. If any day has too few voyages,
 			 * add new voyage on that day by removing another voyage
