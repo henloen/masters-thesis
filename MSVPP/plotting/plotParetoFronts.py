@@ -26,6 +26,12 @@ fleetCostDictionary = {
 	20: 5600000, 21: 5600000, 22: 5600000, 23: 5600000, 24: 5600000, 25: 5600000, 26: 5600000, 27: 5600000
 }
 
+averageCostDictionary = {
+3: {'': }, 4: {'': }, 5: {'': }, 6: {'': }, 7: {'': }, 8: {'': }, 9: {'': }, 10: {'': }, 11: {'': 420000, 'Gullfaks increase': },
+12: {'': , 'Load reduction project': }, 13: {'': }, 14: {'': }, 15: {'': }, 16: {'': }, 17: {'': }, 18: {'': }, 19: {'': }, 20: {'': }, 21: {'': }, 
+22: {'': }, 23: {'': }, 24: {'': }, 25: {'': }, 26: {'': } , 27: {'': , 'Gullfaks increase': , 'Load reduction project': },
+30: {'': }	
+}
 
 markerColours = ['lawngreen', 'r', 'gold','c','m']
 markerShapes = ['^', 'v', 'o', 'p', '*']
@@ -135,6 +141,10 @@ def exportPlot(filename):
 	axis = pl.gca()
 	xlim = axis.get_xlim()
 	ylim = axis.get_ylim()
+
+	(problemSize, variationCase) = getProblemSizeAndCase(filepath)
+	averageCost = averageCostDictionary[problemSize][variationCase]
+	pl.axhline(y=averageCost, xmin=0, xmax=xlim[1]*1.1, ls='--', color="red")
 
 	#pl.axis([-0.5, xlim[1]*1.1, -0.01, ylim[1]*1.1]) # dynamic scale
 	#pl.axis([-0.5, 41, -0.15, 6]) # scale for instance 11 or 12

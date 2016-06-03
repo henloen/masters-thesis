@@ -30,7 +30,7 @@ public class Test {
 	
 	private void testVoyageSwap(){
 		IO io = new IO("data/hgs/input/input data hgs.xls");
-		ProblemData problemData = io.readData(0);
+		ProblemData problemData = io.readData(0, new String[0]);
 		problemData.generatePatterns();
 		FitnessEvaluationProtocol fitnessEvaluationProtocol = new FitnessEvaluationMultiObjective(problemData);
 		GenoToPhenoConverterProtocol genoToPhenoProtocol = new GenoToPhenoConverterMultiObjective(problemData);
@@ -122,7 +122,7 @@ public class Test {
 	
 	private void testVoyage() {
 		IO io = new IO("data/hgs/input/input data hgs.xls");
-		ProblemData problemData = io.readData(0);
+		ProblemData problemData = io.readData(0, new String[0]);
 		problemData.generatePatterns();
 		FitnessEvaluationProtocol fitnessEvaluationProtocol = new FitnessEvaluationStandard(problemData);
 		GenoToPhenoConverterProtocol genoToPhenoProtocol = new GenoToPhenoConverterStandard(problemData);

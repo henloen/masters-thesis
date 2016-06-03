@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 
@@ -31,13 +32,31 @@ public class IO {
 		this.inputFileName = inputFileName;
 	}
 	
-	public ProblemData readData(int removeVessels) {
+	public ProblemData readData(int removeVessels, String[] changeParameters) {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
-		charteredVessels = readParameters(8, 16);
+		charteredVessels = readParameters(8, 16);	
 		heuristicParameters = readParameters(1, 15);
 		minimumSlackForRobustness = readMinimumSlack(11, 11);
+		
+		for (String str : changeParameters){
+			String[] splitStr = str.split("=");
+			String parameter = splitStr[0];
+			String value = splitStr[1];
+			
+			if (heuristicParameters.containsKey(parameter)){
+				heuristicParameters.put(parameter, value);
+			}
+			else if (problemInstanceParameters.containsKey(parameter)){
+				problemInstanceParameters.put(parameter, value);
+			}
+			else if (parameter.equals("removeVessels")){
+				removeVessels = Integer.parseInt(value);
+			}
+			
+		}
+		
 		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
 		if (datasetSheet == 1) {
 			installations = readInstallations(1,3);

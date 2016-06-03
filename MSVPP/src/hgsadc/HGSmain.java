@@ -36,14 +36,14 @@ public class HGSmain {
 	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
-		main.initialize();
+		main.initialize(args);
 		
 		int vesselsRemoved = 0;
 		
 		if (main.isVariableFleetProblem()){ // TODO How to handle this with multiobjective? Possible to run multiple times and save all non-dominated solutions
 			boolean feasibleFleet = true;
 			while (feasibleFleet) {
-				if (main.isFeasibleFleet(vesselsRemoved)) {
+				if (main.isFeasibleFleet(vesselsRemoved, args)) {
 					vesselsRemoved++;
 				}
 				else {
@@ -51,7 +51,7 @@ public class HGSmain {
 				}
 			}
 		}
-		main.fullHGSADCrun(vesselsRemoved-1);
+		main.fullHGSADCrun(vesselsRemoved-1, args);
 		
 //		System.out.println("=======================================================");
 //		System.out.println("Persistence educations: " + PERSISTENCE_EDUCATIONS);
@@ -72,8 +72,8 @@ public class HGSmain {
 		return Boolean.parseBoolean(problemData.getHeuristicParameters().get("Variable fleet"));
 	}
 
-	private boolean isFeasibleFleet(int vesselsRemoved) {
-		problemData = io.readData(vesselsRemoved);
+	private boolean isFeasibleFleet(int vesselsRemoved, String[] changeParameters) {
+		problemData = io.readData(vesselsRemoved, changeParameters);
 		problemData.generatePatterns(); 
 		System.out.println("Testing fleet with " + problemData.getVessels().size() + " vessels");
 		
@@ -92,8 +92,8 @@ public class HGSmain {
 		
 	}
 	
-	private void fullHGSADCrun(int vesselsRemoved) {
-		problemData = io.readData(vesselsRemoved);
+	private void fullHGSADCrun(int vesselsRemoved, String[] changeParameters) {
+		problemData = io.readData(vesselsRemoved, changeParameters);
 		
 		if (problemData.dominationCriteria != null){ // If multi-objective
 			paretoFront = new HashSet<>();
@@ -126,10 +126,10 @@ public class HGSmain {
 		}
 	}
 
-	private void initialize() {
+	private void initialize(String[] changeParameters) {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
-		problemData = io.readData(0);
+		problemData = io.readData(0, changeParameters);
 	}
 
 	private void terminate() {
@@ -230,7 +230,6 @@ public class HGSmain {
 		killLessValuableIndividuals(feasiblePopulation, infeasiblePopulation, 2/3);  
 		killLessValuableIndividuals(infeasiblePopulation, feasiblePopulation, 2/3);
 		
-		System.out.println("Mass murder of less valuable individuals complete");
 		System.out.println("Breeding new population...");
 		createInitialPopulation();
 		
