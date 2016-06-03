@@ -255,14 +255,21 @@ public class HGSprocesses {
 		return stats;
 	}
 	
-	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation) {
-			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
+	public void recordRunStatistics(int iteration, ArrayList<Individual> feasiblePopulation, ArrayList<Individual> infeasiblePopulation, Individual bestIndividual) {
+			statisticsHandler.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation, bestIndividual);
 	}
 	
-	public void exportRunStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual) {
+	public void exportRunStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual, String[] args) {
+		String argsList = "";
+		for (int i=0; i<args.length;i++) {
+			argsList += args[i];
+			if (i < args.length-1) {
+				argsList += " ";
+			}
+		}
 		statisticsHandler.exportStatistics(outputFileName, runningTime, bestFeasibleIndividual,
 				diversificationProtocol.getDiversificationNumbers(), reproductionProtocol.getNumberOfCrossoverRestarts(),
-				initialPopulationProtocol.getNumberOfConstructionHeuristicRestarts());
+				initialPopulationProtocol.getNumberOfConstructionHeuristicRestarts(), argsList);
 	}
 	
 	public void exportRunStatistics(String outputFileName, long runningTime, Set<Individual> paretoFront) {

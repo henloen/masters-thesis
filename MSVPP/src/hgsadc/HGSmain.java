@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Random;
 
 public class HGSmain {
 	
@@ -20,7 +21,10 @@ public class HGSmain {
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
 	private Individual bestFeasibleIndividual;
 	private long startTime, stopTime;
+	
 	private Set<Individual> paretoFront;
+	private String[] args;
+	
 	private int iteration;
 	
 	public static int PERSISTENCE_EDUCATIONS = 0;
@@ -37,7 +41,6 @@ public class HGSmain {
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
 		main.initialize(args);
-		
 		int vesselsRemoved = 0;
 		
 		if (main.isVariableFleetProblem()){ // TODO How to handle this with multiobjective? Possible to run multiple times and save all non-dominated solutions
@@ -89,7 +92,6 @@ public class HGSmain {
 		else {
 			return false;
 		}
-		
 	}
 	
 	private void fullHGSADCrun(int vesselsRemoved, String[] changeParameters) {
@@ -115,20 +117,11 @@ public class HGSmain {
 		runEvolutionaryLoop();
 		terminate();
 	}
-	
-	// DEPRECATED. GIVES INFEASIBLE FINAL SOLUTIONS
-	private void postEducation() {
-		if (problemData.dominationCriteria != null){
-			for (Individual individual : paretoFront){
-				processes.educate(individual);
-				processes.repair(individual, 1);
-			}
-		}
-	}
 
 	private void initialize(String[] changeParameters) {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
+		this.args = changeParameters;
 		problemData = io.readData(0, changeParameters);
 	}
 
@@ -140,12 +133,11 @@ public class HGSmain {
 		stopTime = System.nanoTime();
 		
 		if (problemData.dominationCriteria == null){ // Single-objective problem
-			processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
+			processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual, args);
 		}
 		else {
 			processes.exportRunStatistics(outputFileName, stopTime - startTime, paretoFront);
 		}
-		
 	}
 
 	private void createInitialPopulation(){
@@ -172,11 +164,11 @@ public class HGSmain {
 	}
 	
 	private void runEvolutionaryLoop() {
-		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation); // record initial population
+		processes.recordRunStatistics(0, feasiblePopulation, infeasiblePopulation, bestFeasibleIndividual);//record initial population
 		while (! stoppingCriterion()) {
 			System.out.println("Iteration " + iteration);
 			doIteration();
-			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation);
+			processes.recordRunStatistics(iteration, feasiblePopulation, infeasiblePopulation, bestFeasibleIndividual);
 			iteration++;
 		}
 		System.out.println();

@@ -33,6 +33,7 @@ public class IO {
 	}
 	
 	public ProblemData readData(int removeVessels, String[] changeParameters) {
+
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
@@ -54,7 +55,6 @@ public class IO {
 			else if (parameter.equals("removeVessels")){
 				removeVessels = Integer.parseInt(value);
 			}
-			
 		}
 		
 		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
