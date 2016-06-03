@@ -6,7 +6,7 @@ import glob
 #run this file by typing "python pythonfolder.py <foldername>" in the command line. All .txt-files in the folder named "foldername" will be plotted and exported
 
 #inputFoldername = sys.argv[1]
-inputFolderpath = '../data/hgs/output/' #+ inputFoldername +"/"
+inputFolderpath = '../data/hgs/output/figures/penalties/' #+ inputFoldername +"/"
 outputFolderpath = 'plots/'
 outputFileFormat = 'pdf'
 
@@ -52,11 +52,11 @@ def plotSingleFile(filename):
 	pl.legend(loc=1)
 	#the second subplot plots the penalities
 	pl.subplot(212);
-	pl.plot(data[:,0], data[:,3], 'r', label=headerArray[3])
-	pl.plot(data[:,0], data[:,4], 'b', label=headerArray[4])
-	pl.plot(data[:,0], data[:,5], 'g', label=headerArray[5])
+	pl.plot(data[:,0], data[:,3], 'r', label="$\omega^Q$")
+	pl.plot(data[:,0], data[:,4], 'b', label="$\omega^T$")
+	pl.plot(data[:,0], data[:,5], 'g', label="$\omega^N$")
 	pl.xlabel('Iteration')
-	pl.ylabel('Penalty')
+	pl.ylabel('Penalty (NOK)')
 	pl.legend(loc=1)
 	
 	

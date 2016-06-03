@@ -5,6 +5,7 @@ import hgsadc.protocols.FitnessEvaluationProtocol;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Random;
 
 public class HGSmain {
 	
@@ -16,12 +17,13 @@ public class HGSmain {
 	private ArrayList<Individual> feasiblePopulation, infeasiblePopulation;
 	private Individual bestFeasibleIndividual;
 	private long startTime, stopTime;
+	private String[] args;
 	
 	private int iteration;
 	
 	public static void main(String[] args) {
 		HGSmain main = new HGSmain();
-		main.initialize();
+		main.initialize(args);
 		boolean feasibleFleet = true;
 		int vesselsRemoved = 0;
 		while (feasibleFleet) {
@@ -36,7 +38,8 @@ public class HGSmain {
 	}
 	
 	private boolean isFeasibleFleet(int vesselsRemoved) {
-		problemData = io.readData(vesselsRemoved);
+		problemData = io.readData(vesselsRemoved, args);
+		changeSystemArgumentParameters(problemData);
 		problemData.generatePatterns(); 
 		System.out.println("Testing fleet with " + problemData.getVessels().size() + " vessels");
 		
@@ -52,11 +55,11 @@ public class HGSmain {
 		else {
 			return false;
 		}
-		
 	}
 	
 	private void fullHGSADCrun(int vesselsRemoved) {
-		problemData = io.readData(vesselsRemoved);
+		problemData = io.readData(vesselsRemoved, args);
+		changeSystemArgumentParameters(problemData);
 		problemData.generatePatterns(); 
 		processes = new HGSprocesses(problemData);
 		
@@ -73,10 +76,31 @@ public class HGSmain {
 		terminate();
 	}
 	
+	private void changeSystemArgumentParameters(ProblemData problemData) {
+		System.out.println("Before change:");
+		System.out.println(problemData.getHeuristicParameters());
+		System.out.println(problemData.getProblemInstanceParameters());
+		for (String arg : args) {
+			String[] splittedArg = arg.split("=");
+			String parameter = splittedArg[0];
+			String value = splittedArg[1];
+			if (problemData.getHeuristicParameters().containsKey(parameter)) {
+				problemData.getHeuristicParameters().put(parameter, value);
+			}
+			else {
+				problemData.getProblemInstanceParameters().put(parameter, value);
+			}
+		}
+		System.out.println("After change:");
+		System.out.println(problemData.getHeuristicParameters());
+		System.out.println(problemData.getProblemInstanceParameters());
+	}
 	
-	private void initialize() {
+	
+	private void initialize(String[] args) {
 		startTime = System.nanoTime();
 		io = new IO(inputFileName);
+		this.args = args;
 	}
 	
 	private void terminate() {
@@ -85,7 +109,7 @@ public class HGSmain {
 		printRunStatistics();
 		printBestSolutions();
 		stopTime = System.nanoTime();
-		processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual);
+		processes.exportRunStatistics(outputFileName, stopTime - startTime, bestFeasibleIndividual, args);
 	}
 
 	private void createInitialPopulation(){
@@ -125,7 +149,11 @@ public class HGSmain {
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
-		processes.educate(offspring);
+		double educationProbability = problemData.getHeuristicParameterDouble("Education rate");
+		double randomDouble = new Random().nextDouble();
+		if (educationProbability < randomDouble) {
+			processes.educate(offspring); 
+		}
 		addToSubpopulation(offspring);
 		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
 		updateCounters();

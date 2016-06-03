@@ -28,12 +28,25 @@ public class IO {
 		this.inputFileName = inputFileName;
 	}
 	
-	public ProblemData readData(int removeVessels) {
+	public ProblemData readData(int removeVessels, String[] args) {
 		//the index arguments of readParameters() refer to positions in the input file: (column,row) and is 0-indexed
 		problemInstanceParameters =  readParameters(1,2);
 		depotCapacity = readDepotCapacity(8,2);
 		charteredVessels = readParameters(8, 16);
 		heuristicParameters = readParameters(1, 15);
+		
+		for (String arg : args) {
+			String[] splittedArg = arg.split("=");
+			String parameter = splittedArg[0];
+			String value = splittedArg[1];
+			if (heuristicParameters.containsKey(parameter)) {
+				heuristicParameters.put(parameter, value);
+			}
+			else {
+				problemInstanceParameters.put(parameter, value);
+			}
+		}
+		
 		datasetSheet = Integer.parseInt(problemInstanceParameters.get("Dataset sheet"));
 		if (datasetSheet == 1) {
 			installations = readInstallations(1,3);

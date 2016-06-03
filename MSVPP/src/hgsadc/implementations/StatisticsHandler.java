@@ -74,9 +74,9 @@ public class StatisticsHandler {
 	}
 
 	public void exportStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual,
-			ArrayList<Integer> diversificationNumbers, int numberOfCrossoverRestarts, int numberOfConstructionHeuristicRestarts) {
+			ArrayList<Integer> diversificationNumbers, int numberOfCrossoverRestarts, int numberOfConstructionHeuristicRestarts, String argsList) {
 		PrintWriter writer = null;
-		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + ".txt";
+		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + " " + argsList + ".txt";
 		try {
 			writer = new PrintWriter(fileName, "UTF-8");
 		} catch (Exception e) {
@@ -166,7 +166,7 @@ public class StatisticsHandler {
 	}
 	
 	public String getCurrentTime() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}

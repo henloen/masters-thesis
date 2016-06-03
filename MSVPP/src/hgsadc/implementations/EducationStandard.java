@@ -54,6 +54,7 @@ public class EducationStandard implements EducationProtocol {
 		installationPatternImprovement(individual);
 		vesselPatternImprovement(individual);
 		voyageReduction(individual);
+		
 		//installationPatternImprovement(individual);
 		//installationPatternSwap(individual);
 	}

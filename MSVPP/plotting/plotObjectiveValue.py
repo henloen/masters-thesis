@@ -6,7 +6,7 @@ import glob
 #run this file by typing "python pythonfolder.py <foldername>" in the command line. All .txt-files in the folder named "foldername" will be plotted and exported
 
 #inputFoldername = sys.argv[1]
-inputFolderpath = '../data/hgs/output/' #+ inputFoldername +"/"
+inputFolderpath = '../data/hgs/output/figures/' #+ inputFoldername +"/"
 outputFolderpath = 'plots/'
 outputFileFormat = 'pdf'
 
@@ -45,7 +45,7 @@ def plotSingleFile(filename):
 	#pl.plot(data[:,0], data[:,6], label=headerArray[6])
 	pl.plot(data[:,0], dontPlotZero(data[:,7]), label="Best solution found")
 	pl.xlabel('Iteration')
-	pl.ylabel('Cost')
+	pl.ylabel('Cost (NOK)')
 	axes = pl.gca()
 	ylim = axes.get_ylim()
 	axes.set_xlim(xmin=0)
