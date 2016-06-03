@@ -149,11 +149,7 @@ public class HGSmain {
 	private void doIteration() {
 		ArrayList<Individual> parents = processes.selectParents(feasiblePopulation, infeasiblePopulation);
 		Individual offspring = processes.generateOffspring(parents);
-		double educationProbability = problemData.getHeuristicParameterDouble("Education rate");
-		double randomDouble = new Random().nextDouble();
-		if (educationProbability < randomDouble) {
-			processes.educate(offspring); 
-		}
+		processes.educate(offspring); 
 		addToSubpopulation(offspring);
 		processes.adjustPenaltyParameters(feasiblePopulation, infeasiblePopulation);
 		updateCounters();
