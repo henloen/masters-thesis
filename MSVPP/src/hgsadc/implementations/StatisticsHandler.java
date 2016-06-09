@@ -39,7 +39,7 @@ public class StatisticsHandler {
 		statistics = new HashMap<Integer, HashMap<String,Double>>();
 		skipNumberOfRows = 18 + problemData.getProblemInstanceParameters().size() + problemData.getHeuristicParameters().size()
 				+ problemData.getLengthOfPlanningPeriod() + problemData.getVessels().size(); 
-		//all rows before the data starts are skipped, see an output file for the layout
+		//all rows before the data stsarts are skipped, see an output file for the layout
 	}
 
 	
@@ -77,7 +77,7 @@ public class StatisticsHandler {
 	public void exportStatistics(String outputFileName, long runningTime, Individual bestFeasibleIndividual,
 			ArrayList<Integer> diversificationNumbers, int numberOfCrossoverRestarts, int numberOfConstructionHeuristicRestarts, String argsList) {
 		PrintWriter writer = null;
-		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + " " + argsList + ".txt";
+		String fileName = outputFileName + getCurrentTime() + " " + problemData.getProblemInstanceParameters().get("Problem size") + ".txt";
 		try {
 			writer = new PrintWriter(fileName, "UTF-8");
 		} catch (Exception e) {

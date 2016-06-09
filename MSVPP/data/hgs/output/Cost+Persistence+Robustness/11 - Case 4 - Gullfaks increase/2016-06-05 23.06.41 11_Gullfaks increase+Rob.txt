@@ -1,0 +1,226 @@
+Skip number of rows: 119
+Time used: 415,08 seconds
+
+Problem instance parameters: 
+Problem size = 11
+Time windows = false
+Maximum duration = 3
+Best known sailing cost = 537616
+Minimum number of installations = 1
+Length of planning period = 7
+Load factor = 1,2
+BaselineDeparturePattern = 
+1 1 0 1 0 1 0 
+1 1 0 0 1 0 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+0 1 0 0 0 0 0 
+1 1 0 1 1 1 0 
+1 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+1 1 0 1 0 1 0 
+
+Total charter cost of fleet = 8400000
+Maximum number of installations = 8
+Dataset sheet = 3
+Minimum duration = 2
+
+Heuristic parameters: 
+Max iterations without improvement = 5000
+Variation case = Gullfaks increase
+Objectives = Cost+Persistence+Robustness
+Fitness evaluation protocol = Cost+Persistence+Robustness
+Survivor selection protocol = standard
+Diversification protocol = standard
+Capacity constraint violation penalty = 1000
+Iterations before diversify = 500
+Genotype to phenotype converter protocol = Cost+Persistence+Robustness
+Baseline file = 11-0-36
+Parent selection protocol = binary tournament
+Max time = 3600
+Duration constraint violation penalty = 1000
+Variable fleet = false
+Repair rate = 0
+Number of installations violation penalty = 1000
+Initial population heuristic = aimed
+Reference proportion of feasible individuals = 0,4
+Repair protocol = standard
+Gap from best known solution = 0
+Proportion of elite individuals = 0,4
+Education rate = 1
+Education protocol = Cost+Persistence
+Proportion of individuals considered for distance evaluation = 0,2
+Reproduction protocol = standard
+Population size = 25
+Number of offspring in a generation = 75
+Granularity threshold in RI = 0,4
+
+Number of iterations: 9532
+Diversifaction happened at iterations: [500, 1233, 2450, 3254, 3754, 4254, 5032, 5532, 6032, 6532, 7032, 7532, 8032, 8532, 9032, 9532]
+Number of crossover restarts: 10110
+Number of construction heuristic restarts: 1696
+
+Penalized cost: 451536,00
+Persistence: 21
+Robustness: 0
+Baseline: {1=[0, 1, 3, 5], 2=[0, 1, 4], 3=[0, 3, 4], 4=[0, 3, 4], 5=[0, 3, 4], 6=[1], 7=[0, 1, 3, 4, 5], 8=[0, 1, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 5]}
+Solution: {1=[0, 1, 3, 4], 2=[1, 4, 5], 3=[0, 2, 3, 5], 4=[0, 2, 3, 5], 5=[0, 2, 3, 5], 6=[4], 7=[0, 2, 3, 4, 5], 8=[1, 2, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 4]}
+Day: 0 - vessel 1: [5, 4, 3, 7, 11, 1] cost: 69247,26 dur: 38,32 cap: 107,88, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 10, 8, 9, 11, 1] cost: 69407,23 dur: 38,64 cap: 130,20
+Day: 2 - vessel 1: [8, 3, 4, 5, 7] cost: 68447,38 dur: 35,99 cap: 89,28, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: [5, 4, 3, 7, 11, 1] cost: 69247,26 dur: 38,32 cap: 107,88
+Day: 4 - vessel 1: [2, 10, 8, 9, 11, 6, 7, 1] cost: 84912,66 dur: 47,03 cap: 219,48, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [7, 5, 4, 3, 9, 8, 10, 2] cost: 90274,24 dur: 49,99 cap: 163,68
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+BaselineSigma: (installation patterns for this solution)
+1 1 0 1 1 0 0 
+0 1 0 0 1 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+0 0 0 0 1 0 0 
+1 0 1 1 1 1 0 
+0 1 1 0 1 1 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+1 1 0 1 1 0 0 
+
+]
+
+Penalized cost: 451468,00
+Persistence: 21
+Robustness: 0
+Baseline: {1=[0, 1, 3, 5], 2=[0, 1, 4], 3=[0, 3, 4], 4=[0, 3, 4], 5=[0, 3, 4], 6=[1], 7=[0, 1, 3, 4, 5], 8=[0, 1, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 5]}
+Solution: {1=[0, 1, 3, 4], 2=[1, 4, 5], 3=[0, 2, 3, 5], 4=[0, 2, 3, 5], 5=[0, 2, 3, 5], 6=[2], 7=[0, 2, 3, 4, 5], 8=[1, 2, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 4]}
+Day: 0 - vessel 1: [1, 11, 7, 3, 4, 5] cost: 69247,26 dur: 38,32 cap: 107,88, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 8, 10, 9, 11, 1] cost: 69407,23 dur: 38,64 cap: 130,20
+Day: 2 - vessel 1: [5, 4, 3, 7, 6, 8] cost: 70943,96 dur: 38,02 cap: 163,68, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: [1, 11, 7, 3, 4, 5] cost: 69247,26 dur: 38,32 cap: 107,88
+Day: 4 - vessel 1: [2, 8, 10, 9, 11, 7, 1] cost: 82348,22 dur: 44,97 cap: 145,08, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [7, 5, 4, 3, 9, 8, 10, 2] cost: 90274,24 dur: 49,99 cap: 163,68
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+BaselineSigma: (installation patterns for this solution)
+1 1 0 1 1 0 0 
+0 1 0 0 1 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+0 0 1 0 0 0 0 
+1 0 1 1 1 1 0 
+0 1 1 0 1 1 0 
+0 1 0 0 1 1 0 
+0 1 0 0 1 1 0 
+1 1 0 1 1 0 0 
+
+]
+
+Penalized cost: 457465,00
+Persistence: 25
+Robustness: 1
+Baseline: {1=[0, 1, 3, 5], 2=[0, 1, 4], 3=[0, 3, 4], 4=[0, 3, 4], 5=[0, 3, 4], 6=[1], 7=[0, 1, 3, 4, 5], 8=[0, 1, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 5]}
+Solution: {1=[0, 1, 3, 4], 2=[1, 4, 5], 3=[0, 2, 4, 5], 4=[0, 2, 4, 5], 5=[0, 2, 4, 5], 6=[3], 7=[0, 2, 3, 4, 5], 8=[1, 2, 4, 5], 9=[1, 3, 5], 10=[1, 3, 5], 11=[0, 1, 3, 4]}
+Day: 0 - vessel 1: [5, 4, 3, 7, 11, 1] cost: 69247,26 dur: 38,32 cap: 107,88, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 8, 10, 9, 11, 1] cost: 69407,23 dur: 38,64 cap: 130,20
+Day: 2 - vessel 1: [7, 5, 4, 3, 8] cost: 68447,38 dur: 35,99 cap: 89,28, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: [7, 6, 11, 9, 10, 1] cost: 66270,76 dur: 35,84 cap: 176,08
+Day: 4 - vessel 1: [1, 7, 5, 4, 3, 11, 8, 2] cost: 93369,51 dur: 51,77 cap: 151,28, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [2, 10, 8, 9, 7, 3, 4, 5] cost: 90291,21 dur: 50,00 cap: 163,68
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+BaselineSigma: (installation patterns for this solution)
+1 1 0 1 1 0 0 
+0 1 0 0 1 1 0 
+1 0 1 0 1 1 0 
+1 0 1 0 1 1 0 
+1 0 1 0 1 1 0 
+0 0 0 1 0 0 0 
+1 0 1 1 1 1 0 
+0 1 1 0 1 1 0 
+0 1 0 1 0 1 0 
+0 1 0 1 0 1 0 
+1 1 0 1 1 0 0 
+
+]
+
+Penalized cost: 451250,00
+Persistence: 23
+Robustness: 0
+Baseline: {1=[0, 1, 3, 5], 2=[0, 1, 4], 3=[0, 3, 4], 4=[0, 3, 4], 5=[0, 3, 4], 6=[1], 7=[0, 1, 3, 4, 5], 8=[0, 1, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 5]}
+Solution: {1=[0, 1, 3, 4], 2=[1, 4, 5], 3=[0, 2, 3, 5], 4=[0, 2, 3, 5], 5=[0, 2, 3, 5], 6=[4], 7=[0, 2, 3, 4, 5], 8=[1, 2, 4, 5], 9=[1, 2, 5], 10=[1, 4, 5], 11=[0, 1, 3, 4]}
+Day: 0 - vessel 1: [1, 11, 7, 3, 4, 5] cost: 69247,26 dur: 38,32 cap: 107,88, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 8, 10, 9, 11, 1] cost: 69407,23 dur: 38,64 cap: 130,20
+Day: 2 - vessel 1: [7, 5, 4, 3, 9, 8] cost: 72131,65 dur: 39,01 cap: 114,08, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: [5, 4, 3, 7, 11, 1] cost: 69247,26 dur: 38,32 cap: 107,88
+Day: 4 - vessel 1: [2, 10, 8, 11, 6, 7, 1] cost: 80942,38 dur: 43,89 cap: 194,68, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [7, 5, 4, 3, 9, 8, 10, 2] cost: 90274,24 dur: 49,99 cap: 163,68
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+BaselineSigma: (installation patterns for this solution)
+1 1 0 1 1 0 0 
+0 1 0 0 1 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+1 0 1 1 0 1 0 
+0 0 0 0 1 0 0 
+1 0 1 1 1 1 0 
+0 1 1 0 1 1 0 
+0 1 1 0 0 1 0 
+0 1 0 0 1 1 0 
+1 1 0 1 1 0 0 
+
+]
+
+Penalized cost: 456326,00
+Persistence: 27
+Robustness: 1
+Baseline: {1=[0, 1, 3, 5], 2=[0, 1, 4], 3=[0, 3, 4], 4=[0, 3, 4], 5=[0, 3, 4], 6=[1], 7=[0, 1, 3, 4, 5], 8=[0, 1, 4, 5], 9=[1, 4, 5], 10=[1, 4, 5], 11=[0, 1, 3, 5]}
+Solution: {1=[1, 2, 4, 5], 2=[1, 4, 5], 3=[0, 2, 4, 5], 4=[0, 2, 4, 5], 5=[0, 2, 4, 5], 6=[3], 7=[0, 2, 3, 4, 5], 8=[0, 1, 3, 4], 9=[1, 3, 5], 10=[1, 3, 5], 11=[0, 1, 3, 4]}
+Day: 0 - vessel 1: [8, 11, 7, 3, 4, 5] cost: 72747,31 dur: 39,26 cap: 107,88, vessel 2: -
+Day: 1 - vessel 1: -, vessel 2: [2, 10, 8, 9, 11, 1] cost: 69407,23 dur: 38,64 cap: 130,20
+Day: 2 - vessel 1: [1, 7, 3, 4, 5] cost: 63757,21 dur: 34,55 cap: 89,28, vessel 2: -
+Day: 3 - vessel 1: -, vessel 2: [7, 6, 11, 9, 10, 8] cost: 64554,66 dur: 34,63 cap: 176,08
+Day: 4 - vessel 1: [1, 7, 5, 4, 3, 11, 8, 2] cost: 93369,51 dur: 51,77 cap: 151,28, vessel 2: -
+Day: 5 - vessel 1: -, vessel 2: [1, 7, 5, 4, 3, 9, 10, 2] cost: 92489,65 dur: 51,41 cap: 163,68
+Day: 6 - vessel 1: -, vessel 2: -
+
+Chartered fleet:
+Name: PSV_1, number: 1, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+Name: PSV_2, number: 2, capacity: 600, speed: 10, unit fuel cost: 7129, fuel consumption sailing: 0.34, fuel consumption depot: 0.045, fuel consumption installation: 0.17, time charter cost: 200000, number of days available: 7
+BaselineSigma: (installation patterns for this solution)
+0 1 1 0 1 1 0 
+0 1 0 0 1 1 0 
+1 0 1 0 1 1 0 
+1 0 1 0 1 1 0 
+1 0 1 0 1 1 0 
+0 0 0 1 0 0 0 
+1 0 1 1 1 1 0 
+1 1 0 1 1 0 0 
+0 1 0 1 0 1 0 
+0 1 0 1 0 1 0 
+1 1 0 1 1 0 0 
+
+]
+
+======================= Non-dominated solutions =======================
+Cost	Persistence	Robustness
+451536	21		0.5
+451468	21		0.3333333333333333
+457465	25		0.6666666666666666
+451250	23		0.3333333333333333
+456326	27		0.6666666666666666

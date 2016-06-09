@@ -39,6 +39,7 @@ public class PenaltyAdjustmentProtocol {
 	}
 	
 	public void adjustPenalties(ArrayList<Individual> entirePopulation, FitnessEvaluationProtocol fitnessProtocol){
+		
 		if (solutionsSincePenaltyAdjustment >= 100){
 			System.out.println("Adjusting penalty parameters...");
 			

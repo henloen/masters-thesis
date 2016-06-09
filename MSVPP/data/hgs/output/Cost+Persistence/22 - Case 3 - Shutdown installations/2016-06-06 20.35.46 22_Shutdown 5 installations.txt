@@ -1,0 +1,82 @@
+Skip number of rows: 54
+Time used: 340,71 seconds
+
+Problem instance parameters: 
+Problem size = 22
+Time windows = false
+Maximum duration = 3
+Best known sailing cost = 537616
+Minimum number of installations = 1
+Length of planning period = 7
+Load factor = 1,2
+BaselineDeparturePattern = 
+1 0 1 1 0 1 0
+1 1 0 0 1 0 0
+1 0 1 0 1 0 0 
+1 0 1 0 1 0 0 
+1 0 1 0 1 0 0 
+0 0 0 0 0 1 0 
+1 1 1 0 1 1 0 
+1 1 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 0 0 1 1 0 0 
+1 1 0 1 0 1 0 
+1 1 0 1 1 0 0 
+1 0 1 0 1 1 0 
+0 1 1 0 1 1 0 
+1 0 1 0 1 1 0 
+1 0 1 0 0 1 0 
+1 1 0 1 1 0 0 
+1 0 1 0 1 0 0 
+1 0 1 0 1 0 0 
+1 0 1 0 1 0 0 
+0 0 1 0 0 0 0 
+0 0 1 0 0 1 0 
+1 0 0 1 0 0 0 
+0 0 0 0 0 1 0 
+0 0 0 0 0 1 0 
+1 0 1 0 0 1 0 
+0 1 0 0 0 1 0 
+
+Total charter cost of fleet = 5600000
+Maximum number of installations = 8
+Dataset sheet = 3
+Minimum duration = 2
+
+Heuristic parameters: 
+Max iterations without improvement = 5000
+Variation case = Shutdown 5 installations
+Objectives = Cost+Persistence+Robustness
+Fitness evaluation protocol = Cost+Persistence+Robustness
+Survivor selection protocol = standard
+Diversification protocol = standard
+Capacity constraint violation penalty = 1000
+Iterations before diversify = 500
+Genotype to phenotype converter protocol = Cost+Persistence+Robustness
+Baseline file = 27-0-80
+Parent selection protocol = binary tournament
+Max time = 3600
+Duration constraint violation penalty = 1000
+Variable fleet = false
+Repair rate = 0
+Number of installations violation penalty = 1000
+Initial population heuristic = aimed
+Reference proportion of feasible individuals = 0,4
+Repair protocol = standard
+Gap from best known solution = 0
+Proportion of elite individuals = 0,4
+Education rate = 1
+Education protocol = Cost+Persistence
+Proportion of individuals considered for distance evaluation = 0,2
+Reproduction protocol = standard
+Population size = 25
+Number of offspring in a generation = 75
+Granularity threshold in RI = 0,4
+
+Number of iterations: 5000
+Diversifaction happened at iterations: [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+Number of crossover restarts: 2446
+Number of construction heuristic restarts: 1015
+
+======================= Non-dominated solutions =======================
+Cost	Persistence	Robustness

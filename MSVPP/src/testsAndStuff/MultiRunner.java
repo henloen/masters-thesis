@@ -60,7 +60,6 @@ public class MultiRunner {
 		try {
 			Workbook workbook = Workbook.getWorkbook(new File(inputFile));
 			Sheet sheet = workbook.getSheet(0); //the parameters are expected in the first sheet
-			System.out.println("Opening workbook");
 			ArrayList<String> headers = readHeaders(sheet, startCol, startRow); 
 			
 			int i = 1;

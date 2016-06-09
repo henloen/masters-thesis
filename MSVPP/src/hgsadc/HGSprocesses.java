@@ -98,8 +98,7 @@ public class HGSprocesses {
 	public void repair(Individual individual, double probability) {
 		if (!individual.isFeasible()){
 			double randomDouble = new Random().nextDouble();
-			if (probability < randomDouble) {
-				
+			if (randomDouble < probability) {
 				int penaltyMultiplier = 10;
 				educationProtocol.repairEducate(individual, penaltyMultiplier);
 				
